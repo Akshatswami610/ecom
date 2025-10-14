@@ -4,7 +4,14 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9366a40e-be76-46fe-8751-1b62336c93b8" name="Changes" comment="" />
+    <list default="true" id="9366a40e-be76-46fe-8751-1b62336c93b8" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/Ecom/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Ecom/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/admin.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/serializers.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/serializers.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/urls.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/backend/api/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/api/views.py" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -18,7 +25,7 @@
     </option>
   </component>
   <component name="Git.Settings">
-    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/Ecom-website-Using-Django" />
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;associatedIndex&quot;: 7
@@ -33,6 +40,7 @@
     "ModuleVcsDetector.initialDetectionPerformed": "true",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
+    "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
     "settings.editor.selected.configurable": "project.propVCSSupport.DirectoryMappings"
   }
