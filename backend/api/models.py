@@ -15,13 +15,22 @@ class Product(models.Model):
 
     product_name = models.CharField(max_length=50)
     product_desc = models.CharField(max_length=100)
-    product_image = models.ImageField(upload_to='Ecom/images', default='')
+    product_image = models.ImageField(upload_to='ecom/images/', default='')
     product_variant = models.CharField(max_length=10, choices=PRODUCT_VARIANT)
     product_mrp = models.IntegerField(default=100)
     timestamp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.product_name
+
+
+class Cart(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='carts')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    qty = models.PositiveIntegerField(default=1)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.product_name} ({self.qty})"
 
 
 class Profile(models.Model):
@@ -32,7 +41,7 @@ class Profile(models.Model):
     address_district = models.CharField(max_length=25)
     address_state = models.CharField(max_length=25)
     address_pincode = models.CharField(max_length=6)
-    usercontact = models.CharField(max_length=10)
+    user_contact = models.CharField(max_length=10)
 
     def __str__(self):
         return self.user.username
