@@ -2,9 +2,487 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - ShopHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --secondary-color: #64748b;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --danger-color: #ef4444;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 20px;
+        }
+
+        .nav-brand a {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 3px 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--primary-color);
+        }
+
+        .cart-link {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: var(--danger-color);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+        }
+
+        .profile-content,
+        .profile-form {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+        }
+
+        .profile-info-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .profile-info-item:last-child {
+            border-bottom: none;
+        }
+
+        .profile-info-label {
+            font-weight: 600;
+            color: var(--text-light);
+            font-size: 0.875rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .profile-info-value {
+            font-size: 1rem;
+            color: var(--text-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--white);
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .success-message {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .footer {
+            background-color: var(--white);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow);
+                display: none;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="home.html">ShopHub</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="profile.html" class="active">Profile</a></li>
+                <li><a href="order-history.html">Orders</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    Cart <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
 
+    <main>
+        <div class="container">
+            <h1>My Profile</h1>
+
+            <div id="profileContent" class="profile-content">
+                <div class="loading">Loading profile...</div>
+            </div>
+
+            <form id="profileForm" class="profile-form" style="display: none;">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone">
+                </div>
+                <div class="form-group">
+                    <label for="address">Address</label>
+                    <textarea id="address" rows="3"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Update Profile</button>
+                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'https://api.example.com/';
+
+        const API = {
+            async request(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers,
+                        },
+                        ...options,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            },
+
+            async getProfile(profileId = 1) {
+                return this.request(`${API_BASE_URL}profile/${profileId}/`);
+            },
+
+            async updateProfile(profileId, data) {
+                return this.request(`${API_BASE_URL}profile/${profileId}/`, {
+                    method: 'PATCH',
+                    body: JSON.stringify(data),
+                });
+            },
+        };
+
+        function getLocalCart() {
+            const cart = localStorage.getItem('cart');
+            return cart ? JSON.parse(cart) : [];
+        }
+
+        function updateCartCount() {
+            const cart = getLocalCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach((el) => {
+                el.textContent = totalItems;
+            });
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'success-message';
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '80px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        let currentProfile = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateCartCount();
+            setupMobileNav();
+            await loadProfile();
+
+            document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                displayProfile(currentProfile);
+            });
+        });
+
+        function setupMobileNav() {
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                });
+            }
+        }
+
+        async function loadProfile() {
+            const profileContent = document.getElementById('profileContent');
+
+            try {
+                currentProfile = await API.getProfile(1);
+                displayProfile(currentProfile);
+            } catch (error) {
+                profileContent.innerHTML = '<div class="error-message">Failed to load profile. Please try again later.</div>';
+            }
+        }
+
+        function displayProfile(profile) {
+            const profileContent = document.getElementById('profileContent');
+            const profileForm = document.getElementById('profileForm');
+
+            profileContent.innerHTML = `
+                <div class="profile-info-item">
+                    <div class="profile-info-label">First Name</div>
+                    <div class="profile-info-value">${profile.first_name || 'Not set'}</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Last Name</div>
+                    <div class="profile-info-value">${profile.last_name || 'Not set'}</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Email</div>
+                    <div class="profile-info-value">${profile.email || 'Not set'}</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Phone</div>
+                    <div class="profile-info-value">${profile.phone || 'Not set'}</div>
+                </div>
+                <div class="profile-info-item">
+                    <div class="profile-info-label">Address</div>
+                    <div class="profile-info-value">${profile.address || 'Not set'}</div>
+                </div>
+                <button class="btn btn-primary" onclick="enableEdit()" style="margin-top: 1rem;">Edit Profile</button>
+            `;
+
+            profileContent.style.display = 'block';
+            profileForm.style.display = 'none';
+        }
+
+        function enableEdit() {
+            const profileContent = document.getElementById('profileContent');
+            const profileForm = document.getElementById('profileForm');
+
+            document.getElementById('firstName').value = currentProfile.first_name || '';
+            document.getElementById('lastName').value = currentProfile.last_name || '';
+            document.getElementById('email').value = currentProfile.email || '';
+            document.getElementById('phone').value = currentProfile.phone || '';
+            document.getElementById('address').value = currentProfile.address || '';
+
+            profileContent.style.display = 'none';
+            profileForm.style.display = 'block';
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+
+            const formData = {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone: document.getElementById('phone').value,
+                address: document.getElementById('address').value,
+            };
+
+            try {
+                const updatedProfile = await API.updateProfile(currentProfile.id, formData);
+                currentProfile = updatedProfile;
+                displayProfile(currentProfile);
+                showNotification('Profile updated successfully!');
+            } catch (error) {
+                alert('Failed to update profile. Please try again.');
+            }
+        }
+    </script>
 </body>
 </html>

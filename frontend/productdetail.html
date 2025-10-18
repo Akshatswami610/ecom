@@ -2,9 +2,612 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Detail - ShopHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --danger-color: #ef4444;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 20px;
+        }
+
+        .nav-brand a {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 3px 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            color: var(--primary-color);
+        }
+
+        .cart-link {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: var(--danger-color);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin: 2rem 0 1rem;
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .product-detail {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .product-detail-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .product-detail-image {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .product-detail-info h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        .product-detail-price {
+            font-size: 2rem;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin-bottom: 1rem;
+        }
+
+        .product-detail-description {
+            color: var(--text-light);
+            margin-bottom: 2rem;
+            line-height: 1.8;
+        }
+
+        .quantity-selector {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .quantity-selector input {
+            width: 80px;
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .reviews-section {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .reviews-section h2 {
+            margin-bottom: 1.5rem;
+        }
+
+        .review-item {
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.5rem 0;
+        }
+
+        .review-item:last-child {
+            border-bottom: none;
+        }
+
+        .review-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .review-author {
+            font-weight: 600;
+        }
+
+        .review-rating {
+            color: #fbbf24;
+        }
+
+        .review-text {
+            color: var(--text-light);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-family: inherit;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .success-message {
+            background-color: #d1fae5;
+            color: #065f46;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+        }
+
+        .footer {
+            background-color: var(--white);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow);
+                display: none;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .product-detail-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="home.html">ShopHub</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="order-history.html">Orders</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    Cart <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
 
+    <main>
+        <div class="container">
+            <a href="home.html" class="back-link">← Back to Products</a>
+
+            <div id="productDetail" class="product-detail">
+                <div class="loading">Loading product details...</div>
+            </div>
+
+            <section class="reviews-section">
+                <h2>Customer Reviews</h2>
+                <div id="reviewsList" class="reviews-list"></div>
+
+                <div class="review-form-container">
+                    <h3>Write a Review</h3>
+                    <form id="reviewForm">
+                        <div class="form-group">
+                            <label for="rating">Rating</label>
+                            <select id="rating" required>
+                                <option value="">Select rating</option>
+                                <option value="5">5 Stars</option>
+                                <option value="4">4 Stars</option>
+                                <option value="3">3 Stars</option>
+                                <option value="2">2 Stars</option>
+                                <option value="1">1 Star</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="reviewText">Your Review</label>
+                            <textarea id="reviewText" rows="4" required></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Submit Review</button>
+                    </form>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'https://api.example.com/';
+
+        const API = {
+            async request(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers,
+                        },
+                        ...options,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            },
+
+            async getProduct(id) {
+                return this.request(`${API_BASE_URL}products/${id}/`);
+            },
+
+            async getReviews(productId) {
+                return this.request(`${API_BASE_URL}reviews?product=${productId}`);
+            },
+
+            async createReview(data) {
+                return this.request(`${API_BASE_URL}reviews`, {
+                    method: 'POST',
+                    body: JSON.stringify(data),
+                });
+            },
+
+            async addToCart(productId, quantity = 1) {
+                return this.request(`${API_BASE_URL}cart`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        product: productId,
+                        quantity: quantity,
+                    }),
+                });
+            },
+        };
+
+        function getLocalCart() {
+            const cart = localStorage.getItem('cart');
+            return cart ? JSON.parse(cart) : [];
+        }
+
+        function saveLocalCart(cart) {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartCount();
+        }
+
+        function updateCartCount() {
+            const cart = getLocalCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach((el) => {
+                el.textContent = totalItems;
+            });
+        }
+
+        function addToLocalCart(product, quantity = 1) {
+            const cart = getLocalCart();
+            const existingItem = cart.find((item) => item.id === product.id);
+
+            if (existingItem) {
+                existingItem.quantity += quantity;
+            } else {
+                cart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: product.price,
+                    image: product.image,
+                    quantity: quantity,
+                });
+            }
+
+            saveLocalCart(cart);
+            showNotification('Product added to cart!');
+        }
+
+        function showNotification(message) {
+            const notification = document.createElement('div');
+            notification.className = 'success-message';
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '80px';
+            notification.style.right = '20px';
+            notification.style.zIndex = '9999';
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        let currentProduct = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateCartCount();
+            setupMobileNav();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            if (productId) {
+                await loadProduct(productId);
+                await loadReviews(productId);
+            }
+
+            document.getElementById('reviewForm').addEventListener('submit', handleReviewSubmit);
+        });
+
+        function setupMobileNav() {
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                });
+            }
+        }
+
+        async function loadProduct(productId) {
+            const productDetail = document.getElementById('productDetail');
+
+            try {
+                currentProduct = await API.getProduct(productId);
+                displayProduct(currentProduct);
+            } catch (error) {
+                productDetail.innerHTML = '<div class="error-message">Failed to load product. Please try again later.</div>';
+            }
+        }
+
+        function displayProduct(product) {
+            const productDetail = document.getElementById('productDetail');
+
+            productDetail.innerHTML = `
+                <div class="product-detail-content">
+                    <div>
+                        <img src="${product.image || '/placeholder.svg?height=400&width=400'}"
+                             alt="${product.name}"
+                             class="product-detail-image">
+                    </div>
+                    <div class="product-detail-info">
+                        <h1>${product.name}</h1>
+                        <div class="product-detail-price">$${parseFloat(product.price).toFixed(2)}</div>
+                        <p class="product-detail-description">${product.description || 'No description available'}</p>
+
+                        <div class="quantity-selector">
+                            <label for="quantity">Quantity:</label>
+                            <input type="number" id="quantity" value="1" min="1" max="99">
+                        </div>
+
+                        <button class="btn btn-primary" onclick="addProductToCart()">Add to Cart</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function loadReviews(productId) {
+            const reviewsList = document.getElementById('reviewsList');
+
+            try {
+                const reviews = await API.getReviews(productId);
+                displayReviews(reviews);
+            } catch (error) {
+                reviewsList.innerHTML = '<p>No reviews yet. Be the first to review!</p>';
+            }
+        }
+
+        function displayReviews(reviews) {
+            const reviewsList = document.getElementById('reviewsList');
+
+            if (reviews.length === 0) {
+                reviewsList.innerHTML = '<p>No reviews yet. Be the first to review!</p>';
+                return;
+            }
+
+            reviewsList.innerHTML = reviews
+                .map(
+                    (review) => `
+                <div class="review-item">
+                    <div class="review-header">
+                        <span class="review-author">${review.user || 'Anonymous'}</span>
+                        <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                    </div>
+                    <p class="review-text">${review.review}</p>
+                </div>
+            `
+                )
+                .join('');
+        }
+
+        async function handleReviewSubmit(e) {
+            e.preventDefault();
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const productId = urlParams.get('id');
+
+            const reviewData = {
+                product: productId,
+                rating: document.getElementById('rating').value,
+                review: document.getElementById('reviewText').value,
+            };
+
+            try {
+                await API.createReview(reviewData);
+                showNotification('Review submitted successfully!');
+                document.getElementById('reviewForm').reset();
+                await loadReviews(productId);
+            } catch (error) {
+                alert('Failed to submit review. Please try again.');
+            }
+        }
+
+        async function addProductToCart() {
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            if (currentProduct) {
+                try {
+                    await API.addToCart(currentProduct.id, quantity);
+                    addToLocalCart(currentProduct, quantity);
+                } catch (error) {
+                    console.error('Failed to add to backend cart:', error);
+                    addToLocalCart(currentProduct, quantity);
+                }
+            }
+        }
+    </script>
 </body>
 </html>

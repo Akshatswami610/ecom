@@ -2,9 +2,321 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About Us - ShopHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --danger-color: #ef4444;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 20px;
+        }
+
+        .nav-brand a {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 3px 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--primary-color);
+        }
+
+        .cart-link {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: var(--danger-color);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+        }
+
+        .about-content {
+            margin-top: 2rem;
+        }
+
+        .about-section {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .about-section h2 {
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .about-section p {
+            color: var(--text-light);
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-card {
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+        }
+
+        .feature-card h3 {
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+
+        .feature-card p {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .values-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .values-list li {
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-light);
+        }
+
+        .values-list li:last-child {
+            border-bottom: none;
+        }
+
+        .values-list strong {
+            color: var(--text-color);
+        }
+
+        .footer {
+            background-color: var(--white);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow);
+                display: none;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="home.html">ShopHub</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="order-history.html">Orders</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    Cart <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
 
+    <main>
+        <div class="container">
+            <h1>About ShopHub</h1>
+
+            <div class="about-content">
+                <section class="about-section">
+                    <h2>Our Story</h2>
+                    <p>Founded in 2020, ShopHub has been dedicated to bringing quality products to customers worldwide. We believe in making online shopping simple, secure, and enjoyable for everyone.</p>
+                    <p>Our mission is to provide an exceptional shopping experience with a carefully curated selection of products, competitive prices, and outstanding customer service.</p>
+                </section>
+
+                <section class="about-section">
+                    <h2>Why Choose Us</h2>
+                    <div class="features-grid">
+                        <div class="feature-card">
+                            <h3>Quality Products</h3>
+                            <p>We carefully select each product to ensure the highest quality standards.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Fast Shipping</h3>
+                            <p>Get your orders delivered quickly with our reliable shipping partners.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>Secure Payments</h3>
+                            <p>Shop with confidence using our secure payment processing system.</p>
+                        </div>
+                        <div class="feature-card">
+                            <h3>24/7 Support</h3>
+                            <p>Our customer support team is always here to help you.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="about-section">
+                    <h2>Our Values</h2>
+                    <ul class="values-list">
+                        <li><strong>Customer First:</strong> Your satisfaction is our top priority.</li>
+                        <li><strong>Integrity:</strong> We conduct business with honesty and transparency.</li>
+                        <li><strong>Innovation:</strong> We continuously improve our platform and services.</li>
+                        <li><strong>Sustainability:</strong> We're committed to environmentally responsible practices.</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        function getLocalCart() {
+            const cart = localStorage.getItem('cart');
+            return cart ? JSON.parse(cart) : [];
+        }
+
+        function updateCartCount() {
+            const cart = getLocalCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach((el) => {
+                el.textContent = totalItems;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
+
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                });
+            }
+        });
+    </script>
 </body>
 </html>

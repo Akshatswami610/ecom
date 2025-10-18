@@ -2,9 +2,435 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order History - ShopHub</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2563eb;
+            --text-color: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
+            --white: #ffffff;
+            --danger-color: #ef4444;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-light);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .navbar {
+            background-color: var(--white);
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 20px;
+        }
+
+        .nav-brand a {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            text-decoration: none;
+        }
+
+        .nav-toggle {
+            display: none;
+            flex-direction: column;
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        .nav-toggle span {
+            width: 25px;
+            height: 3px;
+            background-color: var(--text-color);
+            margin: 3px 0;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu a {
+            text-decoration: none;
+            color: var(--text-color);
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-menu a:hover,
+        .nav-menu a.active {
+            color: var(--primary-color);
+        }
+
+        .cart-link {
+            position: relative;
+        }
+
+        .cart-count {
+            position: absolute;
+            top: -8px;
+            right: -12px;
+            background-color: var(--danger-color);
+            color: var(--white);
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+        }
+
+        main {
+            padding: 2rem 0;
+        }
+
+        h1 {
+            margin-bottom: 2rem;
+        }
+
+        .orders-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .order-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .order-id {
+            font-weight: 600;
+        }
+
+        .order-date {
+            color: var(--text-light);
+            font-size: 0.875rem;
+        }
+
+        .order-status {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .order-status.completed {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .order-status.pending {
+            background-color: #fef3c7;
+            color: #92400e;
+        }
+
+        .order-status.cancelled {
+            background-color: #fee2e2;
+            color: #991b1b;
+        }
+
+        .order-items {
+            margin-bottom: 1rem;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.5rem 0;
+            color: var(--text-light);
+        }
+
+        .order-total {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 600;
+            font-size: 1.125rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .orders-empty {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .orders-empty p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 1.5rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: var(--white);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-light);
+        }
+
+        .footer {
+            background-color: var(--white);
+            padding: 2rem 0;
+            margin-top: 4rem;
+            text-align: center;
+            color: var(--text-light);
+        }
+
+        @media (max-width: 768px) {
+            .nav-toggle {
+                display: flex;
+            }
+
+            .nav-menu {
+                position: absolute;
+                top: 100%;
+                left: 0;
+                right: 0;
+                background-color: var(--white);
+                flex-direction: column;
+                padding: 1rem;
+                box-shadow: var(--shadow);
+                display: none;
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+        }
+    </style>
 </head>
 <body>
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <a href="home.html">ShopHub</a>
+            </div>
+            <button class="nav-toggle" id="navToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="home.html">Home</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="profile.html">Profile</a></li>
+                <li><a href="order-history.html" class="active">Orders</a></li>
+                <li><a href="cart.html" class="cart-link">
+                    Cart <span class="cart-count" id="cartCount">0</span>
+                </a></li>
+            </ul>
+        </div>
+    </nav>
 
+    <main>
+        <div class="container">
+            <h1>Order History</h1>
+
+            <div id="ordersContent" class="orders-content">
+                <div class="loading">Loading orders...</div>
+            </div>
+
+            <div id="ordersEmpty" class="orders-empty" style="display: none;">
+                <p>You haven't placed any orders yet</p>
+                <a href="home.html" class="btn btn-primary">Start Shopping</a>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const API_BASE_URL = 'https://api.example.com/';
+
+        const API = {
+            async request(url, options = {}) {
+                try {
+                    const response = await fetch(url, {
+                        headers: {
+                            'Content-Type': 'application/json',
+                            ...options.headers,
+                        },
+                        ...options,
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    return await response.json();
+                } catch (error) {
+                    console.error('API request failed:', error);
+                    throw error;
+                }
+            },
+
+            async getOrderHistory() {
+                return this.request(`${API_BASE_URL}orderHistory`);
+            },
+        };
+
+        function getLocalCart() {
+            const cart = localStorage.getItem('cart');
+            return cart ? JSON.parse(cart) : [];
+        }
+
+        function updateCartCount() {
+            const cart = getLocalCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach((el) => {
+                el.textContent = totalItems;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            updateCartCount();
+            setupMobileNav();
+            await loadOrders();
+        });
+
+        function setupMobileNav() {
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                });
+            }
+        }
+
+        async function loadOrders() {
+            const ordersContent = document.getElementById('ordersContent');
+            const ordersEmpty = document.getElementById('ordersEmpty');
+
+            try {
+                const orders = await API.getOrderHistory();
+
+                if (orders.length === 0) {
+                    ordersContent.style.display = 'none';
+                    ordersEmpty.style.display = 'block';
+                    return;
+                }
+
+                displayOrders(orders);
+            } catch (error) {
+                ordersContent.innerHTML = '<div class="error-message">Failed to load orders. Please try again later.</div>';
+            }
+        }
+
+        function displayOrders(orders) {
+            const ordersContent = document.getElementById('ordersContent');
+
+            ordersContent.innerHTML = orders
+                .map(
+                    (order) => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-id">Order #${order.id}</div>
+                            <div class="order-date">${formatDate(order.created_at || order.date)}</div>
+                        </div>
+                        <span class="order-status ${order.status || 'completed'}">${order.status || 'completed'}</span>
+                    </div>
+                    <div class="order-items">
+                        ${
+                            order.items
+                                ? order.items
+                                      .map(
+                                          (item) => `
+                            <div class="order-item">
+                                <span>${item.product_name} x ${item.quantity}</span>
+                                <span>$${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `
+                                      )
+                                      .join('')
+                                : '<div class="order-item">Order details not available</div>'
+                        }
+                    </div>
+                    <div class="order-total">
+                        <span>Total</span>
+                        <span>$${parseFloat(order.total || 0).toFixed(2)}</span>
+                    </div>
+                </div>
+            `
+                )
+                .join('');
+        }
+
+        function formatDate(dateString) {
+            if (!dateString) return 'N/A';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+            });
+        }
+    </script>
 </body>
 </html>
