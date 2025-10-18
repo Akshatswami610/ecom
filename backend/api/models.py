@@ -78,11 +78,12 @@ class Review(models.Model):
         return f"{self.product.product_name} - {self.star}★"
 
 
-class Contact(models.Model):
+class ContactForm(models.Model):
     name = models.CharField(max_length=50)
     email = models.EmailField(max_length=50)
     subject = models.CharField(max_length=50)
     message = models.TextField()
+    timestamp = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.name

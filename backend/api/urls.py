@@ -10,7 +10,7 @@ router.register(r'Cart', CartViewSet)
 router.register(r'Profile', ProfileViewSet)
 router.register(r'OrderHistory', OrderHistoryViewSet)
 router.register(r'Review', ReviewViewSet)
-router.register(r'Contact', ContactViewSet)
+router.register(r'ContactForm', ContactViewSet)
 
 
 # Wire up our API using automatic URL routing.
