@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.urls import path, include
-from api.views import ProductViewSet, ProfileViewSet, OrderHistoryViewSet, ReviewViewSet, ContactViewSet
+from api.views import ProductViewSet, CartViewSet ,ProfileViewSet, OrderHistoryViewSet, ReviewViewSet, ContactViewSet
 from rest_framework import routers
 
 # Routers provide an easy way of automatically determining the URL conf.
 router = routers.DefaultRouter()
 router.register(r'Product', ProductViewSet)
+router.register(r'Cart', CartViewSet)
 router.register(r'Profile', ProfileViewSet)
 router.register(r'OrderHistory', OrderHistoryViewSet)
 router.register(r'Review', ReviewViewSet)
