@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>About Us - ShopHub</title>
+    <title>About Us - LUXE</title>
     <style>
         * {
             margin: 0;
@@ -11,33 +11,46 @@
             box-sizing: border-box;
         }
 
+        /* Updated to premium dark mode color scheme */
         :root {
-            --primary-color: #2563eb;
-            --text-color: #1e293b;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-            --bg-light: #f8fafc;
-            --white: #ffffff;
-            --danger-color: #ef4444;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-elevated: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --accent-primary: #f5f5f5;
+            --accent-gold: #d4af37;
+            --border-subtle: #262626;
+            --border-medium: #404040;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-light);
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            -webkit-font-smoothing: antialiased;
+            /* Added fade-in animation */
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 2rem;
         }
 
+        /* Updated navbar to match premium dark design */
         .navbar {
-            background-color: var(--white);
-            box-shadow: var(--shadow);
+            background-color: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -47,14 +60,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 20px;
+            padding: 1.5rem 2rem;
         }
 
         .nav-brand a {
             font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            color: var(--text-primary);
             text-decoration: none;
+            text-transform: uppercase;
         }
 
         .nav-toggle {
@@ -68,28 +83,32 @@
 
         .nav-toggle span {
             width: 25px;
-            height: 3px;
-            background-color: var(--text-color);
-            margin: 3px 0;
+            height: 1px;
+            background-color: var(--text-primary);
+            margin: 4px 0;
+            transition: 0.3s;
         }
 
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
         }
 
         .nav-menu a {
             text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
             transition: color 0.3s;
         }
 
         .nav-menu a:hover,
         .nav-menu a.active {
-            color: var(--primary-color);
+            color: var(--text-primary);
         }
 
         .cart-link {
@@ -100,69 +119,101 @@
             position: absolute;
             top: -8px;
             right: -12px;
-            background-color: var(--danger-color);
-            color: var(--white);
+            background-color: var(--accent-gold);
+            color: var(--bg-primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
-            font-weight: bold;
+            font-size: 0.625rem;
+            font-weight: 600;
         }
 
         main {
-            padding: 2rem 0;
+            padding: 4rem 0;
+            min-height: calc(100vh - 300px);
         }
 
         h1 {
-            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
         }
 
+        /* Updated about content with dark mode styling and animations */
         .about-content {
             margin-top: 2rem;
         }
 
         .about-section {
-            background-color: var(--white);
-            border-radius: 12px;
-            padding: 2rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            padding: 3rem;
             margin-bottom: 2rem;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .about-section h2 {
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.5rem;
+            color: var(--accent-gold);
         }
 
         .about-section p {
-            color: var(--text-light);
-            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
             line-height: 1.8;
+            letter-spacing: 0.02em;
         }
 
         .features-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 1.5rem;
-            margin-top: 1.5rem;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
         }
 
         .feature-card {
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
+            padding: 2rem;
+            border: 1px solid var(--border-subtle);
+            background-color: var(--bg-elevated);
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-medium);
         }
 
         .feature-card h3 {
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+            font-weight: 400;
+            letter-spacing: 0.05em;
         }
 
         .feature-card p {
-            color: var(--text-light);
+            color: var(--text-muted);
             font-size: 0.875rem;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
         }
 
         .values-list {
@@ -171,9 +222,11 @@
         }
 
         .values-list li {
-            padding: 1rem 0;
-            border-bottom: 1px solid var(--border-color);
-            color: var(--text-light);
+            padding: 1.5rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            color: var(--text-secondary);
+            line-height: 1.8;
+            letter-spacing: 0.02em;
         }
 
         .values-list li:last-child {
@@ -181,15 +234,21 @@
         }
 
         .values-list strong {
-            color: var(--text-color);
+            color: var(--accent-gold);
+            font-weight: 400;
+            letter-spacing: 0.05em;
         }
 
         .footer {
-            background-color: var(--white);
-            padding: 2rem 0;
-            margin-top: 4rem;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 0;
+            margin-top: 6rem;
             text-align: center;
-            color: var(--text-light);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
@@ -202,15 +261,23 @@
                 top: 100%;
                 left: 0;
                 right: 0;
-                background-color: var(--white);
+                background-color: var(--bg-primary);
                 flex-direction: column;
-                padding: 1rem;
-                box-shadow: var(--shadow);
+                padding: 2rem;
+                border-bottom: 1px solid var(--border-subtle);
                 display: none;
             }
 
             .nav-menu.active {
                 display: flex;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .features-grid {
+                grid-template-columns: 1fr;
             }
         }
     </style>
@@ -219,7 +286,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <a href="home.html">ShopHub</a>
+                <a href="home.html">LUXE</a>
             </div>
             <button class="nav-toggle" id="navToggle">
                 <span></span>
@@ -227,12 +294,12 @@
                 <span></span>
             </button>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="home.html">Home</a></li>
-                <li><a href="about.html" class="active">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="order-history.html">Orders</a></li>
-                <li><a href="cart.html" class="cart-link">
+                <li><a href="/home" class="active">Home</a></li>
+                <li><a href="/aboutus">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/cart" class="cart-link">
                     Cart <span class="cart-count" id="cartCount">0</span>
                 </a></li>
             </ul>
@@ -241,33 +308,33 @@
 
     <main>
         <div class="container">
-            <h1>About ShopHub</h1>
+            <h1>About LUXE</h1>
 
             <div class="about-content">
                 <section class="about-section">
                     <h2>Our Story</h2>
-                    <p>Founded in 2020, ShopHub has been dedicated to bringing quality products to customers worldwide. We believe in making online shopping simple, secure, and enjoyable for everyone.</p>
-                    <p>Our mission is to provide an exceptional shopping experience with a carefully curated selection of products, competitive prices, and outstanding customer service.</p>
+                    <p>Founded in 2020, LUXE has been dedicated to bringing exceptional quality products to discerning customers worldwide. We believe in making online shopping an experience of sophistication, security, and elegance.</p>
+                    <p>Our mission is to provide an unparalleled shopping experience with a meticulously curated selection of premium products, competitive pricing, and outstanding customer service that exceeds expectations.</p>
                 </section>
 
                 <section class="about-section">
                     <h2>Why Choose Us</h2>
                     <div class="features-grid">
                         <div class="feature-card">
-                            <h3>Quality Products</h3>
-                            <p>We carefully select each product to ensure the highest quality standards.</p>
+                            <h3>Curated Excellence</h3>
+                            <p>We carefully select each product to ensure the highest quality standards and timeless appeal.</p>
                         </div>
                         <div class="feature-card">
-                            <h3>Fast Shipping</h3>
-                            <p>Get your orders delivered quickly with our reliable shipping partners.</p>
+                            <h3>Premium Delivery</h3>
+                            <p>Experience swift and secure delivery with our trusted logistics partners worldwide.</p>
                         </div>
                         <div class="feature-card">
-                            <h3>Secure Payments</h3>
-                            <p>Shop with confidence using our secure payment processing system.</p>
+                            <h3>Secure Transactions</h3>
+                            <p>Shop with complete confidence using our state-of-the-art secure payment processing system.</p>
                         </div>
                         <div class="feature-card">
-                            <h3>24/7 Support</h3>
-                            <p>Our customer support team is always here to help you.</p>
+                            <h3>Dedicated Support</h3>
+                            <p>Our expert customer support team is available 24/7 to assist you with any inquiries.</p>
                         </div>
                     </div>
                 </section>
@@ -275,10 +342,10 @@
                 <section class="about-section">
                     <h2>Our Values</h2>
                     <ul class="values-list">
-                        <li><strong>Customer First:</strong> Your satisfaction is our top priority.</li>
-                        <li><strong>Integrity:</strong> We conduct business with honesty and transparency.</li>
-                        <li><strong>Innovation:</strong> We continuously improve our platform and services.</li>
-                        <li><strong>Sustainability:</strong> We're committed to environmentally responsible practices.</li>
+                        <li><strong>Customer Excellence:</strong> Your satisfaction and experience are our highest priorities.</li>
+                        <li><strong>Integrity:</strong> We conduct business with unwavering honesty and complete transparency.</li>
+                        <li><strong>Innovation:</strong> We continuously evolve our platform and services to exceed expectations.</li>
+                        <li><strong>Sustainability:</strong> We're deeply committed to environmentally responsible practices.</li>
                     </ul>
                 </section>
             </div>
@@ -287,7 +354,7 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+            <p>&copy; 2025 LUXE. All rights reserved.</p>
         </div>
     </footer>
 

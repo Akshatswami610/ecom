@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shopping Cart - ShopHub</title>
+    <title>Shopping Cart - LUXE</title>
     <style>
         * {
             margin: 0;
@@ -11,34 +11,40 @@
             box-sizing: border-box;
         }
 
+        /* Updated to dark mode color scheme with premium aesthetics */
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --text-color: #1e293b;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-            --bg-light: #f8fafc;
-            --white: #ffffff;
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-elevated: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --accent-primary: #f5f5f5;
+            --accent-gold: #d4af37;
+            --border-subtle: #262626;
+            --border-medium: #404040;
             --danger-color: #ef4444;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-light);
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            -webkit-font-smoothing: antialiased;
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 2rem;
         }
 
+        /* Updated navbar to dark mode with backdrop blur */
         .navbar {
-            background-color: var(--white);
-            box-shadow: var(--shadow);
+            background-color: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -48,14 +54,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 20px;
+            padding: 1.5rem 2rem;
         }
 
         .nav-brand a {
             font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            color: var(--text-primary);
             text-decoration: none;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
         }
 
         .nav-toggle {
@@ -69,28 +78,32 @@
 
         .nav-toggle span {
             width: 25px;
-            height: 3px;
-            background-color: var(--text-color);
-            margin: 3px 0;
+            height: 1px;
+            background-color: var(--text-primary);
+            margin: 4px 0;
+            transition: all 0.3s ease;
         }
 
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
         }
 
         .nav-menu a {
             text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: color 0.3s;
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            transition: color 0.3s ease;
         }
 
         .nav-menu a:hover,
         .nav-menu a.active {
-            color: var(--primary-color);
+            color: var(--text-primary);
         }
 
         .cart-link {
@@ -101,39 +114,83 @@
             position: absolute;
             top: -8px;
             right: -12px;
-            background-color: var(--danger-color);
-            color: var(--white);
+            background-color: var(--accent-gold);
+            color: var(--bg-primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
-            font-weight: bold;
+            font-size: 0.625rem;
+            font-weight: 600;
         }
 
         main {
-            padding: 2rem 0;
+            padding: 4rem 0;
+            min-height: calc(100vh - 200px);
         }
 
         h1 {
-            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
+            /* Added fade-in animation */
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* Added keyframe animations */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .cart-layout {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 3rem;
+            /* Added staggered animation */
+            animation: fadeIn 0.8s ease;
         }
 
         .cart-content {
-            background-color: var(--white);
-            border-radius: 12px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
             padding: 2rem;
-            margin-bottom: 2rem;
         }
 
         .cart-item {
             display: grid;
-            grid-template-columns: 100px 1fr auto;
-            gap: 1.5rem;
-            padding: 1.5rem 0;
-            border-bottom: 1px solid var(--border-color);
+            grid-template-columns: 120px 1fr auto;
+            gap: 2rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            /* Added slide-in animation */
+            animation: slideIn 0.5s ease;
+            transition: transform 0.3s ease;
+        }
+
+        .cart-item:hover {
+            transform: translateX(4px);
         }
 
         .cart-item:last-child {
@@ -141,48 +198,58 @@
         }
 
         .cart-item-image {
-            width: 100px;
-            height: 100px;
+            width: 120px;
+            height: 120px;
             object-fit: cover;
-            border-radius: 8px;
+            background-color: var(--bg-elevated);
+            border: 1px solid var(--border-subtle);
         }
 
         .cart-item-details h3 {
-            margin-bottom: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 400;
+            margin-bottom: 0.75rem;
+            letter-spacing: 0.02em;
         }
 
         .cart-item-price {
-            color: var(--primary-color);
-            font-weight: 600;
-            margin-bottom: 1rem;
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+            letter-spacing: 0.02em;
         }
 
         .cart-item-quantity {
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 1rem;
         }
 
         .cart-item-quantity button {
-            width: 30px;
-            height: 30px;
-            border: 1px solid var(--border-color);
-            background-color: var(--white);
-            border-radius: 4px;
+            width: 32px;
+            height: 32px;
+            border: 1px solid var(--border-medium);
+            background-color: transparent;
+            color: var(--text-primary);
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 400;
+            font-size: 1rem;
+            transition: all 0.3s ease;
         }
 
         .cart-item-quantity button:hover {
-            background-color: var(--bg-light);
+            background-color: var(--bg-elevated);
+            border-color: var(--accent-gold);
         }
 
         .cart-item-quantity input {
             width: 60px;
             text-align: center;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            padding: 0.25rem;
+            border: 1px solid var(--border-medium);
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            padding: 0.5rem;
+            font-size: 0.875rem;
         }
 
         .cart-item-actions {
@@ -194,42 +261,52 @@
 
         .cart-item-total {
             font-size: 1.25rem;
-            font-weight: bold;
+            font-weight: 400;
+            letter-spacing: 0.02em;
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border: 1px solid var(--border-medium);
+            background-color: transparent;
+            color: var(--text-primary);
+            font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--white);
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            border-color: var(--accent-primary);
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-hover);
+            background-color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
         }
 
         .btn-danger {
-            background-color: var(--danger-color);
-            color: var(--white);
+            background-color: transparent;
+            color: var(--danger-color);
+            border-color: var(--danger-color);
         }
 
         .btn-danger:hover {
-            background-color: #dc2626;
+            background-color: var(--danger-color);
+            color: var(--text-primary);
         }
 
         .btn-small {
             padding: 0.5rem 1rem;
-            font-size: 0.875rem;
+            font-size: 0.625rem;
         }
 
         .btn-block {
@@ -238,48 +315,67 @@
 
         .cart-empty {
             text-align: center;
-            padding: 3rem;
+            padding: 6rem 2rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            animation: fadeIn 0.6s ease;
         }
 
         .cart-empty p {
-            font-size: 1.25rem;
-            color: var(--text-light);
-            margin-bottom: 1.5rem;
+            font-size: 1.125rem;
+            color: var(--text-muted);
+            margin-bottom: 2rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
         .cart-summary {
-            background-color: var(--white);
-            border-radius: 12px;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
             padding: 2rem;
-            max-width: 400px;
-            margin-left: auto;
+            position: sticky;
+            top: 100px;
+            animation: fadeIn 0.8s ease 0.2s both;
         }
 
         .cart-summary h3 {
-            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
         }
 
         .summary-row {
             display: flex;
             justify-content: space-between;
-            padding: 0.75rem 0;
-            border-bottom: 1px solid var(--border-color);
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-subtle);
+            font-size: 0.875rem;
+            letter-spacing: 0.02em;
+            color: var(--text-secondary);
         }
 
         .summary-row.total {
-            font-size: 1.25rem;
-            font-weight: bold;
-            border-top: 2px solid var(--border-color);
+            font-size: 1.5rem;
+            font-weight: 400;
+            color: var(--text-primary);
+            border-top: 1px solid var(--border-medium);
             border-bottom: none;
-            margin-top: 0.5rem;
+            margin-top: 1rem;
+            padding-top: 1.5rem;
         }
 
         .footer {
-            background-color: var(--white);
-            padding: 2rem 0;
-            margin-top: 4rem;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 0;
+            margin-top: 6rem;
             text-align: center;
-            color: var(--text-light);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
@@ -292,10 +388,10 @@
                 top: 100%;
                 left: 0;
                 right: 0;
-                background-color: var(--white);
+                background-color: var(--bg-primary);
                 flex-direction: column;
-                padding: 1rem;
-                box-shadow: var(--shadow);
+                padding: 2rem;
+                border-bottom: 1px solid var(--border-subtle);
                 display: none;
             }
 
@@ -303,8 +399,12 @@
                 display: flex;
             }
 
+            .cart-layout {
+                grid-template-columns: 1fr;
+            }
+
             .cart-item {
-                grid-template-columns: 80px 1fr;
+                grid-template-columns: 100px 1fr;
             }
 
             .cart-item-actions {
@@ -312,6 +412,7 @@
                 flex-direction: row;
                 justify-content: space-between;
                 align-items: center;
+                margin-top: 1rem;
             }
         }
     </style>
@@ -320,7 +421,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <a href="home.html">ShopHub</a>
+                <a href="home.html">LUXE</a>
             </div>
             <button class="nav-toggle" id="navToggle">
                 <span></span>
@@ -328,12 +429,12 @@
                 <span></span>
             </button>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="home.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="order-history.html">Orders</a></li>
-                <li><a href="cart.html" class="cart-link active">
+                <li><a href="/home" class="active">Home</a></li>
+                <li><a href="/aboutus">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/order-history">Orders</a></li>
+                <li><a href="/cart" class="cart-link">
                     Cart <span class="cart-count" id="cartCount">0</span>
                 </a></li>
             </ul>
@@ -344,39 +445,43 @@
         <div class="container">
             <h1>Shopping Cart</h1>
 
-            <div id="cartContent" class="cart-content" style="display: none;"></div>
+            <div id="cartLayout" class="cart-layout" style="display: none;">
+                <div id="cartContent" class="cart-content"></div>
+
+                <div id="cartSummary" class="cart-summary">
+                    <h3>Order Summary</h3>
+                    <div class="summary-row">
+                        <span>Subtotal</span>
+                        <span id="subtotal">$0.00</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Tax (10%)</span>
+                        <span id="tax">$0.00</span>
+                    </div>
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="total">$0.00</span>
+                    </div>
+                    <button class="btn btn-primary btn-block" id="checkoutBtn" style="margin-top: 2rem;">Proceed to Checkout</button>
+                </div>
+            </div>
 
             <div id="cartEmpty" class="cart-empty" style="display: none;">
                 <p>Your cart is empty</p>
-                <a href="home.html" class="btn btn-primary">Continue Shopping</a>
-            </div>
-
-            <div id="cartSummary" class="cart-summary" style="display: none;">
-                <h3>Order Summary</h3>
-                <div class="summary-row">
-                    <span>Subtotal:</span>
-                    <span id="subtotal">$0.00</span>
-                </div>
-                <div class="summary-row">
-                    <span>Tax (10%):</span>
-                    <span id="tax">$0.00</span>
-                </div>
-                <div class="summary-row total">
-                    <span>Total:</span>
-                    <span id="total">$0.00</span>
-                </div>
-                <button class="btn btn-primary btn-block" id="checkoutBtn">Proceed to Checkout</button>
+                <a href="home" class="btn btn-primary">Continue Shopping</a>
             </div>
         </div>
     </main>
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+            <p>&copy; 2025 LUXE. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
+        const API_BASE_URL = 'http://localhost:8000/';
+
         function getLocalCart() {
             const cart = localStorage.getItem('cart');
             return cart ? JSON.parse(cart) : [];
@@ -418,20 +523,17 @@
 
         function loadCart() {
             const cart = getLocalCart();
-            const cartContent = document.getElementById('cartContent');
+            const cartLayout = document.getElementById('cartLayout');
             const cartEmpty = document.getElementById('cartEmpty');
-            const cartSummary = document.getElementById('cartSummary');
 
             if (cart.length === 0) {
                 cartEmpty.style.display = 'block';
-                cartContent.style.display = 'none';
-                cartSummary.style.display = 'none';
+                cartLayout.style.display = 'none';
                 return;
             }
 
             cartEmpty.style.display = 'none';
-            cartContent.style.display = 'block';
-            cartSummary.style.display = 'block';
+            cartLayout.style.display = 'grid';
 
             displayCart(cart);
             updateSummary(cart);
@@ -444,14 +546,14 @@
                 .map(
                     (item, index) => `
                 <div class="cart-item">
-                    <img src="${item.image || '/placeholder.svg?height=100&width=100'}"
+                    <img src="${item.image || '/placeholder.svg?height=120&width=120'}"
                          alt="${item.name}"
                          class="cart-item-image">
                     <div class="cart-item-details">
                         <h3>${item.name}</h3>
                         <div class="cart-item-price">$${parseFloat(item.price).toFixed(2)}</div>
                         <div class="cart-item-quantity">
-                            <button onclick="updateQuantity(${index}, -1)">-</button>
+                            <button onclick="updateQuantity(${index}, -1)">−</button>
                             <input type="number" value="${item.quantity}" min="1"
                                    onchange="setQuantity(${index}, this.value)" readonly>
                             <button onclick="updateQuantity(${index}, 1)">+</button>

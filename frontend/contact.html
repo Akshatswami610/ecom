@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - ShopHub</title>
+    <title>Contact Us - LUXE</title>
     <style>
         * {
             margin: 0;
@@ -11,34 +11,48 @@
             box-sizing: border-box;
         }
 
+        /* Updated to premium dark mode color scheme */
         :root {
-            --primary-color: #2563eb;
-            --primary-hover: #1d4ed8;
-            --text-color: #1e293b;
-            --text-light: #64748b;
-            --border-color: #e2e8f0;
-            --bg-light: #f8fafc;
-            --white: #ffffff;
-            --danger-color: #ef4444;
-            --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #141414;
+            --bg-elevated: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --text-muted: #737373;
+            --accent-primary: #f5f5f5;
+            --accent-gold: #d4af37;
+            --border-subtle: #262626;
+            --border-medium: #404040;
+            --success-bg: rgba(16, 185, 129, 0.1);
+            --success-text: #6ee7b7;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             line-height: 1.6;
-            color: var(--text-color);
-            background-color: var(--bg-light);
+            color: var(--text-primary);
+            background-color: var(--bg-primary);
+            -webkit-font-smoothing: antialiased;
+            /* Added fade-in animation */
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .container {
-            max-width: 1200px;
+            max-width: 1400px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 2rem;
         }
 
+        /* Updated navbar to match premium dark design */
         .navbar {
-            background-color: var(--white);
-            box-shadow: var(--shadow);
+            background-color: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
             z-index: 1000;
@@ -48,14 +62,16 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 20px;
+            padding: 1.5rem 2rem;
         }
 
         .nav-brand a {
             font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
+            font-weight: 300;
+            letter-spacing: 0.3em;
+            color: var(--text-primary);
             text-decoration: none;
+            text-transform: uppercase;
         }
 
         .nav-toggle {
@@ -69,28 +85,32 @@
 
         .nav-toggle span {
             width: 25px;
-            height: 3px;
-            background-color: var(--text-color);
-            margin: 3px 0;
+            height: 1px;
+            background-color: var(--text-primary);
+            margin: 4px 0;
+            transition: 0.3s;
         }
 
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: 2rem;
+            gap: 3rem;
             align-items: center;
         }
 
         .nav-menu a {
             text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
             transition: color 0.3s;
         }
 
         .nav-menu a:hover,
         .nav-menu a.active {
-            color: var(--primary-color);
+            color: var(--text-primary);
         }
 
         .cart-link {
@@ -101,26 +121,32 @@
             position: absolute;
             top: -8px;
             right: -12px;
-            background-color: var(--danger-color);
-            color: var(--white);
+            background-color: var(--accent-gold);
+            color: var(--bg-primary);
             border-radius: 50%;
-            width: 20px;
-            height: 20px;
+            width: 18px;
+            height: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.75rem;
-            font-weight: bold;
+            font-size: 0.625rem;
+            font-weight: 600;
         }
 
         main {
-            padding: 2rem 0;
+            padding: 4rem 0;
+            min-height: calc(100vh - 300px);
         }
 
         h1 {
-            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+            margin-bottom: 3rem;
         }
 
+        /* Updated contact content with dark mode styling and animations */
         .contact-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -130,35 +156,57 @@
 
         .contact-info,
         .contact-form {
-            background-color: var(--white);
-            border-radius: 12px;
-            padding: 2rem;
+            background-color: var(--bg-secondary);
+            border: 1px solid var(--border-subtle);
+            padding: 3rem;
+            animation: slideUp 0.5s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .contact-info h2 {
+            font-size: 1.5rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
             margin-bottom: 1rem;
         }
 
         .contact-info p {
-            color: var(--text-light);
-            margin-bottom: 2rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            line-height: 1.8;
+            letter-spacing: 0.02em;
         }
 
         .contact-details {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 2rem;
         }
 
         .contact-item h3 {
-            font-size: 1rem;
-            margin-bottom: 0.5rem;
-            color: var(--primary-color);
+            font-size: 0.75rem;
+            margin-bottom: 0.75rem;
+            color: var(--accent-gold);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            font-weight: 500;
         }
 
         .contact-item p {
             margin: 0;
-            color: var(--text-color);
+            color: var(--text-primary);
+            font-size: 1rem;
+            letter-spacing: 0.02em;
         }
 
         .form-group {
@@ -167,53 +215,86 @@
 
         .form-group label {
             display: block;
-            margin-bottom: 0.5rem;
-            font-weight: 500;
+            margin-bottom: 0.75rem;
+            font-weight: 400;
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
         }
 
         .form-group input,
         .form-group textarea {
             width: 100%;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 1rem;
+            padding: 1rem 1.5rem;
+            border: 1px solid var(--border-medium);
+            background-color: var(--bg-elevated);
+            color: var(--text-primary);
+            font-size: 0.875rem;
             font-family: inherit;
+            letter-spacing: 0.02em;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+
+        .form-group input::placeholder,
+        .form-group textarea::placeholder {
+            color: var(--text-muted);
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
+            border: 1px solid var(--border-medium);
+            background-color: transparent;
+            color: var(--text-primary);
+            font-size: 0.75rem;
             font-weight: 500;
             cursor: pointer;
             transition: all 0.3s;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         .btn-primary {
-            background-color: var(--primary-color);
-            color: var(--white);
+            background-color: var(--accent-primary);
+            color: var(--bg-primary);
+            border-color: var(--accent-primary);
         }
 
         .btn-primary:hover {
-            background-color: var(--primary-hover);
+            background-color: var(--accent-gold);
+            border-color: var(--accent-gold);
+            transform: translateY(-2px);
         }
 
         .success-message {
-            background-color: #d1fae5;
-            color: #065f46;
-            padding: 1rem;
-            border-radius: 8px;
-            margin-bottom: 1rem;
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            padding: 1rem 1.5rem;
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            margin-bottom: 1.5rem;
+            font-size: 0.875rem;
+            letter-spacing: 0.05em;
         }
 
         .footer {
-            background-color: var(--white);
-            padding: 2rem 0;
-            margin-top: 4rem;
+            background-color: var(--bg-secondary);
+            border-top: 1px solid var(--border-subtle);
+            padding: 3rem 0;
+            margin-top: 6rem;
             text-align: center;
-            color: var(--text-light);
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         @media (max-width: 768px) {
@@ -226,15 +307,19 @@
                 top: 100%;
                 left: 0;
                 right: 0;
-                background-color: var(--white);
+                background-color: var(--bg-primary);
                 flex-direction: column;
-                padding: 1rem;
-                box-shadow: var(--shadow);
+                padding: 2rem;
+                border-bottom: 1px solid var(--border-subtle);
                 display: none;
             }
 
             .nav-menu.active {
                 display: flex;
+            }
+
+            h1 {
+                font-size: 2rem;
             }
 
             .contact-content {
@@ -247,7 +332,7 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <a href="home.html">ShopHub</a>
+                <a href="home.html">LUXE</a>
             </div>
             <button class="nav-toggle" id="navToggle">
                 <span></span>
@@ -255,12 +340,12 @@
                 <span></span>
             </button>
             <ul class="nav-menu" id="navMenu">
-                <li><a href="home.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html" class="active">Contact</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="order-history.html">Orders</a></li>
-                <li><a href="cart.html" class="cart-link">
+                <li><a href="/home" class="active">Home</a></li>
+                <li><a href="/aboutus">About</a></li>
+                <li><a href="/contact">Contact</a></li>
+                <li><a href="/profile">Profile</a></li>
+                <li><a href="/orders">Orders</a></li>
+                <li><a href="/cart" class="cart-link">
                     Cart <span class="cart-count" id="cartCount">0</span>
                 </a></li>
             </ul>
@@ -279,7 +364,7 @@
                     <div class="contact-details">
                         <div class="contact-item">
                             <h3>Email</h3>
-                            <p>support@shophub.com</p>
+                            <p>contact@luxe.com</p>
                         </div>
                         <div class="contact-item">
                             <h3>Phone</h3>
@@ -287,7 +372,7 @@
                         </div>
                         <div class="contact-item">
                             <h3>Address</h3>
-                            <p>123 Commerce Street<br>New York, NY 10001</p>
+                            <p>123 Luxury Avenue<br>New York, NY 10001</p>
                         </div>
                     </div>
                 </div>
@@ -295,19 +380,19 @@
                 <form id="contactForm" class="contact-form">
                     <div class="form-group">
                         <label for="name">Name</label>
-                        <input type="text" id="name" required>
+                        <input type="text" id="name" placeholder="Your name" required>
                     </div>
                     <div class="form-group">
                         <label for="email">Email</label>
-                        <input type="email" id="email" required>
+                        <input type="email" id="email" placeholder="your@email.com" required>
                     </div>
                     <div class="form-group">
                         <label for="subject">Subject</label>
-                        <input type="text" id="subject" required>
+                        <input type="text" id="subject" placeholder="How can we help?" required>
                     </div>
                     <div class="form-group">
                         <label for="message">Message</label>
-                        <textarea id="message" rows="5" required></textarea>
+                        <textarea id="message" rows="5" placeholder="Your message..." required></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary">Send Message</button>
                 </form>
@@ -317,12 +402,12 @@
 
     <footer class="footer">
         <div class="container">
-            <p>&copy; 2025 ShopHub. All rights reserved.</p>
+            <p>&copy; 2025 LUXE. All rights reserved.</p>
         </div>
     </footer>
 
     <script>
-        const API_BASE_URL = 'https://api.example.com/';
+        const API_BASE_URL = 'http://localhost:8000/';
 
         const API = {
             async request(url, options = {}) {
@@ -347,7 +432,7 @@
             },
 
             async submitContactForm(data) {
-                return this.request(`${API_BASE_URL}contact`, {
+                return this.request(`${API_BASE_URL}ContactForm/`, {
                     method: 'POST',
                     body: JSON.stringify(data),
                 });
@@ -372,9 +457,12 @@
             notification.className = 'success-message';
             notification.textContent = message;
             notification.style.position = 'fixed';
-            notification.style.top = '80px';
-            notification.style.right = '20px';
+            notification.style.top = '100px';
+            notification.style.right = '2rem';
             notification.style.zIndex = '9999';
+            notification.style.padding = '1rem 1.5rem';
+            notification.style.fontSize = '0.875rem';
+            notification.style.letterSpacing = '0.05em';
 
             document.body.appendChild(notification);
 
@@ -416,7 +504,7 @@
                 showNotification("Message sent successfully! We'll get back to you soon.");
                 document.getElementById('contactForm').reset();
             } catch (error) {
-                alert('Failed to send message. Please try again.');
+                showNotification('Failed to send message. Please try again.');
             }
         }
     </script>
