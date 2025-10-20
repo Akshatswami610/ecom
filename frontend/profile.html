@@ -1,128 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile - LUXE</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'basic.html' %}
+{% block title %}Luxe - Profile{% endblock %}
 
-        /* Updated to dark mode color scheme */
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #141414;
-            --bg-elevated: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --text-muted: #737373;
-            --accent-primary: #f5f5f5;
-            --accent-gold: #d4af37;
-            --border-subtle: #262626;
-            --border-medium: #404040;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background-color: var(--bg-primary);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Updated navbar styling */
-        .navbar {
-            background-color: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-subtle);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1rem 20px;
-        }
-
-        .nav-brand a {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            color: var(--text-primary);
-            text-decoration: none;
-            text-transform: uppercase;
-        }
-
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .nav-toggle span {
-            width: 25px;
-            height: 3px;
-            background-color: var(--text-primary);
-            margin: 3px 0;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 2rem;
-            align-items: center;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 400;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: color 0.3s ease;
-        }
-
-        .nav-menu a:hover,
-        .nav-menu a.active {
-            color: var(--text-primary);
-        }
-
-        .cart-link {
-            position: relative;
-        }
-
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -12px;
-            background-color: var(--accent-gold);
-            color: var(--bg-primary);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.625rem;
-            font-weight: 600;
-        }
-
+{% block css %}
+<style>
         main {
             padding: 4rem 0;
             min-height: calc(100vh - 200px);
@@ -134,11 +14,9 @@
             letter-spacing: 0.05em;
             text-transform: uppercase;
             margin-bottom: 3rem;
-            /* Added animation */
             animation: fadeIn 0.6s ease;
         }
 
-        /* Added animations */
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -280,110 +158,71 @@
             letter-spacing: 0.05em;
         }
 
-        .footer {
-            background-color: var(--bg-secondary);
-            border-top: 1px solid var(--border-subtle);
-            padding: 3rem 0;
-            margin-top: 6rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
         @media (max-width: 768px) {
-            .nav-toggle {
-                display: flex;
+            h1 {
+                font-size: 2rem;
             }
 
-            .nav-menu {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background-color: var(--white);
-                flex-direction: column;
-                padding: 1rem;
-                box-shadow: var(--shadow);
-                display: none;
-            }
-
-            .nav-menu.active {
-                display: flex;
+            .profile-content,
+            .profile-form {
+                padding: 2rem;
             }
         }
     </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <a href="home.html">LUXE</a>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1>My Profile</h1>
+
+        <div id="profileContent" class="profile-content">
+            <div class="loading">Loading profile...</div>
+        </div>
+
+        <form id="profileForm" class="profile-form" style="display: none;">
+            <div class="form-group">
+                <label for="firstName">First Name</label>
+                <input type="text" id="firstName" required>
             </div>
-            <button class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="/home" class="active">Home</a></li>
-                <li><a href="/aboutus">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-                <li><a href="/profile">Profile</a></li>
-                <li><a href="/orders">Orders</a></li>
-                <li><a href="/cart" class="cart-link">
-                    Cart <span class="cart-count" id="cartCount">0</span>
-                </a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <main>
-        <div class="container">
-            <h1>My Profile</h1>
-
-            <div id="profileContent" class="profile-content">
-                <div class="loading">Loading profile...</div>
+            <div class="form-group">
+                <label for="lastName">Last Name</label>
+                <input type="text" id="lastName" required>
             </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone">
+            </div>
+            <div class="form-group">
+                <label for="address">Address</label>
+                <textarea id="address" rows="3"></textarea>
+            </div>
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">Update Profile</button>
+                <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
+            </div>
+        </form>
+    </div>
+</main>
+{% endblock %}
 
-            <form id="profileForm" class="profile-form" style="display: none;">
-                <div class="form-group">
-                    <label for="firstName">First Name</label>
-                    <input type="text" id="firstName" required>
-                </div>
-                <div class="form-group">
-                    <label for="lastName">Last Name</label>
-                    <input type="text" id="lastName" required>
-                </div>
-                <div class="form-group">
-                    <label for="email">Email</label>
-                    <input type="email" id="email" required>
-                </div>
-                <div class="form-group">
-                    <label for="phone">Phone</label>
-                    <input type="tel" id="phone">
-                </div>
-                <div class="form-group">
-                    <label for="address">Address</label>
-                    <textarea id="address" rows="3"></textarea>
-                </div>
-                <div class="form-actions">
-                    <button type="submit" class="btn btn-primary">Update Profile</button>
-                    <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
-                </div>
-            </form>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 LUXE. All rights reserved.</p>
-        </div>
-    </footer>
-
+{% block js %}
     <script>
         const API_BASE_URL = 'http://localhost:8000/';
+
+        // Sample profile data - Replace with: currentProfile = await API.getProfile(1);
+        const sampleProfile = {
+            id: 1,
+            first_name: "John",
+            last_name: "Doe",
+            email: "john.doe@example.com",
+            phone: "+1 (555) 123-4567",
+            address: "123 Luxury Avenue, New York, NY 10001"
+        };
 
         const API = {
             async request(url, options = {}) {
@@ -408,11 +247,11 @@
             },
 
             async getProfile(profileId = 1) {
-                return this.request(`${API_BASE_URL}Profile/${profileId}/`);
+                return this.request(`${API_BASE_URL}api/profile/${profileId}/`);
             },
 
             async updateProfile(profileId, data) {
-                return this.request(`${API_BASE_URL}Profile/${profileId}/`, {
+                return this.request(`${API_BASE_URL}api/profile/${profileId}/`, {
                     method: 'PATCH',
                     body: JSON.stringify(data),
                 });
@@ -476,7 +315,8 @@
             const profileContent = document.getElementById('profileContent');
 
             try {
-                currentProfile = await API.getProfile(1);
+                // Using sample data - Replace with: currentProfile = await API.getProfile(1);
+                currentProfile = sampleProfile;
                 displayProfile(currentProfile);
             } catch (error) {
                 profileContent.innerHTML = '<div class="error-message">Failed to load profile. Please try again later.</div>';
@@ -541,7 +381,8 @@
             };
 
             try {
-                const updatedProfile = await API.updateProfile(currentProfile.id, formData);
+                // Replace with: const updatedProfile = await API.updateProfile(currentProfile.id, formData);
+                const updatedProfile = { ...currentProfile, ...formData };
                 currentProfile = updatedProfile;
                 displayProfile(currentProfile);
                 showNotification('Profile updated successfully!');
@@ -550,5 +391,4 @@
             }
         }
     </script>
-</body>
-</html>
+{% endblock %}

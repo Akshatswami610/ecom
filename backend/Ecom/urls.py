@@ -1,12 +1,13 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import home, aboutus, contact, profile, orders, cart
+from .views import home, aboutus, contact, profile, orders, cart, product
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
     path('', home),  # home page
     path('home', home, name='home'),  # home page
+    path('product', product, name='product'),  # home page
     path('aboutus', aboutus, name='aboutus'),
     path('contact', contact, name='contact'),
     path('profile', profile, name='profile'),

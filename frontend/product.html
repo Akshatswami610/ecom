@@ -1,126 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Product Detail - LUXE</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'basic.html' %}
+{% block title %}Luxe - Product{% endblock %}
 
-        /* Dark mode color scheme */
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #141414;
-            --bg-elevated: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --text-muted: #737373;
-            --accent-primary: #f5f5f5;
-            --accent-gold: #d4af37;
-            --border-subtle: #262626;
-            --border-medium: #404040;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background-color: var(--bg-primary);
-            -webkit-font-smoothing: antialiased;
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        .navbar {
-            background-color: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-subtle);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-        }
-
-        .nav-brand a {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            color: var(--text-primary);
-            text-decoration: none;
-            text-transform: uppercase;
-        }
-
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .nav-toggle span {
-            width: 25px;
-            height: 1px;
-            background-color: var(--text-primary);
-            margin: 4px 0;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 400;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: color 0.3s;
-        }
-
-        .nav-menu a:hover {
-            color: var(--text-primary);
-        }
-
-        .cart-link {
-            position: relative;
-        }
-
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -12px;
-            background-color: var(--accent-gold);
-            color: var(--bg-primary);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.625rem;
-            font-weight: 600;
-        }
-
+{% block css %}
+<style>
         .back-link {
             display: inline-block;
             margin: 3rem 0 2rem;
@@ -134,6 +16,11 @@
 
         .back-link:hover {
             color: var(--text-primary);
+        }
+
+        main {
+            padding: 0 0 4rem 0;
+            min-height: calc(100vh - 200px);
         }
 
         .product-detail {
@@ -224,80 +111,6 @@
             border-color: var(--accent-gold);
         }
 
-        .reviews-section {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            padding: 3rem;
-            margin-top: 3rem;
-        }
-
-        .reviews-section h2 {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 2rem;
-        }
-
-        .review-item {
-            border-bottom: 1px solid var(--border-subtle);
-            padding: 2rem 0;
-        }
-
-        .review-item:last-child {
-            border-bottom: none;
-        }
-
-        .review-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .review-author {
-            font-weight: 500;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-        }
-
-        .review-rating {
-            color: var(--accent-gold);
-        }
-
-        .review-text {
-            color: var(--text-secondary);
-            line-height: 1.8;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.75rem;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            width: 100%;
-            padding: 1rem;
-            border: 1px solid var(--border-medium);
-            background-color: var(--bg-elevated);
-            color: var(--text-primary);
-            font-size: 1rem;
-            font-family: inherit;
-        }
-
-        .form-group textarea {
-            resize: vertical;
-        }
-
         .loading {
             text-align: center;
             padding: 4rem;
@@ -315,114 +128,53 @@
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
-        .footer {
-            background-color: var(--bg-secondary);
-            border-top: 1px solid var(--border-subtle);
-            padding: 3rem 0;
-            margin-top: 6rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
         @media (max-width: 768px) {
-            .nav-toggle {
-                display: flex;
-            }
-
-            .nav-menu {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background-color: var(--bg-primary);
-                flex-direction: column;
-                padding: 2rem;
-                border-bottom: 1px solid var(--border-subtle);
-                display: none;
-            }
-
-            .nav-menu.active {
-                display: flex;
-            }
-
             .product-detail-content {
                 grid-template-columns: 1fr;
             }
         }
     </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <a href="home.html">LUXE</a>
-            </div>
-            <button class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="home.html">Home</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="contact.html">Contact</a></li>
-                <li><a href="profile.html">Profile</a></li>
-                <li><a href="order-history.html">Orders</a></li>
-                <li><a href="cart.html" class="cart-link">
-                    Cart <span class="cart-count" id="cartCount">0</span>
-                </a></li>
-            </ul>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <a href="{% url 'home' %}" class="back-link">← Back to Collection</a>
+
+        <div id="productDetail" class="product-detail">
+            <div class="loading">Loading product details...</div>
         </div>
-    </nav>
 
-    <main>
-        <div class="container">
-            <a href="home.html" class="back-link">← Back to Collection</a>
 
-            <div id="productDetail" class="product-detail">
-                <div class="loading">Loading product details...</div>
-            </div>
+    </div>
+</main>
+{% endblock %}
 
-            <section class="reviews-section">
-                <h2>Reviews</h2>
-                <div id="reviewsList" class="reviews-list"></div>
-
-                <div class="review-form-container">
-                    <h3 style="font-size: 1.125rem; font-weight: 300; letter-spacing: 0.05em; text-transform: uppercase; margin: 2rem 0 1.5rem;">Write a Review</h3>
-                    <form id="reviewForm">
-                        <div class="form-group">
-                            <label for="rating">Rating</label>
-                            <select id="rating" required>
-                                <option value="">Select rating</option>
-                                <option value="5">5 Stars</option>
-                                <option value="4">4 Stars</option>
-                                <option value="3">3 Stars</option>
-                                <option value="2">2 Stars</option>
-                                <option value="1">1 Star</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="reviewText">Your Review</label>
-                            <textarea id="reviewText" rows="4" required></textarea>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Submit Review</button>
-                    </form>
-                </div>
-            </section>
-        </div>
-    </main>
-
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 LUXE. All rights reserved.</p>
-        </div>
-    </footer>
-
+{% block js %}
     <script>
         const API_BASE_URL = 'http://localhost:8000/';
+
+        // Sample reviews data - Replace with: const reviews = await API.getReviews(productId);
+        const sampleReviews = [
+            {
+                id: 1,
+                user: "John Doe",
+                rating: 5,
+                review: "Absolutely stunning piece. The craftsmanship is impeccable and delivery was swift."
+            },
+            {
+                id: 2,
+                user: "Jane Smith",
+                rating: 5,
+                review: "Exceeded my expectations. Worth every penny. Highly recommend to anyone seeking luxury."
+            },
+            {
+                id: 3,
+                user: "Michael Brown",
+                rating: 4,
+                review: "Beautiful watch, excellent quality. Packaging could have been a bit more premium."
+            }
+        ];
 
         const API = {
             async request(url, options = {}) {
@@ -447,22 +199,22 @@
             },
 
             async getProduct(id) {
-                return this.request(`${API_BASE_URL}Product/${id}/`);
+                return this.request(`${API_BASE_URL}api/products/${id}/`);
             },
 
             async getReviews(productId) {
-                return this.request(`${API_BASE_URL}Review/?product=${productId}`);
+                return this.request(`${API_BASE_URL}api/reviews/?product=${productId}`);
             },
 
             async createReview(data) {
-                return this.request(`${API_BASE_URL}Review/`, {
+                return this.request(`${API_BASE_URL}api/reviews/`, {
                     method: 'POST',
                     body: JSON.stringify(data),
                 });
             },
 
             async addToCart(productId, quantity = 1) {
-                return this.request(`${API_BASE_URL}Cart/`, {
+                return this.request(`${API_BASE_URL}api/cart/`, {
                     method: 'POST',
                     body: JSON.stringify({
                         product: productId,
@@ -540,10 +292,8 @@
 
             if (productId) {
                 await loadProduct(productId);
-                await loadReviews(productId);
             }
-
-            document.getElementById('reviewForm').addEventListener('submit', handleReviewSubmit);
+        });
         });
 
         function setupMobileNav() {
@@ -561,7 +311,8 @@
             const productDetail = document.getElementById('productDetail');
 
             try {
-                currentProduct = await API.getProduct(productId);
+                // Using sample data - Replace with: currentProduct = await API.getProduct(productId);
+                currentProduct = sampleProduct;
                 displayProduct(currentProduct);
             } catch (error) {
                 productDetail.innerHTML = '<div class="error-message">Failed to load product. Please try again later.</div>';
@@ -598,7 +349,8 @@
             const reviewsList = document.getElementById('reviewsList');
 
             try {
-                const reviews = await API.getReviews(productId);
+                // Using sample data - Replace with: const reviews = await API.getReviews(productId);
+                const reviews = sampleReviews;
                 displayReviews(reviews);
             } catch (error) {
                 reviewsList.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to review.</p>';
@@ -641,7 +393,7 @@
             };
 
             try {
-                await API.createReview(reviewData);
+                // Replace with: await API.createReview(reviewData);
                 showNotification('Review submitted successfully');
                 document.getElementById('reviewForm').reset();
                 await loadReviews(productId);
@@ -655,7 +407,7 @@
 
             if (currentProduct) {
                 try {
-                    await API.addToCart(currentProduct.id, quantity);
+                    // Replace with: await API.addToCart(currentProduct.id, quantity);
                     addToLocalCart(currentProduct, quantity);
                 } catch (error) {
                     console.error('Failed to add to backend cart:', error);
@@ -664,5 +416,4 @@
             }
         }
     </script>
-</body>
-</html>
+{% endblock %}
