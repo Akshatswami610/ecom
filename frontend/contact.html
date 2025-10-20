@@ -1,138 +1,8 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact Us - LUXE</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+{% extends 'basic.html' %}
+{% block title %}Luxe - Contact Us{% endblock %}
 
-        /* Updated to premium dark mode color scheme */
-        :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #141414;
-            --bg-elevated: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --text-muted: #737373;
-            --accent-primary: #f5f5f5;
-            --accent-gold: #d4af37;
-            --border-subtle: #262626;
-            --border-medium: #404040;
-            --success-bg: rgba(16, 185, 129, 0.1);
-            --success-text: #6ee7b7;
-        }
-
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            line-height: 1.6;
-            color: var(--text-primary);
-            background-color: var(--bg-primary);
-            -webkit-font-smoothing: antialiased;
-            /* Added fade-in animation */
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 0 2rem;
-        }
-
-        /* Updated navbar to match premium dark design */
-        .navbar {
-            background-color: rgba(10, 10, 10, 0.8);
-            backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-subtle);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        .navbar .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-        }
-
-        .nav-brand a {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            color: var(--text-primary);
-            text-decoration: none;
-            text-transform: uppercase;
-        }
-
-        .nav-toggle {
-            display: none;
-            flex-direction: column;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 0.5rem;
-        }
-
-        .nav-toggle span {
-            width: 25px;
-            height: 1px;
-            background-color: var(--text-primary);
-            margin: 4px 0;
-            transition: 0.3s;
-        }
-
-        .nav-menu {
-            display: flex;
-            list-style: none;
-            gap: 3rem;
-            align-items: center;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: var(--text-secondary);
-            font-weight: 400;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: color 0.3s;
-        }
-
-        .nav-menu a:hover,
-        .nav-menu a.active {
-            color: var(--text-primary);
-        }
-
-        .cart-link {
-            position: relative;
-        }
-
-        .cart-count {
-            position: absolute;
-            top: -8px;
-            right: -12px;
-            background-color: var(--accent-gold);
-            color: var(--bg-primary);
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.625rem;
-            font-weight: 600;
-        }
-
+{% block css %}
+<style>
         main {
             padding: 4rem 0;
             min-height: calc(100vh - 300px);
@@ -146,7 +16,16 @@
             margin-bottom: 3rem;
         }
 
-        /* Updated contact content with dark mode styling and animations */
+        body {
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Contact content with dark mode styling and animations */
         .contact-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -276,8 +155,8 @@
         }
 
         .success-message {
-            background-color: var(--success-bg);
-            color: var(--success-text);
+            background-color: rgba(16, 185, 129, 0.1);
+            color: #6ee7b7;
             padding: 1rem 1.5rem;
             border: 1px solid rgba(16, 185, 129, 0.2);
             margin-bottom: 1.5rem;
@@ -285,39 +164,7 @@
             letter-spacing: 0.05em;
         }
 
-        .footer {
-            background-color: var(--bg-secondary);
-            border-top: 1px solid var(--border-subtle);
-            padding: 3rem 0;
-            margin-top: 6rem;
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
         @media (max-width: 768px) {
-            .nav-toggle {
-                display: flex;
-            }
-
-            .nav-menu {
-                position: absolute;
-                top: 100%;
-                left: 0;
-                right: 0;
-                background-color: var(--bg-primary);
-                flex-direction: column;
-                padding: 2rem;
-                border-bottom: 1px solid var(--border-subtle);
-                display: none;
-            }
-
-            .nav-menu.active {
-                display: flex;
-            }
-
             h1 {
                 font-size: 2rem;
             }
@@ -327,84 +174,59 @@
             }
         }
     </style>
-</head>
-<body>
-    <nav class="navbar">
-        <div class="container">
-            <div class="nav-brand">
-                <a href="home.html">LUXE</a>
-            </div>
-            <button class="nav-toggle" id="navToggle">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <ul class="nav-menu" id="navMenu">
-                <li><a href="/home" class="active">Home</a></li>
-                <li><a href="/aboutus">About</a></li>
-                <li><a href="/contact">Contact</a></li>
-                <li><a href="/profile">Profile</a></li>
-                <li><a href="/orders">Orders</a></li>
-                <li><a href="/cart" class="cart-link">
-                    Cart <span class="cart-count" id="cartCount">0</span>
-                </a></li>
-            </ul>
-        </div>
-    </nav>
+{% endblock %}
 
-    <main>
-        <div class="container">
-            <h1>Contact Us</h1>
+{% block content %}
+<main>
+    <div class="container">
+        <h1>Contact Us</h1>
 
-            <div class="contact-content">
-                <div class="contact-info">
-                    <h2>Get in Touch</h2>
-                    <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+        <div class="contact-content">
+            <div class="contact-info">
+                <h2>Get in Touch</h2>
+                <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
 
-                    <div class="contact-details">
-                        <div class="contact-item">
-                            <h3>Email</h3>
-                            <p>contact@luxe.com</p>
-                        </div>
-                        <div class="contact-item">
-                            <h3>Phone</h3>
-                            <p>+1 (555) 123-4567</p>
-                        </div>
-                        <div class="contact-item">
-                            <h3>Address</h3>
-                            <p>123 Luxury Avenue<br>New York, NY 10001</p>
-                        </div>
+                <div class="contact-details">
+                    <div class="contact-item">
+                        <h3>Email</h3>
+                        <p>contact@luxe.com</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Phone</h3>
+                        <p>+1 (555) 123-4567</p>
+                    </div>
+                    <div class="contact-item">
+                        <h3>Address</h3>
+                        <p>123 Luxury Avenue<br>New York, NY 10001</p>
                     </div>
                 </div>
-
-                <form id="contactForm" class="contact-form">
-                    <div class="form-group">
-                        <label for="name">Name</label>
-                        <input type="text" id="name" placeholder="Your name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="email">Email</label>
-                        <input type="email" id="email" placeholder="your@email.com" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="subject">Subject</label>
-                        <input type="text" id="subject" placeholder="How can we help?" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="message">Message</label>
-                        <textarea id="message" rows="5" placeholder="Your message..." required></textarea>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Send Message</button>
-                </form>
             </div>
-        </div>
-    </main>
 
-    <footer class="footer">
-        <div class="container">
-            <p>&copy; 2025 LUXE. All rights reserved.</p>
+            <form id="contactForm" class="contact-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" placeholder="Your name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" placeholder="your@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" placeholder="How can we help?" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" rows="5" placeholder="Your message..." required></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Send Message</button>
+            </form>
         </div>
-    </footer>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
 
     <script>
         const API_BASE_URL = 'http://localhost:8000/';
@@ -508,5 +330,4 @@
             }
         }
     </script>
-</body>
-</html>
+{% endblock %}
