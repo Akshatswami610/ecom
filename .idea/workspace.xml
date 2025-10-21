@@ -5,11 +5,16 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9366a40e-be76-46fe-8751-1b62336c93b8" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/frontend/trackorder.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Ecom/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Ecom/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/backend/Ecom/views.py" beforeDir="false" afterPath="$PROJECT_DIR$/backend/Ecom/views.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/frontend/orders.html" beforeDir="false" afterPath="$PROJECT_DIR$/frontend/orders.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/aboutus.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/basic.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/cart.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/contact.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/home.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/orders.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/product.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/profile.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/frontend/trackorder.html" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -38,18 +43,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "DefaultHtmlFileTemplate": "HTML File",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
-    "settings.editor.selected.configurable": "preferences.lookFeel"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;ignore.virus.scanning.warn.message&quot;: &quot;true&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.lookFeel&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Users\aksha\OneDrive\Desktop\ecom\backend" />
