@@ -1,5 +1,5 @@
 {% extends 'basic.html' %}
-{% block title %}FreshMart India - Order History{% endblock %}
+{% block title %}FreshMart India - Orders{% endblock %}
 
 {% block css %}
 <style>
@@ -119,6 +119,36 @@
         padding-top: 1.5rem;
         border-top: 2px solid #1f2937;
         color: #10b981;
+        margin-bottom: 1.5rem; /* Added margin-bottom for spacing before button */
+    }
+
+    .order-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-track {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-track:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
 
     .orders-empty {
@@ -195,7 +225,7 @@
 {% block content %}
 <main>
     <div class="container">
-        <h1>Order History</h1>
+        <h1>Orders</h1>
 
         <div id="ordersContent" class="orders-content">
             <div class="loading">Loading Orders...</div>
@@ -346,7 +376,7 @@
                                           (item) => `
                             <div class="order-item">
                                 <span>${item.product_name} × ${item.quantity}</span>
-                                <span>$${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                                <span>₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
                             </div>
                         `
                                       )
@@ -356,7 +386,10 @@
                     </div>
                     <div class="order-total">
                         <span>Total</span>
-                        <span>$${parseFloat(order.total || 0).toFixed(2)}</span>
+                        <span>₹${parseFloat(order.total || 0).toFixed(2)}</span>
+                    </div>
+                    <div class="order-actions">
+                        <a href="{% url 'trackorder' %}?id={{ order.id }}" class="btn-track">Track Order</a>
                     </div>
                 </div>
             `

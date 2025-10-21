@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import home, aboutus, contact, profile, orders, cart, product
+from .views import home, aboutus, contact, profile, orders, cart, product, trackorder
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -13,4 +13,5 @@ urlpatterns = [
     path('profile', profile, name='profile'),
     path('orders', orders, name='orders'),
     path('cart', cart, name='cart'),
+    path('trackorder', trackorder, name='trackorder'),
 ]

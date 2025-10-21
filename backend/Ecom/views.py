@@ -20,3 +20,6 @@ def orders(request):
 
 def cart(request):
     return render(request,'cart.html')
+
+def trackorder(request):
+    return render(request,'trackorder.html')
