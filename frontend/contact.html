@@ -1,179 +1,183 @@
 {% extends 'basic.html' %}
-{% block title %}Luxe - Contact Us{% endblock %}
+{% block title %}FreshMart India - Contact Us{% endblock %}
 
 {% block css %}
 <style>
-        main {
-            padding: 4rem 0;
-            min-height: calc(100vh - 300px);
-        }
+    main {
+        padding: 4rem 0;
+        min-height: calc(100vh - 300px);
+    }
 
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .contact-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .contact-info,
+    .contact-form {
+        background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+        padding: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .contact-info h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1rem;
+        color: #ffffff;
+    }
+
+    .contact-info p {
+        color: #9ca3af;
+        margin-bottom: 3rem;
+        line-height: 1.8;
+    }
+
+    .contact-details {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .contact-item {
+        padding: 1.5rem;
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+
+    .contact-item:hover {
+        border-color: #10b981;
+        transform: translateX(8px);
+    }
+
+    .contact-item h3 {
+        font-size: 0.875rem;
+        margin-bottom: 0.75rem;
+        color: #10b981;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .contact-item p {
+        margin: 0;
+        color: #ffffff;
+        font-size: 1.125rem;
+        font-weight: 500;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 0.75rem;
+        font-weight: 600;
+        font-size: 0.875rem;
+        color: #10b981;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .form-group input,
+    .form-group textarea {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        border: 2px solid #1f2937;
+        background-color: #0a0a0a;
+        color: #ffffff;
+        font-size: 0.875rem;
+        font-family: inherit;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    .form-group input:focus,
+    .form-group textarea:focus {
+        outline: none;
+        border-color: #10b981;
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .form-group input::placeholder,
+    .form-group textarea::placeholder {
+        color: #6b7280;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .success-message {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+        color: #10b981;
+        padding: 1rem 1.5rem;
+        border: 1px solid #10b981;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
         h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 3rem;
+            font-size: 2rem;
         }
 
-        body {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Contact content with dark mode styling and animations */
         .contact-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 3rem;
-            margin-top: 2rem;
+            grid-template-columns: 1fr;
         }
-
-        .contact-info,
-        .contact-form {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            padding: 3rem;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .contact-info h2 {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            margin-bottom: 1rem;
-        }
-
-        .contact-info p {
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            line-height: 1.8;
-            letter-spacing: 0.02em;
-        }
-
-        .contact-details {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .contact-item h3 {
-            font-size: 0.75rem;
-            margin-bottom: 0.75rem;
-            color: var(--accent-gold);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            font-weight: 500;
-        }
-
-        .contact-item p {
-            margin: 0;
-            color: var(--text-primary);
-            font-size: 1rem;
-            letter-spacing: 0.02em;
-        }
-
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 0.75rem;
-            font-weight: 400;
-            font-size: 0.75rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-        }
-
-        .form-group input,
-        .form-group textarea {
-            width: 100%;
-            padding: 1rem 1.5rem;
-            border: 1px solid var(--border-medium);
-            background-color: var(--bg-elevated);
-            color: var(--text-primary);
-            font-size: 0.875rem;
-            font-family: inherit;
-            letter-spacing: 0.02em;
-            transition: border-color 0.3s;
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: var(--accent-gold);
-        }
-
-        .form-group input::placeholder,
-        .form-group textarea::placeholder {
-            color: var(--text-muted);
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: 1px solid var(--border-medium);
-            background-color: transparent;
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-primary);
-            color: var(--bg-primary);
-            border-color: var(--accent-primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-gold);
-            border-color: var(--accent-gold);
-            transform: translateY(-2px);
-        }
-
-        .success-message {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #6ee7b7;
-            padding: 1rem 1.5rem;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            margin-bottom: 1.5rem;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .contact-content {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -184,20 +188,20 @@
         <div class="contact-content">
             <div class="contact-info">
                 <h2>Get in Touch</h2>
-                <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+                <p>Have questions about our fresh groceries? We're here to help! Send us a message and we'll respond as soon as possible.</p>
 
                 <div class="contact-details">
                     <div class="contact-item">
                         <h3>Email</h3>
-                        <p>contact@luxe.com</p>
+                        <p>support@freshmartindia.com</p>
                     </div>
                     <div class="contact-item">
                         <h3>Phone</h3>
-                        <p>+1 (555) 123-4567</p>
+                        <p>+91 1800 123 4567</p>
                     </div>
                     <div class="contact-item">
                         <h3>Address</h3>
-                        <p>123 Luxury Avenue<br>New York, NY 10001</p>
+                        <p>123 Fresh Market Road<br>Mumbai, Maharashtra 400001</p>
                     </div>
                 </div>
             </div>
@@ -227,107 +231,106 @@
 {% endblock %}
 
 {% block js %}
+<script>
+    const API_BASE_URL = 'http://localhost:8000/';
 
-    <script>
-        const API_BASE_URL = 'http://localhost:8000/';
-
-        const API = {
-            async request(url, options = {}) {
-                try {
-                    const response = await fetch(url, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...options.headers,
-                        },
-                        ...options,
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    return await response.json();
-                } catch (error) {
-                    console.error('API request failed:', error);
-                    throw error;
-                }
-            },
-
-            async submitContactForm(data) {
-                return this.request(`${API_BASE_URL}ContactForm/`, {
-                    method: 'POST',
-                    body: JSON.stringify(data),
+    const API = {
+        async request(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                    ...options,
                 });
-            },
-        };
 
-        function getLocalCart() {
-            const cart = localStorage.getItem('cart');
-            return cart ? JSON.parse(cart) : [];
-        }
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
 
-        function updateCartCount() {
-            const cart = getLocalCart();
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.querySelectorAll('.cart-count').forEach((el) => {
-                el.textContent = totalItems;
+                return await response.json();
+            } catch (error) {
+                console.error('API request failed:', error);
+                throw error;
+            }
+        },
+
+        async submitContactForm(data) {
+            return this.request(`${API_BASE_URL}ContactForm/`, {
+                method: 'POST',
+                body: JSON.stringify(data),
+            });
+        },
+    };
+
+    function getLocalCart() {
+        const cart = localStorage.getItem('cart');
+        return cart ? JSON.parse(cart) : [];
+    }
+
+    function updateCartCount() {
+        const cart = getLocalCart();
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.querySelectorAll('.cart-count').forEach((el) => {
+            el.textContent = totalItems;
+        });
+    }
+
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'success-message';
+        notification.textContent = message;
+        notification.style.position = 'fixed';
+        notification.style.top = '100px';
+        notification.style.right = '2rem';
+        notification.style.zIndex = '9999';
+        notification.style.padding = '1rem 1.5rem';
+        notification.style.fontSize = '0.875rem';
+        notification.style.letterSpacing = '0.05em';
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        updateCartCount();
+        setupMobileNav();
+
+        document.getElementById('contactForm').addEventListener('submit', handleContactSubmit);
+    });
+
+    function setupMobileNav() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
             });
         }
+    }
 
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'success-message';
-            notification.textContent = message;
-            notification.style.position = 'fixed';
-            notification.style.top = '100px';
-            notification.style.right = '2rem';
-            notification.style.zIndex = '9999';
-            notification.style.padding = '1rem 1.5rem';
-            notification.style.fontSize = '0.875rem';
-            notification.style.letterSpacing = '0.05em';
+    async function handleContactSubmit(e) {
+        e.preventDefault();
 
-            document.body.appendChild(notification);
+        const formData = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            subject: document.getElementById('subject').value,
+            message: document.getElementById('message').value,
+        };
 
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+        try {
+            await API.submitContactForm(formData);
+            showNotification("Message sent successfully! We'll get back to you soon.");
+            document.getElementById('contactForm').reset();
+        } catch (error) {
+            showNotification('Failed to send message. Please try again.');
         }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCartCount();
-            setupMobileNav();
-
-            document.getElementById('contactForm').addEventListener('submit', handleContactSubmit);
-        });
-
-        function setupMobileNav() {
-            const navToggle = document.getElementById('navToggle');
-            const navMenu = document.getElementById('navMenu');
-
-            if (navToggle && navMenu) {
-                navToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('active');
-                });
-            }
-        }
-
-        async function handleContactSubmit(e) {
-            e.preventDefault();
-
-            const formData = {
-                name: document.getElementById('name').value,
-                email: document.getElementById('email').value,
-                subject: document.getElementById('subject').value,
-                message: document.getElementById('message').value,
-            };
-
-            try {
-                await API.submitContactForm(formData);
-                showNotification("Message sent successfully! We'll get back to you soon.");
-                document.getElementById('contactForm').reset();
-            } catch (error) {
-                showNotification('Failed to send message. Please try again.');
-            }
-        }
-    </script>
+    }
+</script>
 {% endblock %}

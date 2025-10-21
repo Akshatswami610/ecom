@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}LUXE{% endblock %}</title>
+    <title>{% block title %}FreshMart India{% endblock %}</title>
     <style>
         * {
             margin: 0;
@@ -11,18 +11,23 @@
             box-sizing: border-box;
         }
 
-        /* Dark mode color scheme with premium aesthetics */
+        /* Updated color scheme for Indian grocery store with fresh, vibrant colors */
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #141414;
-            --bg-elevated: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --text-muted: #737373;
-            --accent-primary: #f5f5f5;
-            --accent-gold: #d4af37;
-            --border-subtle: #262626;
-            --border-medium: #404040;
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f29;
+            --bg-elevated: #232936;
+            --bg-card: #1e2530;
+            --text-primary: #f0f4f8;
+            --text-secondary: #b8c5d6;
+            --text-muted: #8a99ad;
+            --accent-green: #10b981;
+            --accent-green-hover: #059669;
+            --accent-orange: #f97316;
+            --accent-yellow: #fbbf24;
+            --border-subtle: #2d3748;
+            --border-medium: #3d4a5c;
+            --success: #10b981;
+            --warning: #f59e0b;
         }
 
         body {
@@ -39,30 +44,42 @@
             padding: 0 2rem;
         }
 
-        /* Navbar */
+        /* Updated navbar with grocery-friendly design */
         .navbar {
-            background-color: rgba(10, 10, 10, 0.8);
+            background-color: rgba(15, 20, 25, 0.95);
             backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--border-subtle);
             position: sticky;
             top: 0;
             z-index: 1000;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
         }
 
         .navbar .container {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1.5rem 2rem;
+            padding: 1.25rem 2rem;
         }
 
         .nav-brand a {
-            font-size: 1.5rem;
-            font-weight: 300;
-            letter-spacing: 0.3em;
-            color: var(--text-primary);
+            font-size: 1.75rem;
+            font-weight: 700;
+            letter-spacing: 0.02em;
+            color: var(--accent-green);
             text-decoration: none;
-            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .nav-brand a:hover {
+            transform: scale(1.05);
+        }
+
+        .nav-brand-icon {
+            font-size: 2rem;
         }
 
         .nav-toggle {
@@ -76,54 +93,97 @@
 
         .nav-toggle span {
             width: 25px;
-            height: 1px;
-            background-color: var(--text-primary);
-            margin: 4px 0;
+            height: 2px;
+            background-color: var(--accent-green);
+            margin: 3px 0;
             transition: 0.3s;
+            border-radius: 2px;
         }
 
         .nav-menu {
             display: flex;
             list-style: none;
-            gap: 3rem;
+            gap: 2.5rem;
             align-items: center;
         }
 
         .nav-menu a {
             text-decoration: none;
             color: var(--text-secondary);
-            font-weight: 400;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: color 0.3s;
+            font-weight: 500;
+            font-size: 0.95rem;
+            letter-spacing: 0.01em;
+            transition: all 0.3s ease;
+            position: relative;
+            padding: 0.5rem 0;
+        }
+
+        .nav-menu a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-green);
+            transition: width 0.3s ease;
         }
 
         .nav-menu a:hover,
         .nav-menu a.active {
-            color: var(--text-primary);
+            color: var(--accent-green);
+        }
+
+        .nav-menu a:hover::after {
+            width: 100%;
         }
 
         .cart-link {
             position: relative;
+            background-color: var(--accent-green);
+            color: var(--bg-primary) !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .cart-link:hover {
+            background-color: var(--accent-green-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+        }
+
+        .cart-link::after {
+            display: none;
         }
 
         .cart-count {
             position: absolute;
             top: -8px;
-            right: -12px;
-            background-color: var(--accent-gold);
-            color: var(--bg-primary);
+            right: -8px;
+            background-color: var(--accent-orange);
+            color: white;
             border-radius: 50%;
-            width: 18px;
-            height: 18px;
+            width: 22px;
+            height: 22px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 0.625rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 700;
+            box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+            animation: pulse 2s infinite;
         }
 
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
 
         /* Responsive Design */
         @media (max-width: 768px) {
@@ -136,37 +196,21 @@
                 top: 100%;
                 left: 0;
                 right: 0;
-                background-color: var(--bg-primary);
+                background-color: var(--bg-secondary);
                 flex-direction: column;
                 padding: 2rem;
                 border-bottom: 1px solid var(--border-subtle);
                 display: none;
+                gap: 1.5rem;
             }
 
             .nav-menu.active {
                 display: flex;
             }
 
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .hero p {
-                font-size: 1rem;
-            }
-
-            .products-grid {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-
-            .filters {
-                flex-direction: column;
-            }
-
-            .search-input,
-            .sort-select {
+            .cart-link {
                 width: 100%;
+                text-align: center;
             }
         }
         {% block css %}{% endblock %}
@@ -176,7 +220,10 @@
     <nav class="navbar">
         <div class="container">
             <div class="nav-brand">
-                <a href="{% url 'home' %}">LUXE</a>
+                <a href="{% url 'home' %}">
+                    <span class="nav-brand-icon">🛒</span>
+                    FreshMart India
+                </a>
             </div>
             <button class="nav-toggle" id="navToggle">
                 <span></span>
@@ -185,8 +232,8 @@
             </button>
             <ul class="nav-menu" id="navMenu">
                 <li><a href="{% url 'home' %}">Home</a></li>
-                <li><a href="{% url 'aboutus' %}">About Us</a></li>
-                <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                <li><a href="{% url 'aboutus' %}">About</a></li>
+                <li><a href="{% url 'contact' %}">Contact</a></li>
                 <li><a href="{% url 'orders' %}">Orders</a></li>
                 <li><a href="{% url 'profile' %}">Profile</a></li>
                 <li><a href="{% url 'cart' %}" class="cart-link">
@@ -198,8 +245,8 @@
     <div class="main-content">
         {% block content %}{% endblock %}
     </div>
-    <script>
+
+    <!-- FIXED: Block is OUTSIDE script tags -->
     {% block js %}{% endblock %}
-    </script>
 </body>
 </html>

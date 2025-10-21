@@ -1,139 +1,197 @@
 {% extends 'basic.html' %}
-{% block title %}Luxe - Product{% endblock %}
+{% block title %}FreshMart India - Product Details{% endblock %}
 
 {% block css %}
 <style>
-        .back-link {
-            display: inline-block;
-            margin: 3rem 0 2rem;
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            transition: color 0.3s;
-        }
+    .back-link {
+        display: inline-block;
+        margin: 2rem 0;
+        color: #10b981;
+        text-decoration: none;
+        font-size: 0.875rem;
+        font-weight: 500;
+        transition: all 0.3s;
+        animation: fadeIn 0.5s ease;
+    }
 
-        .back-link:hover {
-            color: var(--text-primary);
-        }
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
 
-        main {
-            padding: 0 0 4rem 0;
-            min-height: calc(100vh - 200px);
+    .back-link:hover {
+        color: #059669;
+        transform: translateX(-4px);
+    }
+
+    main {
+        padding: 0 0 4rem 0;
+        min-height: calc(100vh - 200px);
+    }
+
+    .product-detail {
+        background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+        padding: 3rem;
+        margin-bottom: 3rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .product-detail-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 4rem;
+    }
+
+    .product-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        border-radius: 12px;
+        border: 1px solid #1f2937;
+    }
+
+    .product-detail-image {
+        width: 100%;
+        border-radius: 12px;
+        transition: transform 0.5s ease;
+    }
+
+    .product-image-wrapper:hover .product-detail-image {
+        transform: scale(1.05);
+    }
+
+    .product-detail-info h1 {
+        font-size: 2.5rem;
+        font-weight: 600;
+        margin-bottom: 1rem;
+        color: #ffffff;
+        animation: fadeIn 0.7s ease 0.2s both;
+    }
+
+    .product-badge {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-bottom: 1.5rem;
+        animation: scaleIn 0.5s ease 0.3s both;
+    }
+
+    @keyframes scaleIn {
+        from { opacity: 0; transform: scale(0.8); }
+        to { opacity: 1; transform: scale(1); }
+    }
+
+    .product-detail-price {
+        font-size: 2.5rem;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        font-weight: 700;
+        margin-bottom: 2rem;
+        animation: fadeIn 0.7s ease 0.4s both;
+    }
+
+    .product-detail-description {
+        color: #9ca3af;
+        margin-bottom: 2rem;
+        line-height: 1.8;
+        font-size: 1rem;
+        animation: fadeIn 0.7s ease 0.5s both;
+    }
+
+    .quantity-selector {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        animation: fadeIn 0.7s ease 0.6s both;
+    }
+
+    .quantity-selector label {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #d1d5db;
+    }
+
+    .quantity-selector input {
+        width: 80px;
+        padding: 0.75rem;
+        border: 2px solid #1f2937;
+        background-color: #111111;
+        color: #ffffff;
+        text-align: center;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s;
+    }
+
+    .quantity-selector input:focus {
+        outline: none;
+        border-color: #10b981;
+    }
+
+    .btn {
+        padding: 1rem 2.5rem;
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        animation: fadeIn 0.7s ease 0.7s both;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .loading {
+        text-align: center;
+        padding: 4rem;
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .success-message {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+        color: #10b981;
+        padding: 1rem 1.5rem;
+        border: 1px solid #10b981;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        .product-detail-content {
+            grid-template-columns: 1fr;
         }
 
         .product-detail {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            padding: 3rem;
-            margin-bottom: 3rem;
+            padding: 2rem;
         }
-
-        .product-detail-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-        }
-
-        .product-detail-image {
-            width: 100%;
-            border: 1px solid var(--border-subtle);
-        }
-
-        .product-detail-info h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: 0.02em;
-            margin-bottom: 1.5rem;
-        }
-
-        .product-detail-price {
-            font-size: 2rem;
-            color: var(--text-primary);
-            font-weight: 400;
-            margin-bottom: 2rem;
-            letter-spacing: 0.02em;
-        }
-
-        .product-detail-description {
-            color: var(--text-secondary);
-            margin-bottom: 3rem;
-            line-height: 1.8;
-            font-size: 1rem;
-        }
-
-        .quantity-selector {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 2rem;
-        }
-
-        .quantity-selector label {
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            color: var(--text-secondary);
-        }
-
-        .quantity-selector input {
-            width: 80px;
-            padding: 0.75rem;
-            border: 1px solid var(--border-medium);
-            background-color: var(--bg-elevated);
-            color: var(--text-primary);
-            text-align: center;
-            font-size: 1rem;
-        }
-
-        .btn {
-            padding: 1rem 2rem;
-            border: 1px solid var(--border-medium);
-            background-color: transparent;
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-primary);
-            color: var(--bg-primary);
-            border-color: var(--accent-primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-gold);
-            border-color: var(--accent-gold);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 4rem;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .success-message {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #6ee7b7;
-            padding: 1rem;
-            margin-bottom: 1rem;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        @media (max-width: 768px) {
-            .product-detail-content {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -144,276 +202,277 @@
         <div id="productDetail" class="product-detail">
             <div class="loading">Loading product details...</div>
         </div>
-
-
     </div>
 </main>
 {% endblock %}
 
 {% block js %}
-    <script>
-        const API_BASE_URL = 'http://localhost:8000/';
+<script>
+    const API_BASE_URL = 'http://localhost:8000/';
 
-        // Sample reviews data - Replace with: const reviews = await API.getReviews(productId);
-        const sampleReviews = [
-            {
-                id: 1,
-                user: "John Doe",
-                rating: 5,
-                review: "Absolutely stunning piece. The craftsmanship is impeccable and delivery was swift."
-            },
-            {
-                id: 2,
-                user: "Jane Smith",
-                rating: 5,
-                review: "Exceeded my expectations. Worth every penny. Highly recommend to anyone seeking luxury."
-            },
-            {
-                id: 3,
-                user: "Michael Brown",
-                rating: 4,
-                review: "Beautiful watch, excellent quality. Packaging could have been a bit more premium."
-            }
-        ];
+    const sampleProduct = {
+        id: 1,
+        name: "Fresh Organic Apples",
+        price: 120,
+        description: "Premium quality organic apples sourced directly from Himachal Pradesh farms. Rich in nutrients, crisp and naturally sweet. Perfect for healthy snacking and cooking.",
+        image: "/placeholder.svg?height=600&width=600"
+    };
 
-        const API = {
-            async request(url, options = {}) {
-                try {
-                    const response = await fetch(url, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...options.headers,
-                        },
-                        ...options,
-                    });
+    const sampleReviews = [
+        {
+            id: 1,
+            user: "John Doe",
+            rating: 5,
+            review: "Absolutely stunning piece. The craftsmanship is impeccable and delivery was swift."
+        },
+        {
+            id: 2,
+            user: "Jane Smith",
+            rating: 5,
+            review: "Exceeded my expectations. Worth every penny. Highly recommend to anyone seeking luxury."
+        },
+        {
+            id: 3,
+            user: "Michael Brown",
+            rating: 4,
+            review: "Beautiful watch, excellent quality. Packaging could have been a bit more premium."
+        }
+    ];
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
+    const API = {
+        async request(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                    ...options,
+                });
 
-                    return await response.json();
-                } catch (error) {
-                    console.error('API request failed:', error);
-                    throw error;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-            },
 
-            async getProduct(id) {
-                return this.request(`${API_BASE_URL}api/products/${id}/`);
-            },
+                return await response.json();
+            } catch (error) {
+                console.error('API request failed:', error);
+                throw error;
+            }
+        },
 
-            async getReviews(productId) {
-                return this.request(`${API_BASE_URL}api/reviews/?product=${productId}`);
-            },
+        async getProduct(id) {
+            return this.request(`${API_BASE_URL}api/products/${id}/`);
+        },
 
-            async createReview(data) {
-                return this.request(`${API_BASE_URL}api/reviews/`, {
-                    method: 'POST',
-                    body: JSON.stringify(data),
-                });
-            },
+        async getReviews(productId) {
+            return this.request(`${API_BASE_URL}api/reviews/?product=${productId}`);
+        },
 
-            async addToCart(productId, quantity = 1) {
-                return this.request(`${API_BASE_URL}api/cart/`, {
-                    method: 'POST',
-                    body: JSON.stringify({
-                        product: productId,
-                        quantity: quantity,
-                    }),
-                });
-            },
-        };
+        async createReview(data) {
+            return this.request(`${API_BASE_URL}api/reviews/`, {
+                method: 'POST',
+                body: JSON.stringify(data),
+            });
+        },
 
-        function getLocalCart() {
-            const cart = localStorage.getItem('cart');
-            return cart ? JSON.parse(cart) : [];
-        }
+        async addToCart(productId, quantity = 1) {
+            return this.request(`${API_BASE_URL}api/cart/`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    product: productId,
+                    quantity: quantity,
+                }),
+            });
+        },
+    };
 
-        function saveLocalCart(cart) {
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-        }
+    function getLocalCart() {
+        const cart = localStorage.getItem('cart');
+        return cart ? JSON.parse(cart) : [];
+    }
 
-        function updateCartCount() {
-            const cart = getLocalCart();
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.querySelectorAll('.cart-count').forEach((el) => {
-                el.textContent = totalItems;
+    function saveLocalCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+    }
+
+    function updateCartCount() {
+        const cart = getLocalCart();
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.querySelectorAll('.cart-count').forEach((el) => {
+            el.textContent = totalItems;
+        });
+    }
+
+    function addToLocalCart(product, quantity = 1) {
+        const cart = getLocalCart();
+        const existingItem = cart.find((item) => item.id === product.id);
+
+        if (existingItem) {
+            existingItem.quantity += quantity;
+        } else {
+            cart.push({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                image: product.image,
+                quantity: quantity,
             });
         }
 
-        function addToLocalCart(product, quantity = 1) {
-            const cart = getLocalCart();
-            const existingItem = cart.find((item) => item.id === product.id);
+        saveLocalCart(cart);
+        showNotification('Product added to cart');
+    }
 
-            if (existingItem) {
-                existingItem.quantity += quantity;
-            } else {
-                cart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
-                    quantity: quantity,
-                });
-            }
+    function showNotification(message) {
+        const notification = document.createElement('div');
+        notification.className = 'success-message';
+        notification.textContent = message;
+        notification.style.position = 'fixed';
+        notification.style.top = '100px';
+        notification.style.right = '2rem';
+        notification.style.zIndex = '9999';
+        notification.style.padding = '1rem 1.5rem';
+        notification.style.fontSize = '0.875rem';
+        notification.style.letterSpacing = '0.05em';
 
-            saveLocalCart(cart);
-            showNotification('Product added to cart');
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    let currentProduct = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        updateCartCount();
+        setupMobileNav();
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        if (productId) {
+            await loadProduct(productId);
         }
+    });
 
-        function showNotification(message) {
-            const notification = document.createElement('div');
-            notification.className = 'success-message';
-            notification.textContent = message;
-            notification.style.position = 'fixed';
-            notification.style.top = '100px';
-            notification.style.right = '2rem';
-            notification.style.zIndex = '9999';
-            notification.style.padding = '1rem 1.5rem';
-            notification.style.fontSize = '0.875rem';
-            notification.style.letterSpacing = '0.05em';
+    function setupMobileNav() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
 
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
         }
+    }
 
-        let currentProduct = null;
+    async function loadProduct(productId) {
+        const productDetail = document.getElementById('productDetail');
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            updateCartCount();
-            setupMobileNav();
-
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
-
-            if (productId) {
-                await loadProduct(productId);
-            }
-        });
-        });
-
-        function setupMobileNav() {
-            const navToggle = document.getElementById('navToggle');
-            const navMenu = document.getElementById('navMenu');
-
-            if (navToggle && navMenu) {
-                navToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('active');
-                });
-            }
+        try {
+            currentProduct = sampleProduct;
+            displayProduct(currentProduct);
+        } catch (error) {
+            productDetail.innerHTML = '<div class="error-message">Failed to load product. Please try again later.</div>';
         }
+    }
 
-        async function loadProduct(productId) {
-            const productDetail = document.getElementById('productDetail');
+    function displayProduct(product) {
+        const productDetail = document.getElementById('productDetail');
 
-            try {
-                // Using sample data - Replace with: currentProduct = await API.getProduct(productId);
-                currentProduct = sampleProduct;
-                displayProduct(currentProduct);
-            } catch (error) {
-                productDetail.innerHTML = '<div class="error-message">Failed to load product. Please try again later.</div>';
-            }
-        }
-
-        function displayProduct(product) {
-            const productDetail = document.getElementById('productDetail');
-
-            productDetail.innerHTML = `
-                <div class="product-detail-content">
-                    <div>
-                        <img src="${product.image || '/placeholder.svg?height=600&width=600'}"
-                             alt="${product.name}"
-                             class="product-detail-image">
-                    </div>
-                    <div class="product-detail-info">
-                        <h1>${product.name}</h1>
-                        <div class="product-detail-price">$${parseFloat(product.price).toFixed(2)}</div>
-                        <p class="product-detail-description">${product.description || 'Premium quality product crafted with attention to detail'}</p>
-
-                        <div class="quantity-selector">
-                            <label for="quantity">Quantity</label>
-                            <input type="number" id="quantity" value="1" min="1" max="99">
-                        </div>
-
-                        <button class="btn btn-primary" onclick="addProductToCart()">Add to Cart</button>
-                    </div>
+        productDetail.innerHTML = `
+            <div class="product-detail-content">
+                <div class="product-image-wrapper">
+                    <img src="${product.image || '/placeholder.svg?height=600&width=600'}"
+                         alt="${product.name}"
+                         class="product-detail-image">
                 </div>
-            `;
-        }
+                <div class="product-detail-info">
+                    <h1>${product.name}</h1>
+                    <div class="product-badge">Organic</div>
+                    <div class="product-detail-price">$${parseFloat(product.price).toFixed(2)}</div>
+                    <p class="product-detail-description">${product.description || 'Premium quality product crafted with attention to detail'}</p>
 
-        async function loadReviews(productId) {
-            const reviewsList = document.getElementById('reviewsList');
-
-            try {
-                // Using sample data - Replace with: const reviews = await API.getReviews(productId);
-                const reviews = sampleReviews;
-                displayReviews(reviews);
-            } catch (error) {
-                reviewsList.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to review.</p>';
-            }
-        }
-
-        function displayReviews(reviews) {
-            const reviewsList = document.getElementById('reviewsList');
-
-            if (reviews.length === 0) {
-                reviewsList.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to review.</p>';
-                return;
-            }
-
-            reviewsList.innerHTML = reviews
-                .map(
-                    (review) => `
-                <div class="review-item">
-                    <div class="review-header">
-                        <span class="review-author">${review.user || 'Anonymous'}</span>
-                        <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                    <div class="quantity-selector">
+                        <label for="quantity">Quantity</label>
+                        <input type="number" id="quantity" value="1" min="1" max="99">
                     </div>
-                    <p class="review-text">${review.review}</p>
+
+                    <button class="btn btn-primary" onclick="addProductToCart()">Add to Cart</button>
                 </div>
-            `
-                )
-                .join('');
+            </div>
+        `;
+    }
+
+    async function loadReviews(productId) {
+        const reviewsList = document.getElementById('reviewsList');
+
+        try {
+            const reviews = sampleReviews;
+            displayReviews(reviews);
+        } catch (error) {
+            reviewsList.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to review.</p>';
+        }
+    }
+
+    function displayReviews(reviews) {
+        const reviewsList = document.getElementById('reviewsList');
+
+        if (reviews.length === 0) {
+            reviewsList.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to review.</p>';
+            return;
         }
 
-        async function handleReviewSubmit(e) {
-            e.preventDefault();
+        reviewsList.innerHTML = reviews
+            .map(
+                (review) => `
+            <div class="review-item">
+                <div class="review-header">
+                    <span class="review-author">${review.user || 'Anonymous'}</span>
+                    <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
+                </div>
+                <p class="review-text">${review.review}</p>
+            </div>
+        `
+            )
+            .join('');
+    }
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const productId = urlParams.get('id');
+    async function handleReviewSubmit(e) {
+        e.preventDefault();
 
-            const reviewData = {
-                product: productId,
-                rating: document.getElementById('rating').value,
-                review: document.getElementById('reviewText').value,
-            };
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
 
+        const reviewData = {
+            product: productId,
+            rating: document.getElementById('rating').value,
+            review: document.getElementById('reviewText').value,
+        };
+
+        try {
+            showNotification('Review submitted successfully');
+            document.getElementById('reviewForm').reset();
+            await loadReviews(productId);
+        } catch (error) {
+            alert('Failed to submit review. Please try again.');
+        }
+    }
+
+    async function addProductToCart() {
+        const quantity = parseInt(document.getElementById('quantity').value);
+
+        if (currentProduct) {
             try {
-                // Replace with: await API.createReview(reviewData);
-                showNotification('Review submitted successfully');
-                document.getElementById('reviewForm').reset();
-                await loadReviews(productId);
+                addToLocalCart(currentProduct, quantity);
             } catch (error) {
-                alert('Failed to submit review. Please try again.');
+                console.error('Failed to add to backend cart:', error);
+                addToLocalCart(currentProduct, quantity);
             }
         }
-
-        async function addProductToCart() {
-            const quantity = parseInt(document.getElementById('quantity').value);
-
-            if (currentProduct) {
-                try {
-                    // Replace with: await API.addToCart(currentProduct.id, quantity);
-                    addToLocalCart(currentProduct, quantity);
-                } catch (error) {
-                    console.error('Failed to add to backend cart:', error);
-                    addToLocalCart(currentProduct, quantity);
-                }
-            }
-        }
-    </script>
+    }
+</script>
 {% endblock %}

@@ -1,203 +1,195 @@
 {% extends 'basic.html' %}
-{% block title %}Luxe - Order History{% endblock %}
+{% block title %}FreshMart India - Order History{% endblock %}
 
 {% block css %}
 <style>
-        main {
-            padding: 4rem 0;
-            min-height: calc(100vh - 300px);
-        }
+    main {
+        padding: 4rem 0;
+        min-height: calc(100vh - 300px);
+    }
 
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .orders-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .order-card {
+        background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s;
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .order-card:hover {
+        transform: translateY(-4px);
+        border-color: #10b981;
+        box-shadow: 0 15px 50px rgba(16, 185, 129, 0.2);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #1f2937;
+    }
+
+    .order-id {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #ffffff;
+    }
+
+    .order-date {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .order-status {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .order-status.completed {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+        color: #10b981;
+        border: 1px solid #10b981;
+    }
+
+    .order-status.pending {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+        color: #f59e0b;
+        border: 1px solid #f59e0b;
+    }
+
+    .order-status.cancelled {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+    }
+
+    .order-items {
+        margin-bottom: 1.5rem;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        color: #9ca3af;
+        font-size: 0.875rem;
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        font-size: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #1f2937;
+        color: #10b981;
+    }
+
+    .orders-empty {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+    }
+
+    .orders-empty p {
+        font-size: 1.25rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+        font-weight: 500;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .loading {
+        text-align: center;
+        padding: 4rem;
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .error-message {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+        color: #ef4444;
+        padding: 1rem 1.5rem;
+        border: 1px solid #ef4444;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
         h1 {
-            font-size: 2.5rem;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-bottom: 3rem;
-        }
-
-        body {
-            animation: fadeIn 0.5s ease-in;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        /* Order cards with dark mode styling and animations */
-        .orders-content {
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        .order-card {
-            background-color: var(--bg-secondary);
-            border: 1px solid var(--border-subtle);
-            padding: 2rem;
-            transition: transform 0.3s, border-color 0.3s;
-            animation: slideUp 0.5s ease-out;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .order-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--border-medium);
+            font-size: 2rem;
         }
 
         .order-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border-subtle);
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
         }
-
-        .order-id {
-            font-weight: 400;
-            font-size: 1.125rem;
-            letter-spacing: 0.02em;
-        }
-
-        .order-date {
-            color: var(--text-muted);
-            font-size: 0.75rem;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
-            margin-top: 0.5rem;
-        }
-
-        .order-status {
-            padding: 0.5rem 1rem;
-            font-size: 0.75rem;
-            font-weight: 500;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .order-status.completed {
-            background-color: rgba(16, 185, 129, 0.1);
-            color: #6ee7b7;
-            border: 1px solid rgba(16, 185, 129, 0.2);
-        }
-
-        .order-status.pending {
-            background-color: rgba(245, 158, 11, 0.1);
-            color: #fbbf24;
-            border: 1px solid rgba(245, 158, 11, 0.2);
-        }
-
-        .order-status.cancelled {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-
-        .order-items {
-            margin-bottom: 1.5rem;
-        }
-
-        .order-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 0.75rem 0;
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            letter-spacing: 0.02em;
-        }
-
-        .order-total {
-            display: flex;
-            justify-content: space-between;
-            font-weight: 400;
-            font-size: 1.25rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border-subtle);
-            letter-spacing: 0.02em;
-        }
-
-        .orders-empty {
-            text-align: center;
-            padding: 6rem 2rem;
-        }
-
-        .orders-empty p {
-            font-size: 1.125rem;
-            color: var(--text-muted);
-            margin-bottom: 2rem;
-            letter-spacing: 0.05em;
-        }
-
-        .btn {
-            padding: 0.75rem 1.5rem;
-            border: 1px solid var(--border-medium);
-            background-color: transparent;
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-block;
-            text-align: center;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .btn-primary {
-            background-color: var(--accent-primary);
-            color: var(--bg-primary);
-            border-color: var(--accent-primary);
-        }
-
-        .btn-primary:hover {
-            background-color: var(--accent-gold);
-            border-color: var(--accent-gold);
-            transform: translateY(-2px);
-        }
-
-        .loading {
-            text-align: center;
-            padding: 4rem;
-            color: var(--text-muted);
-            font-size: 0.875rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-        }
-
-        .error-message {
-            background-color: rgba(239, 68, 68, 0.1);
-            color: #fca5a5;
-            padding: 1rem 1.5rem;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-            font-size: 0.875rem;
-            letter-spacing: 0.05em;
-        }
-
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .order-header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 1rem;
-            }
-        }
-    </style>
+    }
+</style>
 {% endblock %}
 
 {% block content %}
@@ -218,124 +210,126 @@
 {% endblock %}
 
 {% block js %}
-    <script>
-        const API_BASE_URL = 'http://localhost:8000/';
+<script>
+    const API_BASE_URL = 'http://localhost:8000/';
 
-        // Sample orders data - Replace with: const orders = await API.getOrderHistory();
-        const sampleOrders = [
-            {
-                id: 1001,
-                created_at: "2025-10-15",
-                status: "completed",
-                total: 2500,
-                items: [
-                    { product_name: "Luxury Watch", quantity: 1, price: 2500 }
-                ]
-            },
-            {
-                id: 1002,
-                created_at: "2025-10-10",
-                status: "completed",
-                total: 2250,
-                items: [
-                    { product_name: "Designer Handbag", quantity: 1, price: 1800 },
-                    { product_name: "Silk Scarf", quantity: 1, price: 450 }
-                ]
-            },
-            {
-                id: 1003,
-                created_at: "2025-10-05",
-                status: "pending",
-                total: 3200,
-                items: [
-                    { product_name: "Gold Bracelet", quantity: 1, price: 3200 }
-                ]
-            }
-        ];
-
-        const API = {
-            async request(url, options = {}) {
-                try {
-                    const response = await fetch(url, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...options.headers,
-                        },
-                        ...options,
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    return await response.json();
-                } catch (error) {
-                    console.error('API request failed:', error);
-                    throw error;
-                }
-            },
-
-            async getOrderHistory() {
-                return this.request(`${API_BASE_URL}api/orders/`);
-            },
-        };
-
-        function getLocalCart() {
-            const cart = localStorage.getItem('cart');
-            return cart ? JSON.parse(cart) : [];
+    const sampleOrders = [
+        {
+            id: 1001,
+            created_at: "2025-10-15",
+            status: "completed",
+            total: 850,
+            items: [
+                { product_name: "Fresh Organic Apples (1kg)", quantity: 2, price: 120 },
+                { product_name: "Basmati Rice (5kg)", quantity: 1, price: 450 },
+                { product_name: "Fresh Milk (1L)", quantity: 3, price: 60 }
+            ]
+        },
+        {
+            id: 1002,
+            created_at: "2025-10-10",
+            status: "completed",
+            total: 1250,
+            items: [
+                { product_name: "Mixed Vegetables (2kg)", quantity: 1, price: 180 },
+                { product_name: "Whole Wheat Flour (10kg)", quantity: 1, price: 550 },
+                { product_name: "Fresh Paneer (500g)", quantity: 2, price: 260 }
+            ]
+        },
+        {
+            id: 1003,
+            created_at: "2025-10-05",
+            status: "pending",
+            total: 680,
+            items: [
+                { product_name: "Organic Honey (500g)", quantity: 1, price: 350 },
+                { product_name: "Green Tea (100g)", quantity: 2, price: 165 }
+            ]
         }
+    ];
 
-        function updateCartCount() {
-            const cart = getLocalCart();
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.querySelectorAll('.cart-count').forEach((el) => {
-                el.textContent = totalItems;
+    const API = {
+        async request(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                    ...options,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API request failed:', error);
+                throw error;
+            }
+        },
+
+        async getOrderHistory() {
+            return this.request(`${API_BASE_URL}api/orders/`);
+        },
+    };
+
+    function getLocalCart() {
+        const cart = localStorage.getItem('cart');
+        return cart ? JSON.parse(cart) : [];
+    }
+
+    function updateCartCount() {
+        const cart = getLocalCart();
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.querySelectorAll('.cart-count').forEach((el) => {
+            el.textContent = totalItems;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        updateCartCount();
+        setupMobileNav();
+        await loadOrders();
+    });
+
+    function setupMobileNav() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
             });
         }
+    }
 
-        document.addEventListener('DOMContentLoaded', async () => {
-            updateCartCount();
-            setupMobileNav();
-            await loadOrders();
-        });
+    async function loadOrders() {
+        const ordersContent = document.getElementById('ordersContent');
+        const ordersEmpty = document.getElementById('ordersEmpty');
 
-        function setupMobileNav() {
-            const navToggle = document.getElementById('navToggle');
-            const navMenu = document.getElementById('navMenu');
+        try {
+            const orders = sampleOrders;
 
-            if (navToggle && navMenu) {
-                navToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('active');
-                });
+            if (orders.length === 0) {
+                ordersContent.style.display = 'none';
+                ordersEmpty.style.display = 'block';
+                return;
             }
+
+            displayOrders(orders);
+        } catch (error) {
+            ordersContent.innerHTML = '<div class="error-message">Failed to load orders. Please try again later.</div>';
         }
+    }
 
-        async function loadOrders() {
-            const ordersContent = document.getElementById('ordersContent');
-            const ordersEmpty = document.getElementById('ordersEmpty');
+    function displayOrders(orders) {
+        const ordersContent = document.getElementById('ordersContent');
 
-            try {
-                // Using sample data - Replace with: const orders = await API.getOrderHistory();
-                const orders = sampleOrders;
-
-                if (orders.length === 0) {
-                    ordersContent.style.display = 'none';
-                    ordersEmpty.style.display = 'block';
-                    return;
-                }
-
-                displayOrders(orders);
-            } catch (error) {
-                ordersContent.innerHTML = '<div class="error-message">Failed to load orders. Please try again later.</div>';
-            }
-        }
-
-        function displayOrders(orders) {
-            const ordersContent = document.getElementById('ordersContent');
-
-            ordersContent.innerHTML = orders
-                .map(
-                    (order) => `
+        ordersContent.innerHTML = orders
+            .map(
+                (order) => `
                 <div class="order-card">
                     <div class="order-header">
                         <div>
@@ -366,18 +360,18 @@
                     </div>
                 </div>
             `
-                )
-                .join('');
-        }
+            )
+            .join('');
+    }
 
-        function formatDate(dateString) {
-            if (!dateString) return 'N/A';
-            const date = new Date(dateString);
-            return date.toLocaleDateString('en-US', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-            });
-        }
-    </script>
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    }
+</script>
 {% endblock %}

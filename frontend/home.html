@@ -1,29 +1,94 @@
 {% extends 'basic.html' %}
-{% block title %}Luxe - Home{% endblock %}
+{% block title %}FreshMart India - Fresh Groceries Delivered{% endblock %}
 
 {% block css %}
 <style>
         /* Hero Section */
         .hero {
-            padding: 8rem 0 6rem;
+            background: linear-gradient(135deg, #1a1f29 0%, #0f1419 100%);
+            padding: 5rem 0 4rem;
             text-align: center;
             border-bottom: 1px solid var(--border-subtle);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 50%, rgba(249, 115, 22, 0.1) 0%, transparent 50%);
+            animation: gradientShift 10s ease infinite;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .hero h1 {
-            font-size: 4rem;
-            font-weight: 300;
-            letter-spacing: -0.02em;
+            font-size: 3.5rem;
+            font-weight: 800;
             margin-bottom: 1.5rem;
-            line-height: 1.1;
+            line-height: 1.2;
+            background: linear-gradient(135deg, var(--accent-green) 0%, var(--accent-yellow) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .hero p {
-            font-size: 1.125rem;
+            font-size: 1.25rem;
             color: var(--text-secondary);
-            letter-spacing: 0.02em;
-            max-width: 600px;
-            margin: 0 auto;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            line-height: 1.8;
+        }
+
+        .hero-badges {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-top: 2rem;
+        }
+
+        .badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--bg-card);
+            border: 1px solid var(--border-medium);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            animation: fadeIn 1s ease;
+        }
+
+        .badge-icon {
+            font-size: 1.25rem;
         }
 
         /* Products Section */
@@ -35,33 +100,50 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
+            animation: fadeIn 0.6s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .section-header h2 {
-            font-size: 2rem;
-            font-weight: 300;
-            letter-spacing: 0.05em;
-            text-transform: uppercase;
+            font-size: 2.25rem;
+            font-weight: 700;
+            color: var(--text-primary);
         }
 
         .filters {
             display: flex;
             gap: 1rem;
-            margin-bottom: 3rem;
+            margin-bottom: 2.5rem;
+            animation: slideInLeft 0.6s ease;
+        }
+
+        @keyframes slideInLeft {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .search-input,
         .sort-select {
             padding: 1rem 1.5rem;
-            border: 1px solid var(--border-medium);
-            border-radius: 0;
-            font-size: 0.875rem;
-            background-color: var(--bg-secondary);
+            border: 2px solid var(--border-medium);
+            border-radius: 12px;
+            font-size: 0.95rem;
+            background-color: var(--bg-card);
             color: var(--text-primary);
             flex: 1;
             min-width: 200px;
-            letter-spacing: 0.02em;
+            transition: all 0.3s ease;
         }
 
         .search-input::placeholder {
@@ -71,51 +153,81 @@
         .search-input:focus,
         .sort-select:focus {
             outline: none;
-            border-color: var(--accent-gold);
+            border-color: var(--accent-green);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
         }
 
         .products-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
             gap: 2rem;
         }
 
         .product-card {
-            background-color: var(--bg-secondary);
+            background-color: var(--bg-card);
             border: 1px solid var(--border-subtle);
+            border-radius: 16px;
             overflow: hidden;
-            transition: transform 0.3s, border-color 0.3s;
+            transition: all 0.3s ease;
             cursor: pointer;
+            animation: fadeInUp 0.6s ease;
         }
 
         .product-card:hover {
-            transform: translateY(-4px);
-            border-color: var(--border-medium);
+            transform: translateY(-8px);
+            border-color: var(--accent-green);
+            box-shadow: 0 12px 24px rgba(16, 185, 129, 0.15);
+        }
+
+        .product-image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 280px;
+            background: linear-gradient(135deg, var(--bg-elevated) 0%, var(--bg-secondary) 100%);
+            overflow: hidden;
         }
 
         .product-image {
             width: 100%;
-            height: 400px;
+            height: 100%;
             object-fit: cover;
-            background-color: var(--bg-elevated);
+            transition: transform 0.5s ease;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.1);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background-color: var(--accent-green);
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         .product-info {
-            padding: 2rem;
+            padding: 1.5rem;
         }
 
         .product-name {
-            font-size: 1.125rem;
-            font-weight: 400;
+            font-size: 1.15rem;
+            font-weight: 600;
             margin-bottom: 0.5rem;
             color: var(--text-primary);
-            letter-spacing: 0.02em;
+            line-height: 1.4;
         }
 
         .product-description {
             color: var(--text-muted);
-            font-size: 0.875rem;
-            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            margin-bottom: 1.25rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -127,80 +239,91 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-subtle);
         }
 
         .product-price {
-            font-size: 1.25rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent-green);
+        }
+
+        .product-price-unit {
+            font-size: 0.85rem;
+            color: var(--text-muted);
             font-weight: 400;
-            color: var(--text-primary);
-            letter-spacing: 0.02em;
         }
 
         .btn {
             padding: 0.75rem 1.5rem;
-            border: 1px solid var(--border-medium);
-            background-color: transparent;
-            color: var(--text-primary);
-            font-size: 0.75rem;
-            font-weight: 500;
+            border: none;
+            background-color: var(--accent-green);
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
             text-align: center;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
+            border-radius: 8px;
         }
 
         .btn-primary {
-            background-color: var(--accent-primary);
-            color: var(--bg-primary);
-            border-color: var(--accent-primary);
+            background-color: var(--accent-green);
         }
 
         .btn-primary:hover {
-            background-color: var(--accent-gold);
-            border-color: var(--accent-gold);
+            background-color: var(--accent-green-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
         }
 
         .btn-small {
-            padding: 0.5rem 1rem;
-            font-size: 0.625rem;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
         }
 
         .loading {
             text-align: center;
             padding: 4rem;
             color: var(--text-muted);
-            font-size: 0.875rem;
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
+            font-size: 1rem;
+        }
+
+        .error-message,
+        .success-message {
+            padding: 1rem 1.5rem;
+            margin-bottom: 1rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
         }
 
         .error-message {
             background-color: rgba(239, 68, 68, 0.1);
             color: #fca5a5;
-            padding: 1rem;
-            margin-bottom: 1rem;
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
 
         .success-message {
             background-color: rgba(16, 185, 129, 0.1);
             color: #6ee7b7;
-            padding: 1rem;
-            margin-bottom: 1rem;
             border: 1px solid rgba(16, 185, 129, 0.2);
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
             .hero h1 {
-                font-size: 2.5rem;
+                font-size: 2.25rem;
             }
 
             .hero p {
-                font-size: 1rem;
+                font-size: 1.05rem;
+            }
+
+            .hero-badges {
+                gap: 1rem;
             }
 
             .products-grid {
@@ -222,20 +345,14 @@
 
 {% block content %}
 <main>
-    <section class="hero">
-        <div class="container">
-            <h1>Curated Excellence</h1>
-            <p>Discover meticulously selected products that define sophistication and quality</p>
-        </div>
-    </section>
 
     <section class="products-section">
         <div class="container">
             <div class="section-header">
-                <h2>Collection</h2>
+                <h2>Shop Fresh Products</h2>
             </div>
             <div class="filters">
-                <input type="text" id="searchInput" placeholder="Search products..." class="search-input">
+                <input type="text" id="searchInput" placeholder="Search for products..." class="search-input">
                 <select id="sortSelect" class="sort-select">
                     <option value="">Sort by</option>
                     <option value="price-asc">Price: Low to High</option>
@@ -244,7 +361,7 @@
                 </select>
             </div>
             <div id="productsGrid" class="products-grid">
-                <div class="loading">Loading Collection...</div>
+                <div class="loading">Loading fresh products...</div>
             </div>
         </div>
     </section>
@@ -252,7 +369,6 @@
 {% endblock %}
 
 {% block js %}
-
     <script>
         const API_BASE_URL = 'http://localhost:8000/';
 
@@ -399,14 +515,20 @@
                 .map(
                     (product) => `
                 <div class="product-card" onclick="viewProduct(${product.id})">
-                    <img src="${product.image || '/placeholder.svg?height=400&width=320'}"
-                         alt="${product.name}"
-                         class="product-image">
+                    <div class="product-image-wrapper">
+                        <img src="${product.image || '/placeholder.svg?height=280&width=300'}"
+                             alt="${product.name}"
+                             class="product-image">
+                        <span class="product-badge">Fresh</span>
+                    </div>
                     <div class="product-info">
                         <h3 class="product-name">${product.name}</h3>
-                        <p class="product-description">${product.description || 'Premium quality product'}</p>
+                        <p class="product-description">${product.description || 'Fresh and high quality product'}</p>
                         <div class="product-footer">
-                            <span class="product-price">$${parseFloat(product.price).toFixed(2)}</span>
+                            <div>
+                                <span class="product-price">₹${parseFloat(product.price).toFixed(2)}</span>
+                                <span class="product-price-unit">/kg</span>
+                            </div>
                             <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart(${product.id})">
                                 Add to Cart
                             </button>
