@@ -7,9 +7,9 @@ import os
 # -------------------------
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = config('SECRET_KEY', default='dev-secret-key')  # For local dev only
+SECRET_KEY = config('SECRET_KEY', default='dev-secret-key')  # Use .env for security
 DEBUG = True
-ALLOWED_HOSTS = ['*']  # Allow all for local testing
+ALLOWED_HOSTS = ['*']  # Allow all for local dev/testing
 
 # -------------------------
 # INSTALLED APPS
@@ -36,7 +36,7 @@ INSTALLED_APPS = [
 # MIDDLEWARE
 # -------------------------
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',  # Must be at the top for React
+    'corsheaders.middleware.CorsMiddleware',  # Must be on top for CORS
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -49,7 +49,7 @@ MIDDLEWARE = [
 # -------------------------
 # CORS SETTINGS
 # -------------------------
-CORS_ALLOW_ALL_ORIGINS = True  # ✅ Allow React on localhost
+CORS_ALLOW_ALL_ORIGINS = True  # Allow all for local dev
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOW_HEADERS = ['*']
 
@@ -82,6 +82,8 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
+        # Uncomment below if you want to see the browsable API in browser
+        # 'rest_framework.renderers.BrowsableAPIRenderer',
     ],
 }
 
@@ -91,20 +93,23 @@ REST_FRAMEWORK = {
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),
-]
-
+# Optional static directory
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
+# You can comment this out if you don’t use extra static dirs
+# Make sure this path exists if you keep it
+# STATICFILES_DIRS = [
+#     os.path.join(BASE_DIR, 'static'),
+# ]
+
 # -------------------------
-# TEMPLATE CONFIG
+# TEMPLATE CONFIG (NOT USED FOR DRF)
 # -------------------------
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        # Optional — only used if you want to serve React build later
-        'DIRS': [os.path.join(BASE_DIR, 'frontend', 'build')],
+        'DIRS': [],  # Empty — no frontend templates
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

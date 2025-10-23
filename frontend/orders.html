@@ -1,0 +1,410 @@
+{% extends 'basic.html' %}
+{% block title %}FreshMart India - Orders{% endblock %}
+
+{% block css %}
+<style>
+    main {
+        padding: 4rem 0;
+        min-height: calc(100vh - 300px);
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .orders-content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    .order-card {
+        background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+        padding: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        transition: all 0.3s;
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .order-card:hover {
+        transform: translateY(-4px);
+        border-color: #10b981;
+        box-shadow: 0 15px 50px rgba(16, 185, 129, 0.2);
+    }
+
+    .order-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 1px solid #1f2937;
+    }
+
+    .order-id {
+        font-weight: 700;
+        font-size: 1.25rem;
+        color: #ffffff;
+    }
+
+    .order-date {
+        color: #6b7280;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+    }
+
+    .order-status {
+        padding: 0.5rem 1rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        border-radius: 20px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .order-status.completed {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+        color: #10b981;
+        border: 1px solid #10b981;
+    }
+
+    .order-status.pending {
+        background: linear-gradient(135deg, rgba(245, 158, 11, 0.2) 0%, rgba(217, 119, 6, 0.2) 100%);
+        color: #f59e0b;
+        border: 1px solid #f59e0b;
+    }
+
+    .order-status.cancelled {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+        color: #ef4444;
+        border: 1px solid #ef4444;
+    }
+
+    .order-items {
+        margin-bottom: 1.5rem;
+    }
+
+    .order-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        color: #9ca3af;
+        font-size: 0.875rem;
+    }
+
+    .order-total {
+        display: flex;
+        justify-content: space-between;
+        font-weight: 700;
+        font-size: 1.5rem;
+        padding-top: 1.5rem;
+        border-top: 2px solid #1f2937;
+        color: #10b981;
+        margin-bottom: 1.5rem; /* Added margin-bottom for spacing before button */
+    }
+
+    .order-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+    }
+
+    .btn-track {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-track:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .orders-empty {
+        text-align: center;
+        padding: 6rem 2rem;
+        background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+    }
+
+    .orders-empty p {
+        font-size: 1.25rem;
+        color: #6b7280;
+        margin-bottom: 2rem;
+        font-weight: 500;
+    }
+
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .loading {
+        text-align: center;
+        padding: 4rem;
+        color: #6b7280;
+        font-size: 1rem;
+    }
+
+    .error-message {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+        color: #ef4444;
+        padding: 1rem 1.5rem;
+        border: 1px solid #ef4444;
+        border-radius: 8px;
+        font-weight: 500;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2rem;
+        }
+
+        .order-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1>Orders</h1>
+
+        <div id="ordersContent" class="orders-content">
+            <div class="loading">Loading Orders...</div>
+        </div>
+
+        <div id="ordersEmpty" class="orders-empty" style="display: none;">
+            <p>You haven't placed any orders yet</p>
+            <a href="{% url 'home' %}" class="btn btn-primary">Start Shopping</a>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+<script>
+    const API_BASE_URL = 'http://localhost:8000/';
+
+    const sampleOrders = [
+        {
+            id: 1001,
+            created_at: "2025-10-15",
+            status: "completed",
+            total: 850,
+            items: [
+                { product_name: "Fresh Organic Apples (1kg)", quantity: 2, price: 120 },
+                { product_name: "Basmati Rice (5kg)", quantity: 1, price: 450 },
+                { product_name: "Fresh Milk (1L)", quantity: 3, price: 60 }
+            ]
+        },
+        {
+            id: 1002,
+            created_at: "2025-10-10",
+            status: "completed",
+            total: 1250,
+            items: [
+                { product_name: "Mixed Vegetables (2kg)", quantity: 1, price: 180 },
+                { product_name: "Whole Wheat Flour (10kg)", quantity: 1, price: 550 },
+                { product_name: "Fresh Paneer (500g)", quantity: 2, price: 260 }
+            ]
+        },
+        {
+            id: 1003,
+            created_at: "2025-10-05",
+            status: "pending",
+            total: 680,
+            items: [
+                { product_name: "Organic Honey (500g)", quantity: 1, price: 350 },
+                { product_name: "Green Tea (100g)", quantity: 2, price: 165 }
+            ]
+        }
+    ];
+
+    const API = {
+        async request(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                    ...options,
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error('API request failed:', error);
+                throw error;
+            }
+        },
+
+        async getOrderHistory() {
+            return this.request(`${API_BASE_URL}api/orders/`);
+        },
+    };
+
+    function getLocalCart() {
+        const cart = localStorage.getItem('cart');
+        return cart ? JSON.parse(cart) : [];
+    }
+
+    function updateCartCount() {
+        const cart = getLocalCart();
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.querySelectorAll('.cart-count').forEach((el) => {
+            el.textContent = totalItems;
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', async () => {
+        updateCartCount();
+        setupMobileNav();
+        await loadOrders();
+    });
+
+    function setupMobileNav() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        }
+    }
+
+    async function loadOrders() {
+        const ordersContent = document.getElementById('ordersContent');
+        const ordersEmpty = document.getElementById('ordersEmpty');
+
+        try {
+            const orders = sampleOrders;
+
+            if (orders.length === 0) {
+                ordersContent.style.display = 'none';
+                ordersEmpty.style.display = 'block';
+                return;
+            }
+
+            displayOrders(orders);
+        } catch (error) {
+            ordersContent.innerHTML = '<div class="error-message">Failed to load orders. Please try again later.</div>';
+        }
+    }
+
+    function displayOrders(orders) {
+        const ordersContent = document.getElementById('ordersContent');
+
+        ordersContent.innerHTML = orders
+            .map(
+                (order) => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <div>
+                            <div class="order-id">Order #${order.id}</div>
+                            <div class="order-date">${formatDate(order.created_at || order.date)}</div>
+                        </div>
+                        <span class="order-status ${order.status || 'completed'}">${order.status || 'completed'}</span>
+                    </div>
+                    <div class="order-items">
+                        ${
+                            order.items
+                                ? order.items
+                                      .map(
+                                          (item) => `
+                            <div class="order-item">
+                                <span>${item.product_name} × ${item.quantity}</span>
+                                <span>₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                            </div>
+                        `
+                                      )
+                                      .join('')
+                                : '<div class="order-item">Order details not available</div>'
+                        }
+                    </div>
+                    <div class="order-total">
+                        <span>Total</span>
+                        <span>₹${parseFloat(order.total || 0).toFixed(2)}</span>
+                    </div>
+                    <div class="order-actions">
+                        <a href="{% url 'trackorder' %}?id={{ order.id }}" class="btn-track">Track Order</a>
+                    </div>
+                </div>
+            `
+            )
+            .join('');
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return 'N/A';
+        const date = new Date(dateString);
+        return date.toLocaleDateString('en-US', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+        });
+    }
+</script>
+{% endblock %}

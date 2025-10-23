@@ -1,0 +1,209 @@
+{% extends 'basic.html' %}
+{% block title %}FreshMart India - About Us{% endblock %}
+
+{% block css %}
+<style>
+    main {
+        padding: 4rem 0;
+        min-height: calc(100vh - 300px);
+    }
+
+    h1 {
+        font-size: 2.5rem;
+        font-weight: 700;
+        margin-bottom: 3rem;
+        background: linear-gradient(135deg, #10b981 0%, #34d399 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeIn 0.6s ease;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .about-content {
+        margin-top: 2rem;
+    }
+
+    .about-section {
+        background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+        border: 1px solid #1f2937;
+        border-radius: 16px;
+        padding: 3rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.5s ease-out;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .about-section h2 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        color: #10b981;
+    }
+
+    .about-section p {
+        color: #9ca3af;
+        margin-bottom: 1.5rem;
+        line-height: 1.8;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 2rem;
+        margin-top: 2rem;
+    }
+
+    .feature-card {
+        padding: 2rem;
+        border: 1px solid #1f2937;
+        background: rgba(16, 185, 129, 0.05);
+        border-radius: 12px;
+        transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-8px);
+        border-color: #10b981;
+        box-shadow: 0 10px 30px rgba(16, 185, 129, 0.2);
+    }
+
+    .feature-card h3 {
+        margin-bottom: 1rem;
+        color: #ffffff;
+        font-weight: 600;
+        font-size: 1.125rem;
+    }
+
+    .feature-card p {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        line-height: 1.8;
+    }
+
+    .values-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .values-list li {
+        padding: 1.5rem;
+        border-bottom: 1px solid #1f2937;
+        color: #9ca3af;
+        line-height: 1.8;
+        transition: all 0.3s;
+    }
+
+    .values-list li:hover {
+        background: rgba(16, 185, 129, 0.05);
+        padding-left: 2rem;
+        border-radius: 8px;
+    }
+
+    .values-list li:last-child {
+        border-bottom: none;
+    }
+
+    .values-list strong {
+        color: #10b981;
+        font-weight: 600;
+    }
+
+    @media (max-width: 768px) {
+        h1 {
+            font-size: 2rem;
+        }
+
+        .features-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<main>
+    <div class="container">
+        <h1>About FreshMart India</h1>
+
+        <div class="about-content">
+            <section class="about-section">
+                <h2>Our Story</h2>
+                <p>Founded in 2020, FreshMart India has been dedicated to bringing farm-fresh groceries directly to your doorstep. We believe in making healthy eating accessible to every Indian household with quality products at affordable prices.</p>
+                <p>Our mission is to revolutionize grocery shopping in India by providing the freshest produce, authentic spices, and daily essentials with unmatched convenience and reliability.</p>
+            </section>
+
+            <section class="about-section">
+                <h2>Why Choose FreshMart India</h2>
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <h3>Farm Fresh Quality</h3>
+                        <p>Direct sourcing from local farmers ensures the freshest fruits, vegetables, and dairy products.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Pan-India Delivery</h3>
+                        <p>Fast and reliable delivery across all major cities in India with temperature-controlled logistics.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Best Prices</h3>
+                        <p>Competitive pricing with regular discounts and offers on your favorite grocery items.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>Quality Assurance</h3>
+                        <p>Every product is carefully inspected to meet our strict quality standards before delivery.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="about-section">
+                <h2>Our Values</h2>
+                <ul class="values-list">
+                    <li><strong>Freshness First:</strong> We prioritize delivering the freshest products to maintain nutritional value and taste.</li>
+                    <li><strong>Customer Trust:</strong> Building lasting relationships through transparency and consistent quality.</li>
+                    <li><strong>Supporting Farmers:</strong> Fair trade practices that empower local farmers and communities.</li>
+                    <li><strong>Sustainability:</strong> Eco-friendly packaging and practices to protect our environment.</li>
+                </ul>
+            </section>
+        </div>
+    </div>
+</main>
+{% endblock %}
+
+{% block js %}
+    <script>
+        function getLocalCart() {
+            const cart = localStorage.getItem('cart');
+            return cart ? JSON.parse(cart) : [];
+        }
+
+        function updateCartCount() {
+            const cart = getLocalCart();
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.querySelectorAll('.cart-count').forEach((el) => {
+                el.textContent = totalItems;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateCartCount();
+
+            const navToggle = document.getElementById('navToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            if (navToggle && navMenu) {
+                navToggle.addEventListener('click', () => {
+                    navMenu.classList.toggle('active');
+                });
+            }
+        });
+    </script>
+{% endblock %}
