@@ -111,6 +111,67 @@
         animation: fadeIn 0.7s ease 0.5s both;
     }
 
+    .variant-selector {
+        margin-bottom: 2rem;
+        animation: fadeIn 0.7s ease 0.5s both;
+    }
+
+    .variant-selector label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #d1d5db;
+        margin-bottom: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .variant-options {
+        display: flex;
+        gap: 0.75rem;
+        flex-wrap: wrap;
+    }
+
+    .variant-option {
+        padding: 0.75rem 1.25rem;
+        border: 2px solid #1f2937;
+        background-color: #111111;
+        color: #9ca3af;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+    }
+
+    .variant-option:hover {
+        border-color: #10b981;
+        background-color: rgba(16, 185, 129, 0.1);
+    }
+
+    .variant-option.selected {
+        border-color: #10b981;
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(5, 150, 105, 0.2) 100%);
+        color: #10b981;
+    }
+
+    .variant-option-name {
+        font-weight: 600;
+    }
+
+    .variant-option-price {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+
+    .variant-option.selected .variant-option-price {
+        color: #34d399;
+    }
+
     .quantity-selector {
         display: flex;
         align-items: center;
@@ -123,23 +184,59 @@
         font-size: 0.875rem;
         font-weight: 600;
         color: #d1d5db;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
-    .quantity-selector input {
-        width: 80px;
-        padding: 0.75rem;
+    .quantity-controls {
+        display: flex;
+        align-items: center;
+        gap: 0;
         border: 2px solid #1f2937;
+        border-radius: 8px;
+        overflow: hidden;
+        background-color: #111111;
+    }
+
+    .qty-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background-color: #1f2937;
+        color: #10b981;
+        font-size: 1.25rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .qty-btn:hover {
+        background-color: #10b981;
+        color: #ffffff;
+    }
+
+    .qty-btn:active {
+        transform: scale(0.95);
+    }
+
+    .quantity-controls input {
+        width: 60px;
+        padding: 0.75rem;
+        border: none;
+        border-left: 1px solid #1f2937;
+        border-right: 1px solid #1f2937;
         background-color: #111111;
         color: #ffffff;
         text-align: center;
         font-size: 1rem;
-        border-radius: 8px;
-        transition: all 0.3s;
+        font-weight: 600;
     }
 
-    .quantity-selector input:focus {
+    .quantity-controls input:focus {
         outline: none;
-        border-color: #10b981;
     }
 
     .btn {
@@ -166,11 +263,27 @@
         box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
     }
 
+    .btn-primary:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
     .loading {
         text-align: center;
         padding: 4rem;
         color: #6b7280;
         font-size: 1rem;
+    }
+
+    .error-message {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+        color: #ef4444;
+        padding: 1rem 1.5rem;
+        border: 1px solid #ef4444;
+        border-radius: 8px;
+        font-weight: 500;
+        text-align: center;
     }
 
     .success-message {
@@ -190,6 +303,14 @@
         .product-detail {
             padding: 2rem;
         }
+
+        .product-detail-info h1 {
+            font-size: 2rem;
+        }
+
+        .product-detail-price {
+            font-size: 2rem;
+        }
     }
 </style>
 {% endblock %}
@@ -197,7 +318,7 @@
 {% block content %}
 <main>
     <div class="container">
-        <a href="{% url 'home' %}" class="back-link">← Back to Collection</a>
+        <a href="{% url 'home' %}" class="back-link">← Back to Home</a>
 
         <div id="productDetail" class="product-detail">
             <div class="loading">Loading product details...</div>
@@ -208,36 +329,7 @@
 
 {% block js %}
 <script>
-    const API_BASE_URL = 'http://localhost:8000/';
-
-    const sampleProduct = {
-        id: 1,
-        name: "Fresh Organic Apples",
-        price: 120,
-        description: "Premium quality organic apples sourced directly from Himachal Pradesh farms. Rich in nutrients, crisp and naturally sweet. Perfect for healthy snacking and cooking.",
-        image: "/placeholder.svg?height=600&width=600"
-    };
-
-    const sampleReviews = [
-        {
-            id: 1,
-            user: "John Doe",
-            rating: 5,
-            review: "Absolutely stunning piece. The craftsmanship is impeccable and delivery was swift."
-        },
-        {
-            id: 2,
-            user: "Jane Smith",
-            rating: 5,
-            review: "Exceeded my expectations. Worth every penny. Highly recommend to anyone seeking luxury."
-        },
-        {
-            id: 3,
-            user: "Michael Brown",
-            rating: 4,
-            review: "Beautiful watch, excellent quality. Packaging could have been a bit more premium."
-        }
-    ];
+    const API_BASE_URL = 'http://localhost:8000/api/v1/';
 
     const API = {
         async request(url, options = {}) {
@@ -262,22 +354,11 @@
         },
 
         async getProduct(id) {
-            return this.request(`${API_BASE_URL}api/products/${id}/`);
-        },
-
-        async getReviews(productId) {
-            return this.request(`${API_BASE_URL}api/reviews/?product=${productId}`);
-        },
-
-        async createReview(data) {
-            return this.request(`${API_BASE_URL}api/reviews/`, {
-                method: 'POST',
-                body: JSON.stringify(data),
-            });
+            return this.request(`${API_BASE_URL}Product/${id}/`);
         },
 
         async addToCart(productId, quantity = 1) {
-            return this.request(`${API_BASE_URL}api/cart/`, {
+            return this.request(`${API_BASE_URL}Cart/`, {
                 method: 'POST',
                 body: JSON.stringify({
                     product: productId,
@@ -305,18 +386,24 @@
         });
     }
 
-    function addToLocalCart(product, quantity = 1) {
+    function addToLocalCart(product, quantity = 1, selectedVariant = null) {
         const cart = getLocalCart();
-        const existingItem = cart.find((item) => item.id === product.id);
+        const cartItemId = selectedVariant
+            ? `${product.id}-${selectedVariant.name}`
+            : product.id;
+
+        const existingItem = cart.find((item) => item.cartItemId === cartItemId);
 
         if (existingItem) {
             existingItem.quantity += quantity;
         } else {
             cart.push({
+                cartItemId: cartItemId,
                 id: product.id,
-                name: product.name,
-                price: product.price,
-                image: product.image,
+                name: product.product_name,
+                price: selectedVariant ? selectedVariant.price : product.product_mrp,
+                variant: selectedVariant ? selectedVariant.name : product.product_variant,
+                image: product.product_image,
                 quantity: quantity,
             });
         }
@@ -345,6 +432,7 @@
     }
 
     let currentProduct = null;
+    let selectedVariant = null;
 
     document.addEventListener('DOMContentLoaded', async () => {
         updateCartCount();
@@ -355,6 +443,9 @@
 
         if (productId) {
             await loadProduct(productId);
+        } else {
+            document.getElementById('productDetail').innerHTML =
+                '<div class="error-message">No product ID provided.</div>';
         }
     });
 
@@ -373,32 +464,78 @@
         const productDetail = document.getElementById('productDetail');
 
         try {
-            currentProduct = sampleProduct;
+            currentProduct = await API.getProduct(productId);
             displayProduct(currentProduct);
         } catch (error) {
-            productDetail.innerHTML = '<div class="error-message">Failed to load product. Please try again later.</div>';
+            console.error('Error loading product:', error);
+            productDetail.innerHTML =
+                '<div class="error-message">Failed to load product. Please try again later.</div>';
         }
     }
 
     function displayProduct(product) {
         const productDetail = document.getElementById('productDetail');
 
+        // Parse product price data
+        let variants = [];
+        try {
+            if (product.product_price_data) {
+                const priceData = typeof product.product_price_data === 'string'
+                    ? JSON.parse(product.product_price_data)
+                    : product.product_price_data;
+
+                variants = Object.entries(priceData).map(([name, price]) => ({
+                    name,
+                    price: parseFloat(price)
+                }));
+            }
+        } catch (error) {
+            console.error('Error parsing price data:', error);
+        }
+
+        // Set initial selected variant
+        if (variants.length > 0) {
+            selectedVariant = variants[0];
+        }
+
+        const displayPrice = selectedVariant ? selectedVariant.price : product.product_mrp;
+        const displayVariant = selectedVariant ? selectedVariant.name : product.product_variant;
+
         productDetail.innerHTML = `
             <div class="product-detail-content">
                 <div class="product-image-wrapper">
-                    <img src="${product.image || '/placeholder.svg?height=600&width=600'}"
-                         alt="${product.name}"
+                    <img src="${product.product_image || '/placeholder.svg?height=600&width=600'}"
+                         alt="${product.product_name}"
                          class="product-detail-image">
                 </div>
                 <div class="product-detail-info">
-                    <h1>${product.name}</h1>
-                    <div class="product-badge">Organic</div>
-                    <div class="product-detail-price">$${parseFloat(product.price).toFixed(2)}</div>
-                    <p class="product-detail-description">${product.description || 'Premium quality product crafted with attention to detail'}</p>
+                    <h1>${product.product_name}</h1>
+                    <div class="product-badge">Fresh</div>
+                    <div class="product-detail-price" id="displayPrice">₹${parseFloat(displayPrice).toFixed(2)} <span style="font-size: 1rem; color: #9ca3af;">/${displayVariant}</span></div>
+                    <p class="product-detail-description">${product.product_desc || 'Premium quality product crafted with attention to detail'}</p>
+
+                    ${variants.length > 0 ? `
+                    <div class="variant-selector">
+                        <label>Select Variant</label>
+                        <div class="variant-options" id="variantOptions">
+                            ${variants.map((variant, index) => `
+                                <div class="variant-option ${index === 0 ? 'selected' : ''}"
+                                     onclick="selectVariant('${variant.name}', ${variant.price})">
+                                    <span class="variant-option-name">${variant.name}</span>
+                                    <span class="variant-option-price">₹${variant.price.toFixed(2)}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    ` : ''}
 
                     <div class="quantity-selector">
-                        <label for="quantity">Quantity</label>
-                        <input type="number" id="quantity" value="1" min="1" max="99">
+                        <label>Quantity</label>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="decrementQty()">−</button>
+                            <input type="number" id="quantity" value="1" min="1" max="99" readonly>
+                            <button class="qty-btn" onclick="incrementQty()">+</button>
+                        </div>
                     </div>
 
                     <button class="btn btn-primary" onclick="addProductToCart()">Add to Cart</button>
@@ -407,71 +544,55 @@
         `;
     }
 
-    async function loadReviews(productId) {
-        const reviewsList = document.getElementById('reviewsList');
+    function selectVariant(variantName, variantPrice) {
+        selectedVariant = { name: variantName, price: variantPrice };
 
-        try {
-            const reviews = sampleReviews;
-            displayReviews(reviews);
-        } catch (error) {
-            reviewsList.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to review.</p>';
+        // Update UI
+        const displayPrice = document.getElementById('displayPrice');
+        displayPrice.innerHTML = `₹${variantPrice.toFixed(2)} <span style="font-size: 1rem; color: #9ca3af;">/${variantName}</span>`;
+
+        // Update selected state
+        document.querySelectorAll('.variant-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        event.target.closest('.variant-option').classList.add('selected');
+    }
+
+    function incrementQty() {
+        const qtyInput = document.getElementById('quantity');
+        let currentValue = parseInt(qtyInput.value);
+        if (currentValue < 99) {
+            qtyInput.value = currentValue + 1;
         }
     }
 
-    function displayReviews(reviews) {
-        const reviewsList = document.getElementById('reviewsList');
-
-        if (reviews.length === 0) {
-            reviewsList.innerHTML = '<p style="color: var(--text-muted);">No reviews yet. Be the first to review.</p>';
-            return;
-        }
-
-        reviewsList.innerHTML = reviews
-            .map(
-                (review) => `
-            <div class="review-item">
-                <div class="review-header">
-                    <span class="review-author">${review.user || 'Anonymous'}</span>
-                    <span class="review-rating">${'★'.repeat(review.rating)}${'☆'.repeat(5 - review.rating)}</span>
-                </div>
-                <p class="review-text">${review.review}</p>
-            </div>
-        `
-            )
-            .join('');
-    }
-
-    async function handleReviewSubmit(e) {
-        e.preventDefault();
-
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get('id');
-
-        const reviewData = {
-            product: productId,
-            rating: document.getElementById('rating').value,
-            review: document.getElementById('reviewText').value,
-        };
-
-        try {
-            showNotification('Review submitted successfully');
-            document.getElementById('reviewForm').reset();
-            await loadReviews(productId);
-        } catch (error) {
-            alert('Failed to submit review. Please try again.');
+    function decrementQty() {
+        const qtyInput = document.getElementById('quantity');
+        let currentValue = parseInt(qtyInput.value);
+        if (currentValue > 1) {
+            qtyInput.value = currentValue - 1;
         }
     }
 
     async function addProductToCart() {
         const quantity = parseInt(document.getElementById('quantity').value);
 
-        if (currentProduct) {
-            try {
-                addToLocalCart(currentProduct, quantity);
-            } catch (error) {
-                console.error('Failed to add to backend cart:', error);
-                addToLocalCart(currentProduct, quantity);
-            }
+        if (!currentProduct) {
+            showNotification('Product not loaded. Please refresh the page.');
+            return;
+        }
+
+        if (quantity < 1) {
+            showNotification('Please enter a valid quantity.');
+            return;
+        }
+
+        try {
+            await API.addToCart(currentProduct.id, quantity);
+            addToLocalCart(currentProduct, quantity, selectedVariant);
+        } catch (error) {
+            console.error('Failed to add to backend cart:', error);
+            addToLocalCart(currentProduct, quantity, selectedVariant);
         }
     }
 </script>

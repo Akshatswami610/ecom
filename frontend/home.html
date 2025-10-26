@@ -370,7 +370,7 @@
 
 {% block js %}
     <script>
-        const API_BASE_URL = 'http://localhost:8000/';
+        const API_BASE_URL = 'http://localhost:8000/api/v1/';
 
         // API Service
         const API = {
@@ -430,24 +430,32 @@
             });
         }
 
-        function addToLocalCart(product, quantity = 1) {
+        function addToLocalCart(product, quantity = 1, selectedVariant = null) {
             const cart = getLocalCart();
-            const existingItem = cart.find((item) => item.id === product.id);
+
+            // Create a unique cart item ID based on product and variant
+            const cartItemId = selectedVariant
+                ? `${product.id}-${selectedVariant.name}`
+                : product.id.toString();
+
+            const existingItem = cart.find((item) => item.cartItemId === cartItemId);
 
             if (existingItem) {
                 existingItem.quantity += quantity;
             } else {
                 cart.push({
+                    cartItemId: cartItemId,
                     id: product.id,
-                    name: product.name,
-                    price: product.price,
-                    image: product.image,
+                    name: product.product_name,
+                    price: selectedVariant ? selectedVariant.price : product.product_mrp,
+                    variant: selectedVariant ? selectedVariant.name : product.product_variant,
+                    image: product.product_image,
                     quantity: quantity,
                 });
             }
 
             saveLocalCart(cart);
-            showNotification('Product added to cart', 'success');
+            showNotification('Product added to cart! 🛒', 'success');
         }
 
         function showNotification(message, type = 'success') {
@@ -467,6 +475,40 @@
             setTimeout(() => {
                 notification.remove();
             }, 3000);
+        }
+
+        // Parse product variants from price data
+        function getProductVariants(product) {
+            try {
+                if (product.product_price_data) {
+                    const priceData = typeof product.product_price_data === 'string'
+                        ? JSON.parse(product.product_price_data)
+                        : product.product_price_data;
+
+                    return Object.entries(priceData).map(([name, price]) => ({
+                        name,
+                        price: parseFloat(price)
+                    }));
+                }
+            } catch (error) {
+                console.error('Error parsing price data:', error);
+            }
+            return [];
+        }
+
+        // Get the default variant (first one) or fallback to product MRP
+        function getDefaultVariant(product) {
+            const variants = getProductVariants(product);
+
+            if (variants.length > 0) {
+                return variants[0]; // Return first variant
+            }
+
+            // Fallback to product's default values
+            return {
+                name: product.product_variant || '100g',
+                price: parseFloat(product.product_mrp)
+            };
         }
 
         // Home Page Functionality
@@ -513,29 +555,47 @@
 
             productsGrid.innerHTML = products
                 .map(
-                    (product) => `
-                <div class="product-card" onclick="viewProduct(${product.id})">
-                    <div class="product-image-wrapper">
-                        <img src="${product.image || '/placeholder.svg?height=280&width=300'}"
-                             alt="${product.name}"
-                             class="product-image">
-                        <span class="product-badge">Fresh</span>
-                    </div>
-                    <div class="product-info">
-                        <h3 class="product-name">${product.name}</h3>
-                        <p class="product-description">${product.description || 'Fresh and high quality product'}</p>
-                        <div class="product-footer">
-                            <div>
-                                <span class="product-price">₹${parseFloat(product.price).toFixed(2)}</span>
-                                <span class="product-price-unit">/kg</span>
+                    (product) => {
+                        const defaultVariant = getDefaultVariant(product);
+                        const variants = getProductVariants(product);
+                        const hasMultipleVariants = variants.length > 1;
+
+                        return `
+                        <div class="product-card" onclick="viewProduct(${product.id})">
+                            <div class="product-image-wrapper">
+                                <img src="${product.product_image || '/placeholder.svg?height=280&width=300'}"
+                                     alt="${product.product_name}"
+                                     class="product-image"
+                                     onerror="this.src='/placeholder.svg?height=280&width=300'">
+                                ${hasMultipleVariants ? '<span class="product-badge">Multiple Options</span>' : ''}
                             </div>
-                            <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart(${product.id})">
-                                Add to Cart
-                            </button>
+                            <div class="product-info">
+                                <h3 class="product-name">${product.product_name}</h3>
+                                <p class="product-description">${product.product_desc || 'Fresh and high quality product'}</p>
+                                ${hasMultipleVariants ? `
+                                    <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">
+                                        Available in ${variants.length} variants
+                                    </div>
+                                ` : ''}
+                                <div class="product-footer">
+                                    <div>
+                                        <span class="product-price">₹${defaultVariant.price.toFixed(2)}</span>
+                                        <span class="product-price-unit">/${defaultVariant.name}</span>
+                                    </div>
+                                    ${hasMultipleVariants ? `
+                                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); viewProduct(${product.id})">
+                                            View Options
+                                        </button>
+                                    ` : `
+                                        <button class="btn btn-primary btn-small" onclick="event.stopPropagation(); addToCart(${product.id})">
+                                            Add to Cart
+                                        </button>
+                                    `}
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                </div>
-            `
+                    `;
+                    }
                 )
                 .join('');
         }
@@ -554,19 +614,27 @@
 
             filteredProducts = allProducts.filter(
                 (product) =>
-                    product.name.toLowerCase().includes(searchTerm) ||
-                    (product.description && product.description.toLowerCase().includes(searchTerm))
+                    product.product_name.toLowerCase().includes(searchTerm) ||
+                    (product.product_desc && product.product_desc.toLowerCase().includes(searchTerm))
             );
 
             switch (sortValue) {
                 case 'price-asc':
-                    filteredProducts.sort((a, b) => parseFloat(a.price) - parseFloat(b.price));
+                    filteredProducts.sort((a, b) => {
+                        const priceA = getDefaultVariant(a).price;
+                        const priceB = getDefaultVariant(b).price;
+                        return priceA - priceB;
+                    });
                     break;
                 case 'price-desc':
-                    filteredProducts.sort((a, b) => parseFloat(b.price) - parseFloat(a.price));
+                    filteredProducts.sort((a, b) => {
+                        const priceA = getDefaultVariant(a).price;
+                        const priceB = getDefaultVariant(b).price;
+                        return priceB - priceA;
+                    });
                     break;
                 case 'name':
-                    filteredProducts.sort((a, b) => a.name.localeCompare(b.name));
+                    filteredProducts.sort((a, b) => a.product_name.localeCompare(b.product_name));
                     break;
             }
 
@@ -574,19 +642,33 @@
         }
 
         function viewProduct(productId) {
-            window.location.href = `product-detail.html?id=${productId}`;
+            window.location.href = `product?id=${productId}`;
         }
 
         async function addToCart(productId) {
             const product = allProducts.find((p) => p.id === productId);
-            if (product) {
-                try {
-                    await API.addToCart(productId, 1);
-                    addToLocalCart(product, 1);
-                } catch (error) {
-                    console.error('Failed to add to backend cart:', error);
-                    addToLocalCart(product, 1);
-                }
+
+            if (!product) {
+                showNotification('Product not found', 'error');
+                return;
+            }
+
+            // Get the default variant for products with single variant
+            const defaultVariant = getDefaultVariant(product);
+            const variants = getProductVariants(product);
+
+            // If product has multiple variants, redirect to product page
+            if (variants.length > 1) {
+                viewProduct(productId);
+                return;
+            }
+
+            try {
+                await API.addToCart(productId, 1);
+                addToLocalCart(product, 1, defaultVariant);
+            } catch (error) {
+                console.error('Failed to add to backend cart:', error);
+                addToLocalCart(product, 1, defaultVariant);
             }
         }
     </script>

@@ -288,17 +288,24 @@
                 <h3>Order Summary</h3>
                 <div class="summary-row">
                     <span>Subtotal</span>
-                    <span id="subtotal">$0.00</span>
+                    <span id="subtotal">₹0.00</span>
                 </div>
                 <div class="summary-row">
-                    <span>Tax (10%)</span>
-                    <span id="tax">$0.00</span>
+                    <span>Delivery Fee</span>
+                    <span id="deliveryFee">₹40.00</span>
                 </div>
+                <div class="summary-row">
+                    <span>GST (5%)</span>
+                    <span id="tax">₹0.00</span>
+                </div>
+                <div id="deliveryMessage" style="padding: 1rem 0; font-size: 0.875rem; text-align: center; display: none;"></div>
                 <div class="summary-row total">
                     <span>Total</span>
-                    <span id="total">$0.00</span>
+                    <span id="total">₹0.00</span>
                 </div>
-                <button class="btn btn-primary btn-block" id="checkoutBtn" style="margin-top: 2rem;">Proceed to Checkout</button>
+                <button class="btn btn-primary btn-block" id="checkoutBtn" style="margin-top: 2rem;">
+                    Proceed to Checkout
+                </button>
             </div>
         </div>
 
@@ -312,7 +319,7 @@
 
 {% block js %}
     <script>
-        const API_BASE_URL = 'http://localhost:8000/';
+        const API_BASE_URL = 'http://localhost:8000/api/v1/';
 
         function getLocalCart() {
             const cart = localStorage.getItem('cart');
@@ -332,13 +339,53 @@
             });
         }
 
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.className = type === 'success' ? 'success-message' : 'error-message';
+            notification.textContent = message;
+            notification.style.position = 'fixed';
+            notification.style.top = '100px';
+            notification.style.right = '2rem';
+            notification.style.zIndex = '9999';
+            notification.style.padding = '1rem 1.5rem';
+            notification.style.fontSize = '0.875rem';
+            notification.style.letterSpacing = '0.05em';
+            notification.style.borderRadius = '8px';
+
+            if (type === 'success') {
+                notification.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%)';
+                notification.style.color = '#10b981';
+                notification.style.border = '1px solid #10b981';
+            } else {
+                notification.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%)';
+                notification.style.color = '#ef4444';
+                notification.style.border = '1px solid #ef4444';
+            }
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             updateCartCount();
             setupMobileNav();
             loadCart();
 
             document.getElementById('checkoutBtn').addEventListener('click', () => {
-                alert('Checkout functionality would be implemented here!');
+                const cart = getLocalCart();
+                if (cart.length === 0) {
+                    showNotification('Your cart is empty!', 'error');
+                    return;
+                }
+                showNotification('Redirecting to checkout...', 'success');
+                // Implement checkout logic here
+                setTimeout(() => {
+                    // window.location.href = '/checkout';
+                    alert('Checkout functionality will be implemented here!');
+                }, 1000);
             });
         });
 
@@ -376,39 +423,54 @@
 
             cartContent.innerHTML = cart
                 .map(
-                    (item, index) => `
-                <div class="cart-item">
-                    <img src="${item.image || '/placeholder.svg?height=120&width=120'}"
-                         alt="${item.name}"
-                         class="cart-item-image">
-                    <div class="cart-item-details">
-                        <h3>${item.name}</h3>
-                        <div class="cart-item-price">$${parseFloat(item.price).toFixed(2)}</div>
-                        <div class="cart-item-quantity">
-                            <button onclick="updateQuantity(${index}, -1)">−</button>
-                            <input type="number" value="${item.quantity}" min="1"
-                                   onchange="setQuantity(${index}, this.value)" readonly>
-                            <button onclick="updateQuantity(${index}, 1)">+</button>
+                    (item, index) => {
+                        const itemId = item.cartItemId || item.id;
+                        const variant = item.variant || '100g';
+                        const itemTotal = parseFloat(item.price) * item.quantity;
+
+                        return `
+                        <div class="cart-item" data-item-id="${itemId}">
+                            <img src="${item.image || '/placeholder.svg?height=120&width=120'}"
+                                 alt="${item.name}"
+                                 class="cart-item-image"
+                                 onerror="this.src='/placeholder.svg?height=120&width=120'">
+                            <div class="cart-item-details">
+                                <h3>${item.name}</h3>
+                                ${variant ? `<div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Variant: ${variant}</div>` : ''}
+                                <div class="cart-item-price">₹${parseFloat(item.price).toFixed(2)} <span style="font-size: 0.875rem; color: #6b7280;">per unit</span></div>
+                                <div class="cart-item-quantity">
+                                    <button onclick="updateQuantity(${index}, -1)" aria-label="Decrease quantity">−</button>
+                                    <input type="number" value="${item.quantity}" min="1" max="99"
+                                           onchange="setQuantity(${index}, this.value)" readonly>
+                                    <button onclick="updateQuantity(${index}, 1)" aria-label="Increase quantity">+</button>
+                                </div>
+                            </div>
+                            <div class="cart-item-actions">
+                                <div class="cart-item-total">₹${itemTotal.toFixed(2)}</div>
+                                <button class="btn btn-danger btn-small" onclick="removeItem(${index})" aria-label="Remove item">Remove</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="cart-item-actions">
-                        <div class="cart-item-total">$${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
-                        <button class="btn btn-danger btn-small" onclick="removeItem(${index})">Remove</button>
-                    </div>
-                </div>
-            `
+                    `;
+                    }
                 )
                 .join('');
         }
 
         function updateQuantity(index, change) {
             const cart = getLocalCart();
-            cart[index].quantity += change;
+            const newQuantity = cart[index].quantity + change;
 
-            if (cart[index].quantity < 1) {
-                cart[index].quantity = 1;
+            if (newQuantity < 1) {
+                showNotification('Minimum quantity is 1', 'error');
+                return;
             }
 
+            if (newQuantity > 99) {
+                showNotification('Maximum quantity is 99', 'error');
+                return;
+            }
+
+            cart[index].quantity = newQuantity;
             saveLocalCart(cart);
             loadCart();
         }
@@ -417,28 +479,63 @@
             const cart = getLocalCart();
             const quantity = parseInt(value);
 
-            if (quantity > 0) {
+            if (isNaN(quantity) || quantity < 1) {
+                showNotification('Please enter a valid quantity', 'error');
+                cart[index].quantity = 1;
+            } else if (quantity > 99) {
+                showNotification('Maximum quantity is 99', 'error');
+                cart[index].quantity = 99;
+            } else {
                 cart[index].quantity = quantity;
-                saveLocalCart(cart);
-                loadCart();
             }
-        }
 
-        function removeItem(index) {
-            const cart = getLocalCart();
-            cart.splice(index, 1);
             saveLocalCart(cart);
             loadCart();
         }
 
+        function removeItem(index) {
+            const cart = getLocalCart();
+            const itemName = cart[index].name;
+
+            if (confirm(`Remove "${itemName}" from cart?`)) {
+                cart.splice(index, 1);
+                saveLocalCart(cart);
+                loadCart();
+                showNotification('Item removed from cart', 'success');
+            }
+        }
+
         function updateSummary(cart) {
             const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
-            const tax = subtotal * 0.1;
-            const total = subtotal + tax;
+            const deliveryFee = subtotal > 500 ? 0 : 40; // Free delivery over ₹500
+            const tax = subtotal * 0.05; // 5% GST
+            const total = subtotal + tax + deliveryFee;
 
-            document.getElementById('subtotal').textContent = `$${subtotal.toFixed(2)}`;
-            document.getElementById('tax').textContent = `$${tax.toFixed(2)}`;
-            document.getElementById('total').textContent = `$${total.toFixed(2)}`;
+            document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+            document.getElementById('deliveryFee').textContent = deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`;
+            document.getElementById('tax').textContent = `₹${tax.toFixed(2)}`;
+            document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
+
+            // Update delivery message
+            const deliveryMessage = document.getElementById('deliveryMessage');
+            if (deliveryFee > 0) {
+                const remaining = 500 - subtotal;
+                deliveryMessage.innerHTML = `<span style="color: #f59e0b;">Add ₹${remaining.toFixed(2)} more for free delivery!</span>`;
+                deliveryMessage.style.display = 'block';
+            } else {
+                deliveryMessage.innerHTML = `<span style="color: #10b981;">🎉 You've earned free delivery!</span>`;
+                deliveryMessage.style.display = 'block';
+            }
+        }
+
+        // Clear cart function (optional - can be called from checkout or admin panel)
+        function clearCart() {
+            if (confirm('Are you sure you want to clear your entire cart?')) {
+                localStorage.removeItem('cart');
+                updateCartCount();
+                loadCart();
+                showNotification('Cart cleared', 'success');
+            }
         }
     </script>
 {% endblock %}

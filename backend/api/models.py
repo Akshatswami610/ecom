@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
+from multiselectfield import MultiSelectField
 
 
 class Product(models.Model):
@@ -16,9 +17,36 @@ class Product(models.Model):
     product_name = models.CharField(max_length=50)
     product_desc = models.CharField(max_length=100)
     product_image = models.ImageField(upload_to='ecom/images/', default='')
-    product_variant = models.CharField(max_length=10, choices=PRODUCT_VARIANT)
-    product_mrp = models.IntegerField(default=100)
+
+    # 🔹 Keep the same name but make it multiselect
+    product_variant = MultiSelectField(choices=PRODUCT_VARIANT)
+
+    # 🔹 Keep the same name for MRP (base price = 100g)
+    product_mrp = models.FloatField(default=100)
+
+    # 🔹 New field to store calculated prices
+    product_price_data = models.JSONField(default=dict, blank=True)
+
     timestamp = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        # Define conversion ratios based on 100g
+        conversion = {
+            "100g": 1,
+            "200g": 2,
+            "500g": 5,
+            "1kg": 10,
+            "2kg": 20,
+            "5kg": 50,
+        }
+
+        prices = {}
+        for variant in self.product_variant:
+            if variant in conversion:
+                prices[variant] = round(self.product_mrp * conversion[variant], 2)
+
+        self.product_price_data = prices
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.product_name
