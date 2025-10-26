@@ -1,12 +1,15 @@
 from django.contrib import admin
 from django.urls import path, include
-from .views import home, aboutus, contact, profile, orders, cart, product, trackorder
+from .views import home, aboutus, contact, profile, orders, cart, product, trackorder, logout, login, signup
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/v1/', include('api.urls')),
+    path('login', login, name='login'),
+    path('signup', signup, name='signup'),
+    path('logout', logout, name='logout'),
     path('', home),  # home page
     path('home', home, name='home'),  # home page
     path('product', product, name='product'),  # home page

@@ -62,11 +62,11 @@ class Cart(models.Model):
 
 
 class Profile(models.Model):
-    username = models.CharField(max_length=50)
+    username = models.CharField(max_length=50, null=True, blank=True)
     email = models.EmailField(unique=True, null=True, blank=True)
-    phone = models.CharField(max_length=15, unique=True)
+    phone = models.CharField(max_length=10, unique=True, default='0000000000')
     password = models.CharField(max_length=100)
-    created_at = models.DateTimeField(auto_now_add=True)
+    created_at = models.DateTimeField(default=timezone.now)
 
     def __str__(self):
         return self.username
