@@ -14,7 +14,8 @@ class CartSerializer(serializers.ModelSerializer):
 class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
-        fields = '__all__'
+        fields = ['id', 'username', 'email', 'phone', 'password']
+        extra_kwargs = {'password': {'write_only': True}}
 
 class OrderHistorySerializer(serializers.ModelSerializer):
     class Meta:
