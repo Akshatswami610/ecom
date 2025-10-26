@@ -63,17 +63,22 @@ class Cart(models.Model):
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user_mail = models.CharField(max_length=100)
+    user_contact = models.CharField(max_length=10)
+
+    def __str__(self):
+        return self.user.username
+
+class Address(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     address_lane1 = models.CharField(max_length=100)
     address_landmark = models.CharField(max_length=50, blank=True, null=True)
     address_city = models.CharField(max_length=25)
     address_district = models.CharField(max_length=25)
     address_state = models.CharField(max_length=25)
     address_pincode = models.CharField(max_length=6)
-    user_contact = models.CharField(max_length=10)
-
     def __str__(self):
         return self.user.username
-
 
 class OrderHistory(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)

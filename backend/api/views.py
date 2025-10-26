@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import Product, Cart, Profile, OrderHistory, Review, ContactForm
-from .serializers import ProductSerializer, CartSerializer, ProfileSerializer, OrderHistorySerializer, ReviewSerializer, ContactFormSerializer
+from .models import Product, Cart, Profile, OrderHistory, Review, ContactForm, Address
+from .serializers import ProductSerializer, CartSerializer, ProfileSerializer, OrderHistorySerializer, ReviewSerializer, ContactFormSerializer, AddressSerializer
 
 class ProductViewSet(viewsets.ModelViewSet):
     queryset = Product.objects.all()
@@ -9,6 +9,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 class CartViewSet(viewsets.ModelViewSet):
     queryset = Cart.objects.all()
     serializer_class = CartSerializer
+
+class AddressViewSet(viewsets.ModelViewSet):
+    queryset = Address.objects.all()
+    serializer_class = AddressSerializer
 
 class ProfileViewSet(viewsets.ModelViewSet):
     queryset = Profile.objects.all()
