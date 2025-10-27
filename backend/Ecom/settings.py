@@ -12,6 +12,10 @@ DEBUG = True
 ALLOWED_HOSTS = ['*']  # Allow all for local dev/testing
 AUTH_USER_MODEL = 'api.CustomUser'
 
+AUTHENTICATION_BACKENDS = [
+    'api.backends.EmailOrPhoneBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 # -------------------------
 # INSTALLED APPS
 # -------------------------
@@ -33,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_extensions',
 ]
 
 # -------------------------
@@ -98,11 +103,6 @@ MEDIA_URL = '/media/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-# You can comment this out if you don’t use extra static dirs
-# Make sure this path exists if you keep it
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static'),
-# ]
 
 # -------------------------
 # TEMPLATE CONFIG (NOT USED FOR DRF)

@@ -1,10 +1,688 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends 'basic.html' %}
 
-</body>
-</html>
+{% block title %}FreshMart India - Sign Up{% endblock %}
+
+{% block css %}
+<style>
+    :root {
+        --bg-card: #1a1a1a;
+        --accent-green: #10b981;
+        --accent-green-hover: #059669;
+        --border-subtle: #1f2937;
+        --border-medium: #374151;
+    }
+
+    body {
+        background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        overflow-x: hidden;
+    }
+
+    body::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: radial-gradient(circle at 20% 50%, rgba(16, 185, 129, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 50%, rgba(249, 115, 22, 0.1) 0%, transparent 50%);
+        animation: gradientShift 10s ease infinite;
+        pointer-events: none;
+    }
+
+    @keyframes gradientShift {
+        0%, 100% { opacity: 0.5; }
+        50% { opacity: 0.8; }
+    }
+
+    .main-content {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 2rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .signup-container {
+        width: 100%;
+        max-width: 550px;
+        animation: slideUp 0.6s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .signup-card {
+        background: linear-gradient(135deg, var(--bg-card) 0%, var(--bg-secondary) 100%);
+        border: 1px solid var(--border-subtle);
+        border-radius: 20px;
+        padding: 3rem;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    }
+
+    .signup-header {
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .signup-header h1 {
+        font-size: 1.75rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--text-primary);
+    }
+
+    .signup-header .subtitle {
+        color: var(--text-muted);
+        font-size: 0.95rem;
+    }
+
+    .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-group.full-width {
+        grid-column: 1 / -1;
+    }
+
+    .form-group label {
+        display: block;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .input-wrapper {
+        position: relative;
+    }
+
+    .input-wrapper input,
+    .input-wrapper select {
+        width: 100%;
+        padding: 1rem 1.25rem;
+        border: 2px solid var(--border-medium);
+        border-radius: 12px;
+        font-size: 0.95rem;
+        background-color: var(--bg-secondary);
+        color: var(--text-primary);
+        transition: all 0.3s ease;
+        outline: none;
+    }
+
+    .input-wrapper select {
+        cursor: pointer;
+    }
+
+    .input-wrapper input::placeholder {
+        color: var(--text-muted);
+    }
+
+    .input-wrapper input:focus,
+    .input-wrapper select:focus {
+        border-color: var(--accent-green);
+        box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+    }
+
+    .input-wrapper input.error,
+    .input-wrapper select.error {
+        border-color: #ef4444;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-muted);
+        font-size: 1.25rem;
+        cursor: pointer;
+        user-select: none;
+        transition: color 0.3s ease;
+    }
+
+    .input-icon:hover {
+        color: var(--accent-green);
+    }
+
+    .input-hint {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        margin-top: 0.25rem;
+    }
+
+    .password-strength {
+        margin-top: 0.5rem;
+        height: 4px;
+        background-color: var(--border-medium);
+        border-radius: 2px;
+        overflow: hidden;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        width: 0%;
+        transition: all 0.3s ease;
+        border-radius: 2px;
+    }
+
+    .password-strength-bar.weak {
+        width: 33%;
+        background-color: #ef4444;
+    }
+
+    .password-strength-bar.medium {
+        width: 66%;
+        background-color: #f59e0b;
+    }
+
+    .password-strength-bar.strong {
+        width: 100%;
+        background-color: var(--accent-green);
+    }
+
+    .terms-checkbox {
+        display: flex;
+        align-items: flex-start;
+        gap: 0.75rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .terms-checkbox input[type="checkbox"] {
+        margin-top: 0.25rem;
+        width: auto;
+        cursor: pointer;
+    }
+
+    .terms-checkbox label {
+        font-size: 0.875rem;
+        color: var(--text-secondary);
+        line-height: 1.5;
+        text-transform: none;
+        letter-spacing: normal;
+    }
+
+    .terms-checkbox a {
+        color: var(--accent-green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: color 0.3s ease;
+    }
+
+    .terms-checkbox a:hover {
+        color: var(--accent-green-hover);
+    }
+
+    .btn {
+        width: 100%;
+        padding: 1rem 2rem;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.95rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--accent-green) 0%, #059669 100%);
+        color: white;
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+    }
+
+    .btn-primary:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+
+    .divider {
+        display: flex;
+        align-items: center;
+        text-align: center;
+        margin: 2rem 0;
+        color: var(--text-muted);
+        font-size: 0.875rem;
+    }
+
+    .divider::before,
+    .divider::after {
+        content: '';
+        flex: 1;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .divider span {
+        padding: 0 1rem;
+    }
+
+    .login-link {
+        text-align: center;
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+    }
+
+    .login-link a {
+        color: var(--accent-green);
+        text-decoration: none;
+        font-weight: 600;
+        transition: color 0.3s ease;
+    }
+
+    .login-link a:hover {
+        color: var(--accent-green-hover);
+    }
+
+    .error-message {
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%);
+        color: #ef4444;
+        padding: 1rem;
+        border: 1px solid #ef4444;
+        border-radius: 8px;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+
+    .success-message {
+        background: linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%);
+        color: var(--accent-green);
+        padding: 1rem;
+        border: 1px solid var(--accent-green);
+        border-radius: 8px;
+        font-size: 0.875rem;
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+
+    .loading-spinner {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: white;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+        margin-right: 0.5rem;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    @media (max-width: 640px) {
+        .main-content {
+            padding: 1rem;
+        }
+
+        .signup-card {
+            padding: 2rem 1.5rem;
+        }
+
+        .signup-header h1 {
+            font-size: 1.5rem;
+        }
+
+        .form-row {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="signup-container">
+    <div class="signup-card">
+        <div class="signup-header">
+            <h1>Create Account</h1>
+            <p class="subtitle">Join FreshMart and start shopping fresh groceries</p>
+        </div>
+
+        <div id="errorMessage" class="error-message"></div>
+        <div id="successMessage" class="success-message"></div>
+
+        <form id="signupForm">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="firstName"
+                            name="firstName"
+                            placeholder="John"
+                            required
+                            autocomplete="given-name"
+                        >
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="text"
+                            id="lastName"
+                            name="lastName"
+                            placeholder="Doe"
+                            required
+                            autocomplete="family-name"
+                        >
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <div class="input-wrapper">
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        required
+                        autocomplete="email"
+                    >
+                    <span class="input-icon">📧</span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Phone Number</label>
+                <div class="input-wrapper">
+                    <input
+                        type="tel"
+                        id="phone"
+                        name="phone"
+                        placeholder="9876543210"
+                        required
+                        maxlength="10"
+                        autocomplete="tel"
+                    >
+                    <span class="input-icon">📱</span>
+                </div>
+                <p class="input-hint">Enter 10-digit mobile number</p>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="password"
+                            name="password"
+                            placeholder="Create password"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <span class="input-icon" id="passwordToggle">👁️</span>
+                    </div>
+                    <div class="password-strength">
+                        <div class="password-strength-bar" id="strengthBar"></div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <div class="input-wrapper">
+                        <input
+                            type="password"
+                            id="confirmPassword"
+                            name="confirmPassword"
+                            placeholder="Confirm password"
+                            required
+                            autocomplete="new-password"
+                        >
+                        <span class="input-icon" id="confirmPasswordToggle">👁️</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="terms-checkbox">
+                <input type="checkbox" id="agreeTerms" name="agreeTerms" required>
+                <label for="agreeTerms">
+                    I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="signupButton">
+                Create Account
+            </button>
+        </form>
+
+        <div class="divider">
+            <span>OR</span>
+        </div>
+
+        <div class="login-link">
+            Already have an account? <a href="{% url 'login' %}">Sign in</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    const API_BASE_URL = 'http://localhost:8000/api/v1/';
+
+    const signupForm = document.getElementById('signupForm');
+    const signupButton = document.getElementById('signupButton');
+    const errorMessage = document.getElementById('errorMessage');
+    const successMessage = document.getElementById('successMessage');
+    const passwordInput = document.getElementById('password');
+    const confirmPasswordInput = document.getElementById('confirmPassword');
+    const passwordToggle = document.getElementById('passwordToggle');
+    const confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
+    const strengthBar = document.getElementById('strengthBar');
+
+    // Toggle password visibility
+    passwordToggle.addEventListener('click', () => {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            passwordToggle.textContent = '🙈';
+        } else {
+            passwordInput.type = 'password';
+            passwordToggle.textContent = '👁️';
+        }
+    });
+
+    confirmPasswordToggle.addEventListener('click', () => {
+        if (confirmPasswordInput.type === 'password') {
+            confirmPasswordInput.type = 'text';
+            confirmPasswordToggle.textContent = '🙈';
+        } else {
+            confirmPasswordInput.type = 'password';
+            confirmPasswordToggle.textContent = '👁️';
+        }
+    });
+
+    // Password strength indicator
+    passwordInput.addEventListener('input', () => {
+        const password = passwordInput.value;
+        let strength = 0;
+
+        if (password.length >= 8) strength++;
+        if (password.match(/[a-z]/) && password.match(/[A-Z]/)) strength++;
+        if (password.match(/\d/)) strength++;
+        if (password.match(/[^a-zA-Z\d]/)) strength++;
+
+        strengthBar.className = 'password-strength-bar';
+        if (strength === 0) {
+            strengthBar.classList.remove('weak', 'medium', 'strong');
+        } else if (strength <= 2) {
+            strengthBar.classList.add('weak');
+        } else if (strength === 3) {
+            strengthBar.classList.add('medium');
+        } else {
+            strengthBar.classList.add('strong');
+        }
+    });
+
+    function showError(message) {
+        errorMessage.textContent = message;
+        errorMessage.style.display = 'block';
+        successMessage.style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        setTimeout(() => {
+            errorMessage.style.display = 'none';
+        }, 5000);
+    }
+
+    function showSuccess(message) {
+        successMessage.textContent = message;
+        successMessage.style.display = 'block';
+        errorMessage.style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function setLoading(isLoading) {
+        if (isLoading) {
+            signupButton.disabled = true;
+            signupButton.innerHTML = '<span class="loading-spinner"></span>Creating Account...';
+        } else {
+            signupButton.disabled = false;
+            signupButton.innerHTML = 'Create Account';
+        }
+    }
+
+    function validatePhone(phone) {
+        const phoneRegex = /^[6-9]\d{9}$/;
+        return phoneRegex.test(phone);
+    }
+
+    function validateEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    signupForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = {
+            first_name: document.getElementById('firstName').value.trim(),
+            last_name: document.getElementById('lastName').value.trim(),
+            email: document.getElementById('email').value.trim(),
+            phone: document.getElementById('phone').value.trim(),
+            password: passwordInput.value,
+            confirm_password: confirmPasswordInput.value,
+            agree_terms: document.getElementById('agreeTerms').checked
+        };
+
+        // Validation
+        if (!formData.first_name || !formData.last_name) {
+            showError('Please enter your full name');
+            return;
+        }
+
+        if (!validateEmail(formData.email)) {
+            showError('Please enter a valid email address');
+            return;
+        }
+
+        if (!validatePhone(formData.phone)) {
+            showError('Please enter a valid 10-digit phone number starting with 6-9');
+            return;
+        }
+
+        if (formData.password.length < 8) {
+            showError('Password must be at least 8 characters long');
+            return;
+        }
+
+        if (formData.password !== formData.confirm_password) {
+            showError('Passwords do not match');
+            return;
+        }
+
+        if (!formData.agree_terms) {
+            showError('Please agree to the Terms of Service and Privacy Policy');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await fetch(`${API_BASE_URL}signup/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                showSuccess('Account created successfully! Redirecting to login...');
+
+                // Redirect to login page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 2000);
+            } else {
+                showError(data.message || 'Registration failed. Please try again.');
+                setLoading(false);
+            }
+        } catch (error) {
+            console.error('Signup error:', error);
+            showError('Unable to connect to server. Please try again later.');
+            setLoading(false);
+        }
+    });
+
+    // Clear error messages when user starts typing
+    const inputs = signupForm.querySelectorAll('input, select');
+    inputs.forEach(input => {
+        input.addEventListener('input', () => {
+            errorMessage.style.display = 'none';
+            input.classList.remove('error');
+        });
+    });
+
+    // Only allow numbers in phone field
+    document.getElementById('phone').addEventListener('input', (e) => {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+
+    // Navigation toggle functionality
+    const navToggle = document.getElementById('navToggle');
+    const navMenu = document.getElementById('navMenu');
+
+    if (navToggle) {
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+        });
+    }
+</script>
+{% endblock %}vvv
