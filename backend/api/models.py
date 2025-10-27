@@ -1,7 +1,16 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import User
+from django.conf import settings
 from multiselectfield import MultiSelectField
+from django.contrib.auth.models import AbstractUser
+
+
+class CustomUser(AbstractUser):
+    phone_number = models.CharField(max_length=10, unique=True, null=True, blank=True)
+
+    def __str__(self):
+        return self.username
+
 
 class Product(models.Model):
     PRODUCT_VARIANT = [
@@ -16,20 +25,12 @@ class Product(models.Model):
     product_name = models.CharField(max_length=50)
     product_desc = models.CharField(max_length=100)
     product_image = models.ImageField(upload_to='ecom/images/', default='')
-
-    # 🔹 Keep the same name but make it multiselect
     product_variant = MultiSelectField(choices=PRODUCT_VARIANT)
-
-    # 🔹 Keep the same name for MRP (base price = 100g)
     product_mrp = models.FloatField(default=100)
-
-    # 🔹 New field to store calculated prices
     product_price_data = models.JSONField(default=dict, blank=True)
-
     timestamp = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
-        # Define conversion ratios based on 100g
         conversion = {
             "100g": 1,
             "200g": 2,
@@ -52,7 +53,7 @@ class Product(models.Model):
 
 
 class Cart(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='carts')
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='carts')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     qty = models.PositiveIntegerField(default=1)
 
@@ -61,18 +62,20 @@ class Cart(models.Model):
 
 
 class Address(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     address_lane1 = models.CharField(max_length=100)
     address_landmark = models.CharField(max_length=50, blank=True, null=True)
     address_city = models.CharField(max_length=25)
     address_district = models.CharField(max_length=25)
     address_state = models.CharField(max_length=25)
     address_pincode = models.CharField(max_length=6)
+
     def __str__(self):
         return self.user.username
 
+
 class OrderHistory(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     order_date = models.DateTimeField(default=timezone.now)
     delivery_date = models.DateTimeField(blank=True, null=True)
@@ -93,7 +96,7 @@ class Review(models.Model):
     ]
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     star = models.CharField(max_length=1, choices=STAR)
     content = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)

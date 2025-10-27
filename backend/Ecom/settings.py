@@ -10,14 +10,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = config('SECRET_KEY', default='dev-secret-key')  # Use .env for security
 DEBUG = True
 ALLOWED_HOSTS = ['*']  # Allow all for local dev/testing
+AUTH_USER_MODEL = 'api.CustomUser'
 
 # -------------------------
 # INSTALLED APPS
 # -------------------------
 INSTALLED_APPS = [
     # Local apps
-    'Ecom',
     'api',
+    'Ecom',
 
     # Third-party
     'rest_framework',
@@ -67,7 +68,7 @@ WSGI_APPLICATION = 'Ecom.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': config('NAME', default='ecom_db'),
+        'NAME': config('NAME', default='ecommerce'),
         'USER': config('USER', default='postgres'),
         'PASSWORD': config('PASSWORD', default=''),
         'HOST': config('HOST', default='localhost'),
