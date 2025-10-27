@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from api.models import Product, Cart, Profile, OrderHistory, Review, ContactForm, Address
+from api.models import Product, Cart, OrderHistory, Review, ContactForm, Address
 
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -10,12 +10,6 @@ class CartSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = '__all__'
-
-class ProfileSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Profile
-        fields = ['id', 'username', 'email', 'phone', 'password']
-        extra_kwargs = {'password': {'write_only': True}}
 
 class OrderHistorySerializer(serializers.ModelSerializer):
     class Meta:

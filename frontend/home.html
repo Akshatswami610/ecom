@@ -572,9 +572,9 @@
                             <div class="product-info">
                                 <h3 class="product-name">${product.product_name}</h3>
                                 <p class="product-description">${product.product_desc || 'Fresh and high quality product'}</p>
-                                ${hasMultipleVariants ? `
+                                ${variants.length > 0 ? `
                                     <div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">
-                                        Available in ${variants.length} variants
+                                        Available in ${variants.length} variant${variants.length > 1 ? 's' : ''}
                                     </div>
                                 ` : ''}
                                 <div class="product-footer">

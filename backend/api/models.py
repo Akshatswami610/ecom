@@ -3,7 +3,6 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from multiselectfield import MultiSelectField
 
-
 class Product(models.Model):
     PRODUCT_VARIANT = [
         ("100g", "100g"),
@@ -61,18 +60,8 @@ class Cart(models.Model):
         return f"{self.user.username} - {self.product.product_name} ({self.qty})"
 
 
-class Profile(models.Model):
-    username = models.CharField(max_length=50, null=True, blank=True)
-    email = models.EmailField(unique=True, null=True, blank=True)
-    phone = models.CharField(max_length=10, unique=True, default='0000000000')
-    password = models.CharField(max_length=100)
-    created_at = models.DateTimeField(default=timezone.now)
-
-    def __str__(self):
-        return self.username
-
 class Address(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     address_lane1 = models.CharField(max_length=100)
     address_landmark = models.CharField(max_length=50, blank=True, null=True)
     address_city = models.CharField(max_length=25)

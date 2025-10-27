@@ -21,6 +21,7 @@ INSTALLED_APPS = [
 
     # Third-party
     'rest_framework',
+    'rest_framework.authtoken',
     'corsheaders',
     'multiselectfield',
 
@@ -83,8 +84,6 @@ REST_FRAMEWORK = {
     ],
     'DEFAULT_RENDERER_CLASSES': [
         'rest_framework.renderers.JSONRenderer',
-        # Uncomment below if you want to see the browsable API in browser
-        # 'rest_framework.renderers.BrowsableAPIRenderer',
     ],
 }
 
