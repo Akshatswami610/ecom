@@ -63,11 +63,23 @@
             margin: 0 auto;
         }
 
-        .profile-cards {
+        .profile-container {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 2rem;
+            max-width: 1200px;
+        }
+
+        .profile-main {
             display: flex;
             flex-direction: column;
             gap: 2rem;
-            max-width: 900px;
+        }
+
+        .profile-sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
         }
 
         .profile-card {
@@ -78,6 +90,7 @@
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             animation: slideUp 0.8s ease;
             transition: all 0.3s ease;
+            height: fit-content;
         }
 
         .profile-card:hover {
@@ -137,6 +150,17 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+        }
+
+        .account-actions-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .account-actions-list .btn {
+            width: 100%;
+            justify-content: center;
         }
 
         .address-item {
@@ -359,6 +383,14 @@
                 font-size: 2rem;
             }
 
+            .profile-container {
+                grid-template-columns: 1fr;
+            }
+
+            .profile-sidebar {
+                order: -1;
+            }
+
             .profile-card {
                 padding: 1.5rem;
             }
@@ -403,41 +435,47 @@
 
         <!-- Profile Content (shown when authenticated) -->
         <div id="profileContent" style="display: none;">
-            <div class="profile-cards">
-                <!-- Your Details Card -->
-                <div class="profile-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Your Details</h2>
-                        <button class="btn btn-secondary btn-icon" onclick="openEditDetailsModal()">
-                            Edit Details
-                        </button>
+            <div class="profile-container">
+                <!-- Main Content -->
+                <div class="profile-main">
+                    <!-- Your Details Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Your Details</h2>
+                            <button class="btn btn-secondary btn-icon" onclick="openEditDetailsModal()">
+                                Edit Details
+                            </button>
+                        </div>
+                        <div id="userDetails">
+                            <!-- User details will be loaded here -->
+                        </div>
                     </div>
-                    <div id="userDetails">
-                        <!-- User details will be loaded here -->
+
+                    <!-- Saved Addresses Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Saved Addresses</h2>
+                            <button class="btn btn-primary btn-icon" onclick="openAddAddressModal()">
+                                + Add New Address
+                            </button>
+                        </div>
+                        <div id="addressList">
+                            <!-- Addresses will be loaded here -->
+                        </div>
                     </div>
                 </div>
 
-                <!-- Saved Addresses Card -->
-                <div class="profile-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Saved Addresses</h2>
-                        <button class="btn btn-primary btn-icon" onclick="openAddAddressModal()">
-                            + Add New Address
-                        </button>
-                    </div>
-                    <div id="addressList">
-                        <!-- Addresses will be loaded here -->
-                    </div>
-                </div>
-
-                <!-- Account Actions Card -->
-                <div class="profile-card">
-                    <div class="card-header">
-                        <h2 class="card-title">Account Actions</h2>
-                    </div>
-                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-                        <button class="btn btn-secondary" onclick="viewOrders()">View Orders</button>
-                        <button class="btn btn-danger" onclick="logout()">Logout</button>
+                <!-- Sidebar -->
+                <div class="profile-sidebar">
+                    <!-- Account Actions Card -->
+                    <div class="profile-card">
+                        <div class="card-header">
+                            <h2 class="card-title">Account Actions</h2>
+                        </div>
+                        <div class="account-actions-list">
+                            <button class="btn btn-secondary" onclick="viewOrders()">View Orders</button>
+                            <button class="btn btn-danger" onclick="logout()">Logout</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -822,11 +860,16 @@
 
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
+                // Clear all authentication tokens
                 localStorage.removeItem('token');
+                localStorage.removeItem('authToken');
                 localStorage.removeItem('cart');
+
                 showNotification('Logged out successfully!');
+
+                // Redirect to login page after a short delay
                 setTimeout(() => {
-                    window.location.href = '/';
+                    window.location.href = '/login';
                 }, 1000);
             }
         }
