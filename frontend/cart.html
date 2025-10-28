@@ -256,6 +256,20 @@
         padding-top: 1.5rem;
     }
 
+    .loading-spinner {
+        display: inline-block;
+        width: 20px;
+        height: 20px;
+        border: 3px solid rgba(16, 185, 129, 0.3);
+        border-radius: 50%;
+        border-top-color: #10b981;
+        animation: spin 1s ease-in-out infinite;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
     @media (max-width: 768px) {
         .cart-layout {
             grid-template-columns: 1fr;
@@ -318,224 +332,388 @@
 {% endblock %}
 
 {% block js %}
-    <script>
-        const API_BASE_URL = 'http://localhost:8000/api/v1/';
+<script>
+    const API_BASE_URL = 'http://localhost:8000/api/v1/';
 
-        function getLocalCart() {
-            const cart = localStorage.getItem('cart');
-            return cart ? JSON.parse(cart) : [];
-        }
+    function getToken() {
+         return localStorage.getItem('authToken') || localStorage.getItem('token');
+    }
 
-        function saveLocalCart(cart) {
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartCount();
-        }
+    function isAuthenticated() {
+        return !!getToken();
+    }
 
-        function updateCartCount() {
-            const cart = getLocalCart();
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-            document.querySelectorAll('.cart-count').forEach((el) => {
-                el.textContent = totalItems;
-            });
-        }
+    function getLocalCart() {
+        const cart = localStorage.getItem('cart');
+        return cart ? JSON.parse(cart) : [];
+    }
 
-        function showNotification(message, type = 'success') {
-            const notification = document.createElement('div');
-            notification.className = type === 'success' ? 'success-message' : 'error-message';
-            notification.textContent = message;
-            notification.style.position = 'fixed';
-            notification.style.top = '100px';
-            notification.style.right = '2rem';
-            notification.style.zIndex = '9999';
-            notification.style.padding = '1rem 1.5rem';
-            notification.style.fontSize = '0.875rem';
-            notification.style.letterSpacing = '0.05em';
-            notification.style.borderRadius = '8px';
+    function saveLocalCart(cart) {
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+    }
 
-            if (type === 'success') {
-                notification.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%)';
-                notification.style.color = '#10b981';
-                notification.style.border = '1px solid #10b981';
-            } else {
-                notification.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%)';
-                notification.style.color = '#ef4444';
-                notification.style.border = '1px solid #ef4444';
-            }
-
-            document.body.appendChild(notification);
-
-            setTimeout(() => {
-                notification.remove();
-            }, 3000);
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            updateCartCount();
-            setupMobileNav();
-            loadCart();
-
-            document.getElementById('checkoutBtn').addEventListener('click', () => {
-                const cart = getLocalCart();
-                if (cart.length === 0) {
-                    showNotification('Your cart is empty!', 'error');
-                    return;
-                }
-                showNotification('Redirecting to checkout...', 'success');
-                // Implement checkout logic here
-                setTimeout(() => {
-                    // window.location.href = '/checkout';
-                    alert('Checkout functionality will be implemented here!');
-                }, 1000);
-            });
+    function updateCartCount() {
+        const cart = getLocalCart();
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.querySelectorAll('.cart-count').forEach((el) => {
+            el.textContent = totalItems;
         });
+    }
 
-        function setupMobileNav() {
-            const navToggle = document.getElementById('navToggle');
-            const navMenu = document.getElementById('navMenu');
+    function showNotification(message, type = 'success') {
+        const notification = document.createElement('div');
+        notification.className = type === 'success' ? 'success-message' : 'error-message';
+        notification.textContent = message;
+        notification.style.position = 'fixed';
+        notification.style.top = '100px';
+        notification.style.right = '2rem';
+        notification.style.zIndex = '9999';
+        notification.style.padding = '1rem 1.5rem';
+        notification.style.fontSize = '0.875rem';
+        notification.style.letterSpacing = '0.05em';
+        notification.style.borderRadius = '8px';
 
-            if (navToggle && navMenu) {
-                navToggle.addEventListener('click', () => {
-                    navMenu.classList.toggle('active');
+        if (type === 'success') {
+            notification.style.background = 'linear-gradient(135deg, rgba(16, 185, 129, 0.1) 0%, rgba(5, 150, 105, 0.1) 100%)';
+            notification.style.color = '#10b981';
+            notification.style.border = '1px solid #10b981';
+        } else {
+            notification.style.background = 'linear-gradient(135deg, rgba(239, 68, 68, 0.1) 0%, rgba(220, 38, 38, 0.1) 100%)';
+            notification.style.color = '#ef4444';
+            notification.style.border = '1px solid #ef4444';
+        }
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+
+    async function syncCartWithBackend() {
+        if (!isAuthenticated()) return;
+
+        const token = getToken();
+        const localCart = getLocalCart();
+
+        try {
+            // Sync local cart to backend
+            for (const item of localCart) {
+                await fetch(`${API_BASE_URL}Cart/add/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${token}`
+                    },
+                    body: JSON.stringify({
+                        product_id: item.id,
+                        quantity: item.quantity,
+                        variant: item.variant || '100g'
+                    })
                 });
             }
-        }
 
-        function loadCart() {
-            const cart = getLocalCart();
-            const cartLayout = document.getElementById('cartLayout');
-            const cartEmpty = document.getElementById('cartEmpty');
+            // Fetch updated cart from backend
+            const response = await fetch(`${API_BASE_URL}Cart/`, {
+                headers: {
+                    'Authorization': `Token ${token}`
+                }
+            });
 
-            if (cart.length === 0) {
-                cartEmpty.style.display = 'block';
-                cartLayout.style.display = 'none';
-                return;
+            if (response.ok) {
+                const data = await response.json();
+                // Update local cart with backend data
+                const backendCart = data.items.map(item => ({
+                    id: item.product.id,
+                    cartItemId: item.id,
+                    name: item.product.name,
+                    price: item.product.price,
+                    image: item.product.image,
+                    quantity: item.quantity,
+                    variant: item.variant
+                }));
+                saveLocalCart(backendCart);
             }
+        } catch (error) {
+            console.error('Error syncing cart:', error);
+        }
+    }
 
-            cartEmpty.style.display = 'none';
-            cartLayout.style.display = 'grid';
-
-            displayCart(cart);
-            updateSummary(cart);
+    document.addEventListener('DOMContentLoaded', () => {
+        // Check authentication
+        if (!isAuthenticated()) {
+            document.getElementById('cartLayout').style.display = 'none';
+            document.getElementById('cartEmpty').innerHTML = `
+                <div style="max-width: 400px; margin: 0 auto;">
+                    <svg style="width: 80px; height: 80px; margin: 0 auto 2rem; display: block; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                    </svg>
+                    <p style="font-size: 1.5rem; margin-bottom: 1rem; color: #e5e7eb;">Authentication Required</p>
+                    <p style="font-size: 0.875rem; color: #9ca3af; margin-bottom: 2rem;">Please login or create an account to view your shopping cart and checkout</p>
+                    <div style="display: flex; gap: 1rem; flex-direction: column;">
+                        <a href="/login" class="btn btn-primary" style="display: block;">Login to Your Account</a>
+                        <a href="/signup" class="btn" style="background: transparent; color: #10b981; border: 2px solid #10b981; display: block;">Create New Account</a>
+                    </div>
+                    <p style="margin-top: 2rem; color: #6b7280; font-size: 0.875rem;">
+                        <a href="{% url 'home' %}" style="color: #10b981; text-decoration: none;">← Continue Shopping</a>
+                    </p>
+                </div>
+            `;
+            document.getElementById('cartEmpty').style.display = 'block';
+            return;
         }
 
-        function displayCart(cart) {
-            const cartContent = document.getElementById('cartContent');
+        updateCartCount();
+        setupMobileNav();
 
-            cartContent.innerHTML = cart
-                .map(
-                    (item, index) => {
-                        const itemId = item.cartItemId || item.id;
-                        const variant = item.variant || '100g';
-                        const itemTotal = parseFloat(item.price) * item.quantity;
+        // Sync cart with backend and load
+        syncCartWithBackend().then(() => {
+            loadCart();
+        });
 
-                        return `
-                        <div class="cart-item" data-item-id="${itemId}">
-                            <img src="${item.image || '/placeholder.svg?height=120&width=120'}"
-                                 alt="${item.name}"
-                                 class="cart-item-image"
-                                 onerror="this.src='/placeholder.svg?height=120&width=120'">
-                            <div class="cart-item-details">
-                                <h3>${item.name}</h3>
-                                ${variant ? `<div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Variant: ${variant}</div>` : ''}
-                                <div class="cart-item-price">₹${parseFloat(item.price).toFixed(2)} <span style="font-size: 0.875rem; color: #6b7280;">per unit</span></div>
-                                <div class="cart-item-quantity">
-                                    <button onclick="updateQuantity(${index}, -1)" aria-label="Decrease quantity">−</button>
-                                    <input type="number" value="${item.quantity}" min="1" max="99"
-                                           onchange="setQuantity(${index}, this.value)" readonly>
-                                    <button onclick="updateQuantity(${index}, 1)" aria-label="Increase quantity">+</button>
-                                </div>
-                            </div>
-                            <div class="cart-item-actions">
-                                <div class="cart-item-total">₹${itemTotal.toFixed(2)}</div>
-                                <button class="btn btn-danger btn-small" onclick="removeItem(${index})" aria-label="Remove item">Remove</button>
-                            </div>
+        document.getElementById('checkoutBtn').addEventListener('click', handleCheckout);
+    });
+
+    function setupMobileNav() {
+        const navToggle = document.getElementById('navToggle');
+        const navMenu = document.getElementById('navMenu');
+
+        if (navToggle && navMenu) {
+            navToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+        }
+    }
+
+    function loadCart() {
+        const cart = getLocalCart();
+        const cartLayout = document.getElementById('cartLayout');
+        const cartEmpty = document.getElementById('cartEmpty');
+
+        if (cart.length === 0) {
+            cartEmpty.innerHTML = `
+                <p>Your cart is empty</p>
+                <a href="{% url 'home' %}" class="btn btn-primary">Continue Shopping</a>
+            `;
+            cartEmpty.style.display = 'block';
+            cartLayout.style.display = 'none';
+            return;
+        }
+
+        cartEmpty.style.display = 'none';
+        cartLayout.style.display = 'grid';
+
+        displayCart(cart);
+        updateSummary(cart);
+    }
+
+    function displayCart(cart) {
+        const cartContent = document.getElementById('cartContent');
+
+        cartContent.innerHTML = cart
+            .map((item, index) => {
+                const itemId = item.cartItemId || item.id;
+                const variant = item.variant || '100g';
+                const itemTotal = parseFloat(item.price) * item.quantity;
+
+                return `
+                <div class="cart-item" data-item-id="${itemId}">
+                    <img src="${item.image || '/placeholder.svg?height=120&width=120'}"
+                         alt="${item.name}"
+                         class="cart-item-image"
+                         onerror="this.src='/placeholder.svg?height=120&width=120'">
+                    <div class="cart-item-details">
+                        <h3>${item.name}</h3>
+                        ${variant ? `<div style="color: #6b7280; font-size: 0.875rem; margin-bottom: 0.5rem;">Variant: ${variant}</div>` : ''}
+                        <div class="cart-item-price">₹${parseFloat(item.price).toFixed(2)} <span style="font-size: 0.875rem; color: #6b7280;">per unit</span></div>
+                        <div class="cart-item-quantity">
+                            <button onclick="updateQuantity(${index}, -1)" aria-label="Decrease quantity">−</button>
+                            <input type="number" value="${item.quantity}" min="1" max="99"
+                                   onchange="setQuantity(${index}, this.value)" readonly>
+                            <button onclick="updateQuantity(${index}, 1)" aria-label="Increase quantity">+</button>
                         </div>
-                    `;
-                    }
-                )
-                .join('');
+                    </div>
+                    <div class="cart-item-actions">
+                        <div class="cart-item-total">₹${itemTotal.toFixed(2)}</div>
+                        <button class="btn btn-danger btn-small" onclick="removeItem(${index})" aria-label="Remove item">Remove</button>
+                    </div>
+                </div>
+            `;
+            })
+            .join('');
+    }
+
+    async function updateQuantity(index, change) {
+        const cart = getLocalCart();
+        const newQuantity = cart[index].quantity + change;
+
+        if (newQuantity < 1) {
+            showNotification('Minimum quantity is 1', 'error');
+            return;
         }
 
-        function updateQuantity(index, change) {
-            const cart = getLocalCart();
-            const newQuantity = cart[index].quantity + change;
+        if (newQuantity > 99) {
+            showNotification('Maximum quantity is 99', 'error');
+            return;
+        }
 
-            if (newQuantity < 1) {
-                showNotification('Minimum quantity is 1', 'error');
-                return;
+        cart[index].quantity = newQuantity;
+        saveLocalCart(cart);
+
+        // Update backend if authenticated
+        if (isAuthenticated() && cart[index].cartItemId) {
+            try {
+                await fetch(`${API_BASE_URL}Cart/update/${cart[index].cartItemId}/`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Token ${getToken()}`
+                    },
+                    body: JSON.stringify({ quantity: newQuantity })
+                });
+            } catch (error) {
+                console.error('Error updating cart:', error);
             }
+        }
 
-            if (newQuantity > 99) {
-                showNotification('Maximum quantity is 99', 'error');
-                return;
-            }
+        loadCart();
+    }
 
-            cart[index].quantity = newQuantity;
+    function setQuantity(index, value) {
+        const cart = getLocalCart();
+        const quantity = parseInt(value);
+
+        if (isNaN(quantity) || quantity < 1) {
+            showNotification('Please enter a valid quantity', 'error');
+            cart[index].quantity = 1;
+        } else if (quantity > 99) {
+            showNotification('Maximum quantity is 99', 'error');
+            cart[index].quantity = 99;
+        } else {
+            cart[index].quantity = quantity;
+        }
+
+        saveLocalCart(cart);
+        loadCart();
+    }
+
+    async function removeItem(index) {
+        const cart = getLocalCart();
+        const itemName = cart[index].name;
+
+        if (confirm(`Remove "${itemName}" from cart?`)) {
+            const cartItemId = cart[index].cartItemId;
+
+            cart.splice(index, 1);
             saveLocalCart(cart);
+
+            // Remove from backend if authenticated
+            if (isAuthenticated() && cartItemId) {
+                try {
+                    await fetch(`${API_BASE_URL}Cart/remove/${cartItemId}/`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Authorization': `Token ${getToken()}`
+                        }
+                    });
+                } catch (error) {
+                    console.error('Error removing item:', error);
+                }
+            }
+
             loadCart();
+            showNotification('Item removed from cart', 'success');
+        }
+    }
+
+    function updateSummary(cart) {
+        const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
+        const deliveryFee = subtotal > 500 ? 0 : 40;
+        const tax = subtotal * 0.05;
+        const total = subtotal + tax + deliveryFee;
+
+        document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
+        document.getElementById('deliveryFee').textContent = deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`;
+        document.getElementById('tax').textContent = `₹${tax.toFixed(2)}`;
+        document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
+
+        const deliveryMessage = document.getElementById('deliveryMessage');
+        if (deliveryFee > 0) {
+            const remaining = 500 - subtotal;
+            deliveryMessage.innerHTML = `<span style="color: #f59e0b;">Add ₹${remaining.toFixed(2)} more for free delivery!</span>`;
+            deliveryMessage.style.display = 'block';
+        } else {
+            deliveryMessage.innerHTML = `<span style="color: #10b981;">🎉 You've earned free delivery!</span>`;
+            deliveryMessage.style.display = 'block';
+        }
+    }
+
+    async function handleCheckout() {
+        const cart = getLocalCart();
+        if (cart.length === 0) {
+            showNotification('Your cart is empty!', 'error');
+            return;
         }
 
-        function setQuantity(index, value) {
-            const cart = getLocalCart();
-            const quantity = parseInt(value);
-
-            if (isNaN(quantity) || quantity < 1) {
-                showNotification('Please enter a valid quantity', 'error');
-                cart[index].quantity = 1;
-            } else if (quantity > 99) {
-                showNotification('Maximum quantity is 99', 'error');
-                cart[index].quantity = 99;
-            } else {
-                cart[index].quantity = quantity;
-            }
-
-            saveLocalCart(cart);
-            loadCart();
+        if (!isAuthenticated()) {
+            showNotification('Please login to checkout', 'error');
+            setTimeout(() => {
+                window.location.href = '/login';
+            }, 1000);
+            return;
         }
 
-        function removeItem(index) {
-            const cart = getLocalCart();
-            const itemName = cart[index].name;
+        const checkoutBtn = document.getElementById('checkoutBtn');
+        checkoutBtn.disabled = true;
+        checkoutBtn.innerHTML = '<span class="loading-spinner"></span> Processing...';
 
-            if (confirm(`Remove "${itemName}" from cart?`)) {
-                cart.splice(index, 1);
-                saveLocalCart(cart);
-                loadCart();
-                showNotification('Item removed from cart', 'success');
-            }
-        }
+        try {
+            // Create order via API
+            const response = await fetch(`${API_BASE_URL}orders/create/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${getToken()}`
+                },
+                body: JSON.stringify({
+                    items: cart.map(item => ({
+                        product_id: item.id,
+                        quantity: item.quantity,
+                        variant: item.variant
+                    }))
+                })
+            });
 
-        function updateSummary(cart) {
-            const subtotal = cart.reduce((sum, item) => sum + parseFloat(item.price) * item.quantity, 0);
-            const deliveryFee = subtotal > 500 ? 0 : 40; // Free delivery over ₹500
-            const tax = subtotal * 0.05; // 5% GST
-            const total = subtotal + tax + deliveryFee;
+            if (response.ok) {
+                const data = await response.json();
+                showNotification('Order placed successfully!', 'success');
 
-            document.getElementById('subtotal').textContent = `₹${subtotal.toFixed(2)}`;
-            document.getElementById('deliveryFee').textContent = deliveryFee === 0 ? 'FREE' : `₹${deliveryFee.toFixed(2)}`;
-            document.getElementById('tax').textContent = `₹${tax.toFixed(2)}`;
-            document.getElementById('total').textContent = `₹${total.toFixed(2)}`;
-
-            // Update delivery message
-            const deliveryMessage = document.getElementById('deliveryMessage');
-            if (deliveryFee > 0) {
-                const remaining = 500 - subtotal;
-                deliveryMessage.innerHTML = `<span style="color: #f59e0b;">Add ₹${remaining.toFixed(2)} more for free delivery!</span>`;
-                deliveryMessage.style.display = 'block';
-            } else {
-                deliveryMessage.innerHTML = `<span style="color: #10b981;">🎉 You've earned free delivery!</span>`;
-                deliveryMessage.style.display = 'block';
-            }
-        }
-
-        // Clear cart function (optional - can be called from checkout or admin panel)
-        function clearCart() {
-            if (confirm('Are you sure you want to clear your entire cart?')) {
+                // Clear cart
                 localStorage.removeItem('cart');
                 updateCartCount();
-                loadCart();
-                showNotification('Cart cleared', 'success');
+
+                setTimeout(() => {
+                    window.location.href = `/orders/${data.order_id}`;
+                }, 1500);
+            } else {
+                throw new Error('Failed to create order');
             }
+        } catch (error) {
+            console.error('Checkout error:', error);
+            showNotification('Failed to process checkout. Please try again.', 'error');
+            checkoutBtn.disabled = false;
+            checkoutBtn.textContent = 'Proceed to Checkout';
         }
-    </script>
+    }
+
+    function clearCart() {
+        if (confirm('Are you sure you want to clear your entire cart?')) {
+            localStorage.removeItem('cart');
+            updateCartCount();
+            loadCart();
+            showNotification('Cart cleared', 'success');
+        }
+    }
+</script>
 {% endblock %}

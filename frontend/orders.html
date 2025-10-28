@@ -241,7 +241,17 @@
 
 {% block js %}
 <script>
+    <script>
     const API_BASE_URL = 'http://localhost:8000/';
+
+    // ✅ Support both 'authToken' and 'token' to stay consistent
+    function getToken() {
+        return localStorage.getItem('authToken') || localStorage.getItem('token');
+    }
+
+    function isAuthenticated() {
+        return !!getToken();
+    }
 
     const sampleOrders = [
         {
@@ -280,10 +290,13 @@
 
     const API = {
         async request(url, options = {}) {
+            const token = getToken();
+
             try {
                 const response = await fetch(url, {
                     headers: {
                         'Content-Type': 'application/json',
+                        ...(token && { 'Authorization': `Token ${token}` }),
                         ...options.headers,
                     },
                     ...options,
@@ -321,6 +334,18 @@
     document.addEventListener('DOMContentLoaded', async () => {
         updateCartCount();
         setupMobileNav();
+
+        // ✅ Authentication check
+        if (!isAuthenticated()) {
+            document.getElementById('ordersContent').style.display = 'none';
+            document.getElementById('ordersEmpty').innerHTML = `
+                <p style="color:#e5e7eb;">Authentication Required</p>
+                <a href="/login" class="btn btn-primary">Login to View Orders</a>
+            `;
+            document.getElementById('ordersEmpty').style.display = 'block';
+            return;
+        }
+
         await loadOrders();
     });
 
@@ -340,7 +365,9 @@
         const ordersEmpty = document.getElementById('ordersEmpty');
 
         try {
-            const orders = sampleOrders;
+            // In production: use API.getOrderHistory()
+            // const orders = await API.getOrderHistory();
+            const orders = sampleOrders; // Using mock data for now
 
             if (orders.length === 0) {
                 ordersContent.style.display = 'none';
@@ -369,30 +396,26 @@
                         <span class="order-status ${order.status || 'completed'}">${order.status || 'completed'}</span>
                     </div>
                     <div class="order-items">
-                        ${
-                            order.items
-                                ? order.items
-                                      .map(
-                                          (item) => `
+                        ${order.items
+                            ? order.items
+                                  .map(
+                                      (item) => `
                             <div class="order-item">
                                 <span>${item.product_name} × ${item.quantity}</span>
                                 <span>₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
-                            </div>
-                        `
-                                      )
-                                      .join('')
-                                : '<div class="order-item">Order details not available</div>'
-                        }
+                            </div>`
+                                  )
+                                  .join('')
+                            : '<div class="order-item">Order details not available</div>'}
                     </div>
                     <div class="order-total">
                         <span>Total</span>
                         <span>₹${parseFloat(order.total || 0).toFixed(2)}</span>
                     </div>
                     <div class="order-actions">
-                        <a href="{% url 'trackorder' %}?id={{ order.id }}" class="btn-track">Track Order</a>
+                        <a href="/trackorder?id=${order.id}" class="btn-track">Track Order</a>
                     </div>
-                </div>
-            `
+                </div>`
             )
             .join('');
     }
@@ -407,4 +430,5 @@
         });
     }
 </script>
+
 {% endblock %}

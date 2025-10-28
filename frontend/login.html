@@ -531,5 +531,38 @@
             navMenu.classList.toggle('active');
         });
     }
+    // Example login function
+    async function handleLogin(event) {
+      event.preventDefault();
+
+      const emailOrPhone = document.getElementById("emailOrPhone").value;
+      const password = document.getElementById("password").value;
+
+      const response = await fetch("http://localhost:8000/api/v1/login/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: emailOrPhone.includes("@") ? emailOrPhone : null,
+          phone: emailOrPhone.includes("@") ? null : emailOrPhone,
+          password: password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // ✅ Save token
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+
+        alert("Login successful!");
+        window.location.href = "/"; // Redirect to homepage or cart
+      } else {
+        alert(data.error || "Invalid credentials");
+      }
+    }
+
 </script>
 {% endblock %}

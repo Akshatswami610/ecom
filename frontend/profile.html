@@ -52,7 +52,17 @@
             }
         }
 
-        /* Added card container for multiple cards layout */
+        .auth-required {
+            text-align: center;
+            padding: 6rem 2rem;
+            background: linear-gradient(135deg, #111111 0%, #0a0a0a 100%);
+            border: 1px solid #1f2937;
+            border-radius: 16px;
+            animation: fadeIn 0.6s ease;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
         .profile-cards {
             display: flex;
             flex-direction: column;
@@ -123,7 +133,6 @@
             font-weight: 500;
         }
 
-        /* Added address card styles */
         .address-list {
             display: flex;
             flex-direction: column;
@@ -184,6 +193,9 @@
             border-radius: 8px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
 
         .btn-primary {
@@ -229,7 +241,6 @@
             font-size: 0.875rem;
         }
 
-        /* Added modal styles for edit/add forms */
         .modal {
             display: none;
             position: fixed;
@@ -374,33 +385,64 @@
     <div class="container">
         <h1>My Profile</h1>
 
-        <div class="profile-cards">
-            <!-- Your Details Card -->
-            <div class="profile-card">
-                <div class="card-header">
-                    <h2 class="card-title">Your Details</h2>
-                    <button class="btn btn-secondary btn-icon" onclick="openEditDetailsModal()">
-                        Edit Details
-                    </button>
-                </div>
-                <div id="userDetails">
-                    <!-- User details will be loaded here -->
-                </div>
+        <!-- Authentication Required Message -->
+        <div id="authRequired" class="auth-required" style="display: none;">
+            <svg style="width: 80px; height: 80px; margin: 0 auto 2rem; display: block; color: #6b7280;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+            <p style="font-size: 1.5rem; margin-bottom: 1rem; color: #e5e7eb;">Authentication Required</p>
+            <p style="font-size: 0.875rem; color: #9ca3af; margin-bottom: 2rem;">Please login or create an account to view and manage your profile</p>
+            <div style="display: flex; gap: 1rem; flex-direction: column;">
+                <a href="/login" class="btn btn-primary" style="display: block;">Login to Your Account</a>
+                <a href="/signup" class="btn" style="background: transparent; color: #10b981; border: 2px solid #10b981; display: block;">Create New Account</a>
             </div>
+            <p style="margin-top: 2rem; color: #6b7280; font-size: 0.875rem;">
+                <a href="{% url 'home' %}" style="color: #10b981; text-decoration: none;">← Back to Home</a>
+            </p>
+        </div>
 
-            <!-- Saved Addresses Card -->
-            <div class="profile-card">
-                <div class="card-header">
-                    <h2 class="card-title">Saved Addresses</h2>
-                    <button class="btn btn-primary btn-icon" onclick="openAddAddressModal()">
-                        + Add New Address
-                    </button>
+        <!-- Profile Content (shown when authenticated) -->
+        <div id="profileContent" style="display: none;">
+            <div class="profile-cards">
+                <!-- Your Details Card -->
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Your Details</h2>
+                        <button class="btn btn-secondary btn-icon" onclick="openEditDetailsModal()">
+                            Edit Details
+                        </button>
+                    </div>
+                    <div id="userDetails">
+                        <!-- User details will be loaded here -->
+                    </div>
                 </div>
-                <div id="addressList">
-                    <!-- Addresses will be loaded here -->
+
+                <!-- Saved Addresses Card -->
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Saved Addresses</h2>
+                        <button class="btn btn-primary btn-icon" onclick="openAddAddressModal()">
+                            + Add New Address
+                        </button>
+                    </div>
+                    <div id="addressList">
+                        <!-- Addresses will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Account Actions Card -->
+                <div class="profile-card">
+                    <div class="card-header">
+                        <h2 class="card-title">Account Actions</h2>
+                    </div>
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <button class="btn btn-secondary" onclick="viewOrders()">View Orders</button>
+                        <button class="btn btn-danger" onclick="logout()">Logout</button>
+                    </div>
                 </div>
             </div>
         </div>
+
     </div>
 
     <!-- Edit Details Modal -->
@@ -479,9 +521,15 @@
 
 {% block js %}
     <script>
-        console.log('[v0] Profile page script loaded');
+        const API_BASE_URL = 'http://localhost:8000/api/v1/';
 
-        const API_BASE_URL = 'http://localhost:8000/';
+        function getToken() {
+            return localStorage.getItem('authToken') || localStorage.getItem('token');
+        }
+
+        function isAuthenticated() {
+            return !!getToken();
+        }
 
         // Sample user data
         const sampleUserData = {
@@ -526,41 +574,7 @@
             }
         ];
 
-        console.log('[v0] Sample data loaded:', { sampleUserData, savedAddresses });
-
         let currentEditingAddressId = null;
-
-        const API = {
-            async request(url, options = {}) {
-                try {
-                    const response = await fetch(url, {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            ...options.headers,
-                        },
-                        ...options,
-                    });
-
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-
-                    return await response.json();
-                } catch (error) {
-                    console.error('API request failed:', error);
-                    throw error;
-                }
-            },
-
-            async getProfile(profileId = 1) {
-                console.log('[v0] Returning sample user data');
-                return Promise.resolve(sampleUserData);
-            },
-
-            async updateProfile(profileId, data) {
-                return Promise.resolve({ ...sampleUserData, ...data });
-            },
-        };
 
         function getLocalCart() {
             const cart = localStorage.getItem('cart');
@@ -587,20 +601,27 @@
         }
 
         document.addEventListener('DOMContentLoaded', () => {
-            console.log('[v0] DOM Content Loaded');
+            // Check authentication first
+            if (!isAuthenticated()) {
+                document.getElementById('authRequired').style.display = 'block';
+                document.getElementById('profileContent').style.display = 'none';
+                return;
+            }
+
+            // User is authenticated, show profile
+            document.getElementById('authRequired').style.display = 'none';
+            document.getElementById('profileContent').style.display = 'block';
 
             updateCartCount();
             setupMobileNav();
 
-            // Load data immediately
+            // Load data
             loadUserDetails();
             loadAddresses();
 
             // Setup form handlers
             document.getElementById('editDetailsForm').addEventListener('submit', handleDetailsUpdate);
             document.getElementById('addressForm').addEventListener('submit', handleAddressSubmit);
-
-            console.log('[v0] All event listeners attached');
         });
 
         function setupMobileNav() {
@@ -614,18 +635,22 @@
             }
         }
 
-        function loadUserDetails() {
-            console.log('[v0] Loading user details');
+        async function loadUserDetails() {
             const userDetailsDiv = document.getElementById('userDetails');
 
             if (!userDetailsDiv) {
-                console.error('[v0] userDetails div not found');
+                console.error('userDetails div not found');
                 return;
             }
 
             try {
+                // In production, fetch from API
+                // const response = await fetch(`${API_BASE_URL}profile/`, {
+                //     headers: { 'Authorization': `Bearer ${getToken()}` }
+                // });
+                // const data = await response.json();
+
                 const data = sampleUserData;
-                console.log('[v0] Rendering user details:', data);
 
                 userDetailsDiv.innerHTML = `
                     <div class="profile-info-item">
@@ -641,20 +666,17 @@
                         <div class="profile-info-value">+91 ${data.profile.user_contact}</div>
                     </div>
                 `;
-
-                console.log('[v0] User details rendered successfully');
             } catch (error) {
-                console.error('[v0] Error loading user details:', error);
+                console.error('Error loading user details:', error);
                 userDetailsDiv.innerHTML = '<div class="empty-state">Failed to load user details.</div>';
             }
         }
 
         function loadAddresses() {
-            console.log('[v0] Loading addresses');
             const addressListDiv = document.getElementById('addressList');
 
             if (!addressListDiv) {
-                console.error('[v0] addressList div not found');
+                console.error('addressList div not found');
                 return;
             }
 
@@ -667,8 +689,6 @@
                 `;
                 return;
             }
-
-            console.log('[v0] Rendering addresses:', savedAddresses);
 
             addressListDiv.innerHTML = savedAddresses.map(address => `
                 <div class="address-item">
@@ -684,8 +704,6 @@
                     </div>
                 </div>
             `).join('');
-
-            console.log('[v0] Addresses rendered successfully');
         }
 
         function openEditDetailsModal() {
@@ -701,9 +719,8 @@
             document.getElementById('editDetailsModal').classList.remove('active');
         }
 
-        function handleDetailsUpdate(e) {
+        async function handleDetailsUpdate(e) {
             e.preventDefault();
-            console.log('[v0] Updating user details');
 
             const formData = {
                 user: {
@@ -717,7 +734,7 @@
             };
 
             try {
-                // Update sample data
+                // Update sample data (in production, call API)
                 sampleUserData.user.first_name = formData.user.first_name;
                 sampleUserData.user.last_name = formData.user.last_name;
                 sampleUserData.user.email = formData.user.email;
@@ -726,9 +743,8 @@
                 loadUserDetails();
                 closeEditDetailsModal();
                 showNotification('Details updated successfully!');
-                console.log('[v0] Details updated');
             } catch (error) {
-                console.error('[v0] Error updating details:', error);
+                console.error('Error updating details:', error);
                 alert('Failed to update details. Please try again.');
             }
         }
@@ -741,7 +757,6 @@
         }
 
         function editAddress(addressId) {
-            console.log('[v0] Editing address:', addressId);
             const address = savedAddresses.find(a => a.id === addressId);
             if (!address) return;
 
@@ -764,7 +779,6 @@
 
         function handleAddressSubmit(e) {
             e.preventDefault();
-            console.log('[v0] Submitting address');
 
             const addressData = {
                 address_lane1: document.getElementById('addressLane1').value,
@@ -776,22 +790,18 @@
             };
 
             if (currentEditingAddressId) {
-                // Edit existing address
                 const index = savedAddresses.findIndex(a => a.id === currentEditingAddressId);
                 if (index !== -1) {
                     savedAddresses[index] = { ...savedAddresses[index], ...addressData };
                     showNotification('Address updated successfully!');
-                    console.log('[v0] Address updated');
                 }
             } else {
-                // Add new address
                 const newAddress = {
                     id: savedAddresses.length > 0 ? Math.max(...savedAddresses.map(a => a.id)) + 1 : 1,
                     ...addressData
                 };
                 savedAddresses.push(newAddress);
                 showNotification('Address added successfully!');
-                console.log('[v0] Address added');
             }
 
             loadAddresses();
@@ -799,12 +809,25 @@
         }
 
         function deleteAddress(addressId) {
-            console.log('[v0] Deleting address:', addressId);
             if (confirm('Are you sure you want to delete this address?')) {
                 savedAddresses = savedAddresses.filter(a => a.id !== addressId);
                 loadAddresses();
                 showNotification('Address deleted successfully!');
-                console.log('[v0] Address deleted');
+            }
+        }
+
+        function viewOrders() {
+            window.location.href = '/orders';
+        }
+
+        function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('token');
+                localStorage.removeItem('cart');
+                showNotification('Logged out successfully!');
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 1000);
             }
         }
 

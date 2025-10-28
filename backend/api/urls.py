@@ -8,9 +8,9 @@ from api.views import (
 
 router = routers.DefaultRouter()
 router.register(r'Product', ProductViewSet)
-router.register(r'Cart', CartViewSet)
-router.register(r'Address', AddressViewSet)
-router.register(r'OrderHistory', OrderHistoryViewSet)
+router.register(r'Cart', CartViewSet, basename='cart')
+router.register(r'Address', AddressViewSet, basename='address')
+router.register(r'OrderHistory', OrderHistoryViewSet, basename='orderhistory')
 router.register(r'Review', ReviewViewSet)
 router.register(r'ContactForm', ContactViewSet)
 
@@ -19,9 +19,8 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     path('', include(router.urls)),
 
-    # 🔹 Authentication-related endpoints
+    # Authentication endpoints
     path('signup/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
     path('profile/', ProfileView.as_view(), name='profile'),
 ]
-
