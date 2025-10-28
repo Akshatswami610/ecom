@@ -6,23 +6,41 @@ from django.contrib.auth.password_validation import validate_password
 User = get_user_model()
 
 class RegisterSerializer(serializers.ModelSerializer):
+    confirm_password = serializers.CharField(write_only=True)
+    agree_terms = serializers.BooleanField(write_only=True)
     password = serializers.CharField(write_only=True, validators=[validate_password])
-    password2 = serializers.CharField(write_only=True)
 
     class Meta:
         model = User
-        fields = ['email', 'phone_number', 'first_name', 'last_name', 'password', 'password2']
+        fields = [
+            'email',
+            'phone_number',
+            'first_name',
+            'last_name',
+            'password',
+            'confirm_password',
+            'agree_terms',
+        ]
 
     def validate(self, attrs):
-        if attrs['password'] != attrs['password2']:
-            raise serializers.ValidationError({"password": "Passwords don't match"})
+        # ✅ Check password match
+        if attrs.get('password') != attrs.get('confirm_password'):
+            raise serializers.ValidationError({"password": "Passwords do not match"})
+
+        # ✅ Check agree_terms
+        if not attrs.get('agree_terms'):
+            raise serializers.ValidationError({"agree_terms": "You must agree to the Terms and Privacy Policy."})
+
         return attrs
 
     def create(self, validated_data):
-        validated_data.pop('password2')
+        # Remove fields not in User model
+        validated_data.pop('confirm_password', None)
+        validated_data.pop('agree_terms', None)
+
+        # Create user
         user = User.objects.create_user(**validated_data)
         return user
-
 
 class UserSerializer(serializers.ModelSerializer):
     class Meta:

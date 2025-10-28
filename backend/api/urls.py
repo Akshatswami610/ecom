@@ -20,7 +20,8 @@ urlpatterns = [
     path('', include(router.urls)),
 
     # 🔹 Authentication-related endpoints
-    path('register/', RegisterView.as_view(), name='register'),
+    path('signup/', RegisterView.as_view(), name='register'),
     path('login/', LoginView.as_view(), name='login'),
     path('profile/', ProfileView.as_view(), name='profile'),
 ]
+

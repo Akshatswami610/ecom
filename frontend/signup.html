@@ -217,6 +217,11 @@
         cursor: pointer;
     }
 
+    .terms-checkbox input[type="checkbox"].error {
+        outline: 2px solid #ef4444;
+        outline-offset: 2px;
+    }
+
     .terms-checkbox label {
         font-size: 0.875rem;
         color: var(--text-secondary);
@@ -412,7 +417,7 @@
                         required
                         autocomplete="email"
                     >
-                    <span class="input-icon">📧</span>
+                    <span class="input-icon">&#128231;</span>
                 </div>
             </div>
 
@@ -428,7 +433,7 @@
                         maxlength="10"
                         autocomplete="tel"
                     >
-                    <span class="input-icon">📱</span>
+                    <span class="input-icon">&#128241;</span>
                 </div>
                 <p class="input-hint">Enter 10-digit mobile number</p>
             </div>
@@ -445,7 +450,7 @@
                             required
                             autocomplete="new-password"
                         >
-                        <span class="input-icon" id="passwordToggle">👁️</span>
+                        <span class="input-icon" id="passwordToggle">&#128065;</span>
                     </div>
                     <div class="password-strength">
                         <div class="password-strength-bar" id="strengthBar"></div>
@@ -463,7 +468,7 @@
                             required
                             autocomplete="new-password"
                         >
-                        <span class="input-icon" id="confirmPasswordToggle">👁️</span>
+                        <span class="input-icon" id="confirmPasswordToggle">&#128065;</span>
                     </div>
                 </div>
             </div>
@@ -504,25 +509,26 @@
     const passwordToggle = document.getElementById('passwordToggle');
     const confirmPasswordToggle = document.getElementById('confirmPasswordToggle');
     const strengthBar = document.getElementById('strengthBar');
+    const agreeTermsCheckbox = document.getElementById('agreeTerms');
 
     // Toggle password visibility
     passwordToggle.addEventListener('click', () => {
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';
-            passwordToggle.textContent = '🙈';
+            passwordToggle.innerHTML = '&#128584;';
         } else {
             passwordInput.type = 'password';
-            passwordToggle.textContent = '👁️';
+            passwordToggle.innerHTML = '&#128065;';
         }
     });
 
     confirmPasswordToggle.addEventListener('click', () => {
         if (confirmPasswordInput.type === 'password') {
             confirmPasswordInput.type = 'text';
-            confirmPasswordToggle.textContent = '🙈';
+            confirmPasswordToggle.innerHTML = '&#128584;';
         } else {
             confirmPasswordInput.type = 'password';
-            confirmPasswordToggle.textContent = '👁️';
+            confirmPasswordToggle.innerHTML = '&#128065;';
         }
     });
 
@@ -545,6 +551,38 @@
             strengthBar.classList.add('medium');
         } else {
             strengthBar.classList.add('strong');
+        }
+    });
+
+    // Phone number validation on blur
+    document.getElementById('phone').addEventListener('blur', (e) => {
+        const phone = e.target.value.trim();
+        if (phone && !validatePhone(phone)) {
+            e.target.classList.add('error');
+            showError('Please enter a valid 10-digit phone number starting with 6-9');
+        } else {
+            e.target.classList.remove('error');
+        }
+    });
+
+    // Email validation on blur
+    document.getElementById('email').addEventListener('blur', (e) => {
+        const email = e.target.value.trim();
+        if (email && !validateEmail(email)) {
+            e.target.classList.add('error');
+            showError('Please enter a valid email address');
+        } else {
+            e.target.classList.remove('error');
+        }
+    });
+
+    // Password match validation on blur
+    confirmPasswordInput.addEventListener('blur', () => {
+        if (confirmPasswordInput.value && passwordInput.value !== confirmPasswordInput.value) {
+            confirmPasswordInput.classList.add('error');
+            showError('Passwords do not match');
+        } else {
+            confirmPasswordInput.classList.remove('error');
         }
     });
 
@@ -589,15 +627,19 @@
     signupForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
+        // Get form data
         const formData = {
             first_name: document.getElementById('firstName').value.trim(),
             last_name: document.getElementById('lastName').value.trim(),
             email: document.getElementById('email').value.trim(),
-            phone: document.getElementById('phone').value.trim(),
+            phone_number: document.getElementById('phone').value.trim(),
             password: passwordInput.value,
             confirm_password: confirmPasswordInput.value,
-            agree_terms: document.getElementById('agreeTerms').checked
+            agree_terms: agreeTermsCheckbox.checked
         };
+
+        // Clear previous error states
+        document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
 
         // Validation
         if (!formData.first_name || !formData.last_name) {
@@ -606,26 +648,31 @@
         }
 
         if (!validateEmail(formData.email)) {
+            document.getElementById('email').classList.add('error');
             showError('Please enter a valid email address');
             return;
         }
 
-        if (!validatePhone(formData.phone)) {
+        if (!validatePhone(formData.phone_number)) {
+            document.getElementById('phone').classList.add('error');
             showError('Please enter a valid 10-digit phone number starting with 6-9');
             return;
         }
 
         if (formData.password.length < 8) {
+            passwordInput.classList.add('error');
             showError('Password must be at least 8 characters long');
             return;
         }
 
         if (formData.password !== formData.confirm_password) {
+            confirmPasswordInput.classList.add('error');
             showError('Passwords do not match');
             return;
         }
 
         if (!formData.agree_terms) {
+            agreeTermsCheckbox.classList.add('error');
             showError('Please agree to the Terms of Service and Privacy Policy');
             return;
         }
@@ -645,18 +692,33 @@
 
             if (response.ok) {
                 showSuccess('Account created successfully! Redirecting to login...');
+                signupForm.reset();
+                strengthBar.className = 'password-strength-bar';
 
                 // Redirect to login page after 2 seconds
                 setTimeout(() => {
-                    window.location.href = '/login';
+                    window.location.href = '{% url "login" %}';
                 }, 2000);
             } else {
-                showError(data.message || 'Registration failed. Please try again.');
+                // Handle specific error cases
+                if (response.status === 400) {
+                    showError(data.message || 'Invalid registration data. Please check your inputs.');
+                } else if (response.status === 409) {
+                    showError('An account with this email or phone number already exists.');
+                } else if (response.status === 500) {
+                    showError('Server error. Please try again later.');
+                } else {
+                    showError(data.message || 'Registration failed. Please try again.');
+                }
                 setLoading(false);
             }
         } catch (error) {
             console.error('Signup error:', error);
-            showError('Unable to connect to server. Please try again later.');
+            if (error.name === 'TypeError' && error.message.includes('fetch')) {
+                showError('Unable to connect to server. Please check your internet connection and try again.');
+            } else {
+                showError('An unexpected error occurred. Please try again later.');
+            }
             setLoading(false);
         }
     });
@@ -668,6 +730,12 @@
             errorMessage.style.display = 'none';
             input.classList.remove('error');
         });
+    });
+
+    // Clear checkbox error on change
+    agreeTermsCheckbox.addEventListener('change', () => {
+        agreeTermsCheckbox.classList.remove('error');
+        errorMessage.style.display = 'none';
     });
 
     // Only allow numbers in phone field
@@ -685,4 +753,4 @@
         });
     }
 </script>
-{% endblock %}vvv
+{% endblock %}
