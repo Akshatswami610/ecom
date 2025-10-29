@@ -331,6 +331,15 @@
 <script>
     const API_BASE_URL = 'http://localhost:8000/api/v1/';
 
+    // Helper functions
+    function getToken() {
+        return localStorage.getItem('authToken') || localStorage.getItem('token');
+    }
+
+    function isAuthenticated() {
+        return !!getToken();
+    }
+
     const API = {
         async request(url, options = {}) {
             try {
@@ -357,13 +366,24 @@
             return this.request(`${API_BASE_URL}Product/${id}/`);
         },
 
-        async addToCart(productId, quantity = 1) {
+        async addToCart(productId, quantity = 1, variant = null) {
+            const token = getToken();
+
+            const body = {
+                product_id: productId,
+                quantity: quantity
+            };
+
+            if (variant) {
+                body.variant = variant;
+            }
+
             return this.request(`${API_BASE_URL}Cart/`, {
                 method: 'POST',
-                body: JSON.stringify({
-                    product: productId,
-                    quantity: quantity,
-                }),
+                headers: {
+                    'Authorization': token ? `Token ${token}` : ''
+                },
+                body: JSON.stringify(body)
             });
         },
     };
@@ -587,12 +607,19 @@
             return;
         }
 
-        try {
-            await API.addToCart(currentProduct.id, quantity);
-            addToLocalCart(currentProduct, quantity, selectedVariant);
-        } catch (error) {
-            console.error('Failed to add to backend cart:', error);
-            addToLocalCart(currentProduct, quantity, selectedVariant);
+        // Always add to local cart first for immediate feedback
+        addToLocalCart(currentProduct, quantity, selectedVariant);
+
+        // Try to sync with backend if authenticated
+        if (isAuthenticated()) {
+            try {
+                const variantName = selectedVariant ? selectedVariant.name : currentProduct.product_variant;
+                await API.addToCart(currentProduct.id, quantity, variantName);
+                console.log('Successfully synced with backend cart');
+            } catch (error) {
+                console.error('Failed to sync with backend cart:', error);
+                // Don't show error to user - local cart still works
+            }
         }
     }
 </script>

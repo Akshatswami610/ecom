@@ -53,10 +53,35 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
+
+class CartProductSerializer(serializers.ModelSerializer):
+    """Nested product serializer for cart items"""
+    name = serializers.CharField(source='product_name')
+    price = serializers.SerializerMethodField()
+    image = serializers.ImageField(source='product_image')
+
+    class Meta:
+        model = Product
+        fields = ['id', 'name', 'price', 'image']
+
+    def get_price(self, obj):
+        # Get the variant from context if available
+        variant = self.context.get('variant', '100g')
+        return obj.product_price_data.get(variant, obj.product_mrp)
+
 class CartSerializer(serializers.ModelSerializer):
+    product = CartProductSerializer(read_only=True)
+    product_id = serializers.PrimaryKeyRelatedField(
+        queryset=Product.objects.all(),
+        source='product',
+        write_only=True
+    )
+    quantity = serializers.IntegerField(source='qty')
+
     class Meta:
         model = Cart
-        fields = '__all__'
+        fields = ['id', 'product', 'product_id', 'quantity', 'variant']
+        read_only_fields = ['id']
 
 class OrderHistorySerializer(serializers.ModelSerializer):
     class Meta:

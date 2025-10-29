@@ -372,6 +372,15 @@
     <script>
         const API_BASE_URL = 'http://localhost:8000/api/v1/';
 
+        // Helper functions
+        function getToken() {
+            return localStorage.getItem('authToken') || localStorage.getItem('token');
+        }
+
+        function isAuthenticated() {
+            return !!getToken();
+        }
+
         // API Service
         const API = {
             async request(url, options = {}) {
@@ -399,13 +408,24 @@
                 return this.request(`${API_BASE_URL}Product/`);
             },
 
-            async addToCart(productId, quantity = 1) {
+            async addToCart(productId, quantity = 1, variant = null) {
+                const token = getToken();
+
+                const body = {
+                    product_id: productId,
+                    quantity: quantity
+                };
+
+                if (variant) {
+                    body.variant = variant;
+                }
+
                 return this.request(`${API_BASE_URL}Cart/`, {
                     method: 'POST',
-                    body: JSON.stringify({
-                        product: productId,
-                        quantity: quantity,
-                    }),
+                    headers: {
+                        'Authorization': token ? `Token ${token}` : ''
+                    },
+                    body: JSON.stringify(body)
                 });
             },
         };
@@ -653,23 +673,44 @@
                 return;
             }
 
-            // Get the default variant for products with single variant
             const defaultVariant = getDefaultVariant(product);
             const variants = getProductVariants(product);
 
-            // If product has multiple variants, redirect to product page
             if (variants.length > 1) {
                 viewProduct(productId);
                 return;
             }
 
-            try {
-                await API.addToCart(productId, 1);
-                addToLocalCart(product, 1, defaultVariant);
-            } catch (error) {
-                console.error('Failed to add to backend cart:', error);
-                addToLocalCart(product, 1, defaultVariant);
+            // Always add to local cart (for UI update)
+            addToLocalCart(product, 1, defaultVariant);
+
+            // If logged in, also store in backend
+            if (isAuthenticated()) {
+                try {
+                    const response = await fetch(`${API_BASE_URL}Cart/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Token ${getToken()}`
+                        },
+                        body: JSON.stringify({
+                            product_id: product.id,
+                            quantity: 1,
+                            variant: defaultVariant.name
+                        })
+                    });
+
+                    if (response.ok) {
+                        showNotification('Added to backend cart ✅', 'success');
+                        console.log('Backend cart updated successfully');
+                    } else {
+                        console.error('Backend add failed:', await response.text());
+                    }
+                } catch (error) {
+                    console.error('Error adding to backend cart:', error);
+                }
             }
         }
+
     </script>
 {% endblock %}

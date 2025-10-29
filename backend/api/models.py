@@ -109,10 +109,10 @@ class Cart(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='carts')
     product = models.ForeignKey(Product, on_delete=models.CASCADE)
     qty = models.PositiveIntegerField(default=1)
+    variant = models.CharField(max_length=10, default='100g')  # NEW FIELD
 
     def __str__(self):
         return f"{self.user.email or self.user.phone_number} - {self.product.product_name} ({self.qty})"
-
 
 # -----------------------
 # Address Model

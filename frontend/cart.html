@@ -398,20 +398,54 @@
         const localCart = getLocalCart();
 
         try {
-            // Sync local cart to backend
+            // Sync local cart to backend using standard POST endpoint
             for (const item of localCart) {
-                await fetch(`${API_BASE_URL}Cart/add/`, {
-                    method: 'POST',
+                // Check if item already exists in backend
+                const existingItems = await fetch(`${API_BASE_URL}Cart/`, {
                     headers: {
-                        'Content-Type': 'application/json',
                         'Authorization': `Token ${token}`
-                    },
-                    body: JSON.stringify({
-                        product_id: item.id,
-                        quantity: item.quantity,
-                        variant: item.variant || '100g'
-                    })
+                    }
                 });
+
+                if (existingItems.ok) {
+                    const backendData = await existingItems.json();
+                    const backendItems = backendData.items || backendData;
+
+                    // Find if this product+variant combination exists
+                    const existingItem = Array.isArray(backendItems) ?
+                        backendItems.find(i =>
+                            (i.product?.id || i.product_id) === item.id &&
+                            i.variant === item.variant
+                        ) : null;
+
+                    if (existingItem) {
+                        // Update existing item using PATCH
+                        await fetch(`${API_BASE_URL}Cart/${existingItem.id}/`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Token ${token}`
+                            },
+                            body: JSON.stringify({
+                                quantity: item.quantity
+                            })
+                        });
+                    } else {
+                        // Create new item using POST
+                        await fetch(`${API_BASE_URL}Cart/`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'Authorization': `Token ${token}`
+                            },
+                            body: JSON.stringify({
+                                product_id: item.id,
+                                quantity: item.quantity,
+                                variant: item.variant || '100g'
+                            })
+                        });
+                    }
+                }
             }
 
             // Fetch updated cart from backend
@@ -423,20 +457,36 @@
 
             if (response.ok) {
                 const data = await response.json();
-                // Update local cart with backend data
-                const backendCart = data.items.map(item => ({
-                    id: item.product.id,
-                    cartItemId: item.id,
-                    name: item.product.name,
-                    price: item.product.price,
-                    image: item.product.image,
-                    quantity: item.quantity,
-                    variant: item.variant
-                }));
-                saveLocalCart(backendCart);
+
+                // Handle both response formats
+                let items = [];
+                if (data && Array.isArray(data.items)) {
+                    items = data.items;
+                } else if (Array.isArray(data)) {
+                    items = data;
+                }
+
+                if (items.length > 0) {
+                    // Update local cart with backend data
+                    const backendCart = items.map(item => ({
+                        id: item.product?.id || item.product_id || item.id,
+                        cartItemId: item.id,
+                        name: item.product?.name || item.product?.product_name || item.name,
+                        price: item.product?.price || item.price,
+                        image: item.product?.image || item.product?.product_image || item.image,
+                        quantity: item.quantity || item.qty,
+                        variant: item.variant || '100g'
+                    }));
+                    saveLocalCart(backendCart);
+                } else {
+                    console.log('Cart is empty on backend');
+                }
+            } else {
+                console.error('Failed to fetch cart from backend:', response.status);
             }
         } catch (error) {
             console.error('Error syncing cart:', error);
+            // Don't clear local cart on sync error - user keeps their items
         }
     }
 
@@ -561,10 +611,10 @@
         cart[index].quantity = newQuantity;
         saveLocalCart(cart);
 
-        // Update backend if authenticated
+        // Update backend if authenticated using standard PATCH
         if (isAuthenticated() && cart[index].cartItemId) {
             try {
-                await fetch(`${API_BASE_URL}Cart/update/${cart[index].cartItemId}/`, {
+                await fetch(`${API_BASE_URL}Cart/${cart[index].cartItemId}/`, {
                     method: 'PATCH',
                     headers: {
                         'Content-Type': 'application/json',
@@ -608,10 +658,10 @@
             cart.splice(index, 1);
             saveLocalCart(cart);
 
-            // Remove from backend if authenticated
+            // Remove from backend if authenticated using standard DELETE
             if (isAuthenticated() && cartItemId) {
                 try {
-                    await fetch(`${API_BASE_URL}Cart/remove/${cartItemId}/`, {
+                    await fetch(`${API_BASE_URL}Cart/${cartItemId}/`, {
                         method: 'DELETE',
                         headers: {
                             'Authorization': `Token ${getToken()}`
