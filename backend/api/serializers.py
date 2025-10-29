@@ -101,4 +101,5 @@ class ContactFormSerializer(serializers.ModelSerializer):
 class AddressSerializer(serializers.ModelSerializer):
     class Meta:
         model = Address
-        fields = "__all__"
+        fields = ['id', 'address_lane1', 'address_landmark', 'address_city',
+                  'address_district', 'address_state', 'address_pincode']

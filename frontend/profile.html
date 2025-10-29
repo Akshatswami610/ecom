@@ -491,6 +491,7 @@
                 <button class="close-btn" onclick="closeEditDetailsModal()">&times;</button>
             </div>
             <form id="editDetailsForm">
+                {% csrf_token %}
                 <div class="form-group">
                     <label for="firstName">First Name *</label>
                     <input type="text" id="firstName" required>
@@ -523,6 +524,7 @@
                 <button class="close-btn" onclick="closeAddressModal()">&times;</button>
             </div>
             <form id="addressForm">
+                {% csrf_token %}
                 <div class="form-group">
                     <label for="addressLane1">Address Line 1 *</label>
                     <input type="text" id="addressLane1" placeholder="House/Flat No., Building Name" required>
@@ -569,50 +571,8 @@
             return !!getToken();
         }
 
-        // Sample user data
-        const sampleUserData = {
-            user: {
-                id: 1,
-                username: "rajesh_kumar",
-                first_name: "Rajesh",
-                last_name: "Kumar",
-                email: "rajesh.kumar@example.com"
-            },
-            profile: {
-                id: 1,
-                user_contact: "9876543210",
-                address_lane1: "123, MG Road, Koramangala",
-                address_landmark: "Near Forum Mall",
-                address_city: "Bangalore",
-                address_district: "Bangalore Urban",
-                address_state: "Karnataka",
-                address_pincode: "560034"
-            }
-        };
-
-        // Sample addresses
-        let savedAddresses = [
-            {
-                id: 1,
-                address_lane1: "123, MG Road, Koramangala",
-                address_landmark: "Near Forum Mall",
-                address_city: "Bangalore",
-                address_district: "Bangalore Urban",
-                address_state: "Karnataka",
-                address_pincode: "560034"
-            },
-            {
-                id: 2,
-                address_lane1: "45, Residency Road",
-                address_landmark: "Opposite City Hospital",
-                address_city: "Bangalore",
-                address_district: "Bangalore Urban",
-                address_state: "Karnataka",
-                address_pincode: "560025"
-            }
-        ];
-
         let currentEditingAddressId = null;
+        let currentUserData = null;
 
         function getLocalCart() {
             const cart = localStorage.getItem('cart');
@@ -675,80 +635,90 @@
 
         async function loadUserDetails() {
             const userDetailsDiv = document.getElementById('userDetails');
-
-            if (!userDetailsDiv) {
-                console.error('userDetails div not found');
-                return;
-            }
-
             try {
-                // In production, fetch from API
-                // const response = await fetch(`${API_BASE_URL}profile/`, {
-                //     headers: { 'Authorization': `Bearer ${getToken()}` }
-                // });
-                // const data = await response.json();
+                const response = await fetch(`${API_BASE_URL}profile/`, {
+                    headers: {
+                        'Authorization': `Token ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-                const data = sampleUserData;
+                if (!response.ok) throw new Error('Failed to fetch user details');
+                const data = await response.json();
+                currentUserData = data;
 
                 userDetailsDiv.innerHTML = `
                     <div class="profile-info-item">
                         <div class="profile-info-label">Full Name</div>
-                        <div class="profile-info-value">${data.user.first_name} ${data.user.last_name}</div>
+                        <div class="profile-info-value">${data.first_name} ${data.last_name}</div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Email</div>
-                        <div class="profile-info-value">${data.user.email}</div>
+                        <div class="profile-info-value">${data.email || '-'}</div>
                     </div>
                     <div class="profile-info-item">
                         <div class="profile-info-label">Phone Number</div>
-                        <div class="profile-info-value">+91 ${data.profile.user_contact}</div>
+                        <div class="profile-info-value">+91 ${data.phone_number || '-'}</div>
                     </div>
                 `;
             } catch (error) {
-                console.error('Error loading user details:', error);
-                userDetailsDiv.innerHTML = '<div class="empty-state">Failed to load user details.</div>';
+                console.error(error);
+                userDetailsDiv.innerHTML = `<div class="empty-state">Unable to load user details.</div>`;
             }
         }
 
-        function loadAddresses() {
+
+        async function loadAddresses() {
             const addressListDiv = document.getElementById('addressList');
+            try {
+                const response = await fetch(`${API_BASE_URL}Address/`, {
+                    headers: { 'Authorization': `Token ${getToken()}` }
+                });
 
-            if (!addressListDiv) {
-                console.error('addressList div not found');
-                return;
+                if (!response.ok) throw new Error('Failed to fetch addresses');
+                const data = await response.json();
+
+                if (data.length === 0) {
+                    addressListDiv.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📍</div>
+                            <p>No saved addresses yet.</p>
+                        </div>`;
+                    return;
+                }
+
+                addressListDiv.innerHTML = data.map(address => `
+                    <div class="address-item">
+                        <div class="address-content">
+                            <strong>${address.address_lane1}</strong><br>
+                            ${address.address_landmark ? `${address.address_landmark}<br>` : ''}
+                            ${address.address_city}, ${address.address_district}<br>
+                            ${address.address_state} - ${address.address_pincode}
+                        </div>
+                        <div class="address-actions">
+                            <button class="btn btn-secondary" onclick="editAddress(${address.id})">Edit</button>
+                            <button class="btn btn-danger" onclick="deleteAddress(${address.id})">Delete</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error(error);
+                addressListDiv.innerHTML = '<div class="empty-state">Failed to load addresses.</div>';
             }
-
-            if (savedAddresses.length === 0) {
-                addressListDiv.innerHTML = `
-                    <div class="empty-state">
-                        <div class="empty-state-icon">📍</div>
-                        <p>No saved addresses yet. Add your first address to get started!</p>
-                    </div>
-                `;
-                return;
-            }
-
-            addressListDiv.innerHTML = savedAddresses.map(address => `
-                <div class="address-item">
-                    <div class="address-content">
-                        <strong>${address.address_lane1}</strong><br>
-                        ${address.address_landmark ? `${address.address_landmark}<br>` : ''}
-                        ${address.address_city}, ${address.address_district}<br>
-                        ${address.address_state} - ${address.address_pincode}
-                    </div>
-                    <div class="address-actions">
-                        <button class="btn btn-secondary" onclick="editAddress(${address.id})">Edit</button>
-                        <button class="btn btn-danger" onclick="deleteAddress(${address.id})">Delete</button>
-                    </div>
-                </div>
-            `).join('');
         }
 
-        function openEditDetailsModal() {
-            document.getElementById('firstName').value = sampleUserData.user.first_name;
-            document.getElementById('lastName').value = sampleUserData.user.last_name;
-            document.getElementById('email').value = sampleUserData.user.email;
-            document.getElementById('userContact').value = sampleUserData.profile.user_contact;
+
+        async function openEditDetailsModal() {
+            if (!currentUserData) {
+                await loadUserDetails();
+            }
+
+            if (currentUserData) {
+                document.getElementById('firstName').value = currentUserData.first_name || '';
+                document.getElementById('lastName').value = currentUserData.last_name || '';
+                document.getElementById('email').value = currentUserData.email || '';
+                document.getElementById('userContact').value = currentUserData.phone_number || '';
+            }
 
             document.getElementById('editDetailsModal').classList.add('active');
         }
@@ -760,32 +730,34 @@
         async function handleDetailsUpdate(e) {
             e.preventDefault();
 
-            const formData = {
-                user: {
-                    first_name: document.getElementById('firstName').value,
-                    last_name: document.getElementById('lastName').value,
-                    email: document.getElementById('email').value,
-                },
-                profile: {
-                    user_contact: document.getElementById('userContact').value,
-                }
+            const payload = {
+                first_name: document.getElementById('firstName').value,
+                last_name: document.getElementById('lastName').value,
+                email: document.getElementById('email').value,
+                phone_number: document.getElementById('userContact').value
             };
 
             try {
-                // Update sample data (in production, call API)
-                sampleUserData.user.first_name = formData.user.first_name;
-                sampleUserData.user.last_name = formData.user.last_name;
-                sampleUserData.user.email = formData.user.email;
-                sampleUserData.profile.user_contact = formData.profile.user_contact;
+                const response = await fetch(`${API_BASE_URL}profile/`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Token ${getToken()}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload),
+                });
 
-                loadUserDetails();
+                if (!response.ok) throw new Error('Failed to update details');
+
+                showNotification('Profile updated successfully!');
                 closeEditDetailsModal();
-                showNotification('Details updated successfully!');
+                loadUserDetails();
             } catch (error) {
-                console.error('Error updating details:', error);
-                alert('Failed to update details. Please try again.');
+                console.error(error);
+                alert('Failed to update details.');
             }
         }
+
 
         function openAddAddressModal() {
             currentEditingAddressId = null;
@@ -794,20 +766,32 @@
             document.getElementById('addressModal').classList.add('active');
         }
 
-        function editAddress(addressId) {
-            const address = savedAddresses.find(a => a.id === addressId);
-            if (!address) return;
+        async function editAddress(addressId) {
+            try {
+                const response = await fetch(`${API_BASE_URL}Address/${addressId}/`, {
+                    headers: {
+                        'Authorization': `Token ${getToken()}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
 
-            currentEditingAddressId = addressId;
-            document.getElementById('addressModalTitle').textContent = 'Edit Address';
-            document.getElementById('addressLane1').value = address.address_lane1;
-            document.getElementById('addressLandmark').value = address.address_landmark || '';
-            document.getElementById('addressCity').value = address.address_city;
-            document.getElementById('addressDistrict').value = address.address_district;
-            document.getElementById('addressState').value = address.address_state;
-            document.getElementById('addressPincode').value = address.address_pincode;
+                if (!response.ok) throw new Error('Failed to fetch address');
+                const address = await response.json();
 
-            document.getElementById('addressModal').classList.add('active');
+                currentEditingAddressId = addressId;
+                document.getElementById('addressModalTitle').textContent = 'Edit Address';
+                document.getElementById('addressLane1').value = address.address_lane1 || '';
+                document.getElementById('addressLandmark').value = address.address_landmark || '';
+                document.getElementById('addressCity').value = address.address_city || '';
+                document.getElementById('addressDistrict').value = address.address_district || '';
+                document.getElementById('addressState').value = address.address_state || '';
+                document.getElementById('addressPincode').value = address.address_pincode || '';
+
+                document.getElementById('addressModal').classList.add('active');
+            } catch (error) {
+                console.error(error);
+                alert('Failed to load address details.');
+            }
         }
 
         function closeAddressModal() {
@@ -815,44 +799,71 @@
             currentEditingAddressId = null;
         }
 
-        function handleAddressSubmit(e) {
+        async function handleAddressSubmit(e) {
             e.preventDefault();
 
             const addressData = {
-                address_lane1: document.getElementById('addressLane1').value,
-                address_landmark: document.getElementById('addressLandmark').value,
-                address_city: document.getElementById('addressCity').value,
-                address_district: document.getElementById('addressDistrict').value,
-                address_state: document.getElementById('addressState').value,
-                address_pincode: document.getElementById('addressPincode').value,
+                address_lane1: document.getElementById('addressLane1').value.trim(),
+                address_landmark: document.getElementById('addressLandmark').value.trim(),
+                address_city: document.getElementById('addressCity').value.trim(),
+                address_district: document.getElementById('addressDistrict').value.trim(),
+                address_state: document.getElementById('addressState').value.trim(),
+                address_pincode: document.getElementById('addressPincode').value.trim(),
             };
 
-            if (currentEditingAddressId) {
-                const index = savedAddresses.findIndex(a => a.id === currentEditingAddressId);
-                if (index !== -1) {
-                    savedAddresses[index] = { ...savedAddresses[index], ...addressData };
-                    showNotification('Address updated successfully!');
+            console.log("Sending to API:", addressData);
+
+            const method = currentEditingAddressId ? 'PUT' : 'POST';
+            const url = currentEditingAddressId
+                ? `${API_BASE_URL}Address/${currentEditingAddressId}/`
+                : `${API_BASE_URL}Address/`;
+
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers: {
+                        'Authorization': `Token ${getToken()}`,
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(addressData),
+                });
+
+                const result = await response.json();
+                console.log("Server replied:", result);
+
+                if (!response.ok) {
+                    throw new Error(result.detail || JSON.stringify(result));
                 }
-            } else {
-                const newAddress = {
-                    id: savedAddresses.length > 0 ? Math.max(...savedAddresses.map(a => a.id)) + 1 : 1,
-                    ...addressData
-                };
-                savedAddresses.push(newAddress);
-                showNotification('Address added successfully!');
-            }
 
-            loadAddresses();
-            closeAddressModal();
-        }
-
-        function deleteAddress(addressId) {
-            if (confirm('Are you sure you want to delete this address?')) {
-                savedAddresses = savedAddresses.filter(a => a.id !== addressId);
+                showNotification(currentEditingAddressId ? 'Address updated!' : 'Address added!');
+                closeAddressModal();
                 loadAddresses();
-                showNotification('Address deleted successfully!');
+            } catch (error) {
+                console.error('Error saving address:', error);
+                alert('Failed to save address.');
             }
         }
+
+
+        async function deleteAddress(addressId) {
+            if (!confirm('Delete this address?')) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}Address/${addressId}/`, {
+                    method: 'DELETE',
+                    headers: { 'Authorization': `Token ${getToken()}` },
+                });
+
+                if (!response.ok) throw new Error('Failed to delete address');
+
+                showNotification('Address deleted successfully!');
+                loadAddresses();
+            } catch (error) {
+                console.error(error);
+                alert('Failed to delete address.');
+            }
+        }
+
 
         function viewOrders() {
             window.location.href = '/orders';

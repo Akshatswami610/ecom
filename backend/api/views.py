@@ -111,7 +111,6 @@ class CartViewSet(viewsets.ModelViewSet):
 
 
 class AddressViewSet(viewsets.ModelViewSet):
-    """User address management."""
     serializer_class = AddressSerializer
     permission_classes = [permissions.IsAuthenticated]
 
