@@ -255,6 +255,17 @@
         });
     }
 
+    function mapStatus(status) {
+        const statusMap = {
+            'DELIVERED': 'completed',
+            'CANCELLED': 'cancelled',
+            'PENDING': 'pending',
+            'PROCESSING': 'pending',
+            'SHIPPED': 'pending'
+        };
+        return statusMap[status?.toUpperCase()] || 'pending';
+    }
+
     document.addEventListener('DOMContentLoaded', async () => {
         updateCartCount();
         setupMobileNav();
@@ -309,18 +320,25 @@
             }
 
             // Transform OrderHistory data to match frontend expectations
-            const orders = orderHistory.map(order => ({
-                id: order.id,
-                created_at: order.order_date,
-                status: order.delivery_date ? 'completed' : 'pending',
-                total: order.product_mrp,
-                delivery_address: order.delivery_address,
-                items: [{
-                    product_name: order.product?.product_name || 'Product',
-                    quantity: 1,
-                    price: order.product_mrp
-                }]
-            }));
+            const orders = orderHistory.map(order => {
+                // Calculate item price - use product price data or calculate from bill amount
+                const itemPrice = order.product?.product_price_data?.[order.variant]
+                    || (order.bill_amount / order.qty);
+
+                return {
+                    id: order.id,
+                    created_at: order.order_date,
+                    status: mapStatus(order.status),
+                    total: order.bill_amount,
+                    delivery_address: order.address,
+                    items: [{
+                        product_name: order.product?.product_name || 'Product',
+                        quantity: order.qty,
+                        variant: order.variant,
+                        price: itemPrice
+                    }]
+                };
+            });
 
             displayOrders(orders);
         } catch (error) {
@@ -348,7 +366,7 @@
                             .map(
                                 (item) => `
                             <div class="order-item">
-                                <span>${item.product_name} × ${item.quantity}</span>
+                                <span>${item.product_name} (${item.variant}) × ${item.quantity}</span>
                                 <span>₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
                             </div>`
                             )
