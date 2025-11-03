@@ -10,7 +10,7 @@ router = routers.DefaultRouter()
 router.register(r'Product', ProductViewSet)
 router.register(r'Cart', CartViewSet, basename='cart')
 router.register(r'Address', AddressViewSet, basename='address')
-router.register(r'OrderHistory', OrderHistoryViewSet, basename='orderhistory')
+router.register(r'orders', OrderHistoryViewSet, basename='orderhistory')
 router.register(r'Review', ReviewViewSet)
 router.register(r'ContactForm', ContactViewSet)
 

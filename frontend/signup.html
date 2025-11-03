@@ -116,6 +116,19 @@
         letter-spacing: 0.05em;
     }
 
+    .form-group label .required {
+        color: #ef4444;
+        margin-left: 0.25rem;
+    }
+
+    .form-group label .optional {
+        color: var(--text-muted);
+        font-size: 0.75rem;
+        font-weight: 400;
+        text-transform: none;
+        margin-left: 0.5rem;
+    }
+
     .input-wrapper {
         position: relative;
     }
@@ -172,6 +185,10 @@
         font-size: 0.75rem;
         color: var(--text-muted);
         margin-top: 0.25rem;
+    }
+
+    .input-hint.info {
+        color: #3b82f6;
     }
 
     .password-strength {
@@ -378,7 +395,7 @@
         <form id="signupForm">
             <div class="form-row">
                 <div class="form-group">
-                    <label for="firstName">First Name</label>
+                    <label for="firstName">First Name <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input
                             type="text"
@@ -392,7 +409,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="lastName">Last Name</label>
+                    <label for="lastName">Last Name <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input
                             type="text"
@@ -407,22 +424,9 @@
             </div>
 
             <div class="form-group">
-                <label for="email">Email Address</label>
-                <div class="input-wrapper">
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="you@example.com"
-                        required
-                        autocomplete="email"
-                    >
-                    <span class="input-icon">&#128231;</span>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label for="phone">Phone Number</label>
+                <label for="phone">
+                    Phone Number <span class="required">*</span>
+                </label>
                 <div class="input-wrapper">
                     <input
                         type="tel"
@@ -431,16 +435,34 @@
                         placeholder="9876543210"
                         required
                         maxlength="10"
+                        pattern="[6-9][0-9]{9}"
                         autocomplete="tel"
                     >
-                    <span class="input-icon">&#128241;</span>
+                    <span class="input-icon">📱</span>
                 </div>
-                <p class="input-hint">Enter 10-digit mobile number</p>
+                <p class="input-hint">This will be your login ID. Enter 10-digit mobile number</p>
+            </div>
+
+            <div class="form-group">
+                <label for="email">
+                    Email Address <span class="optional">(Optional)</span>
+                </label>
+                <div class="input-wrapper">
+                    <input
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder="you@example.com"
+                        autocomplete="email"
+                    >
+                    <span class="input-icon">📧</span>
+                </div>
+                <p class="input-hint info">For order updates and promotional offers only</p>
             </div>
 
             <div class="form-row">
                 <div class="form-group">
-                    <label for="password">Password</label>
+                    <label for="password">Password <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input
                             type="password"
@@ -450,7 +472,7 @@
                             required
                             autocomplete="new-password"
                         >
-                        <span class="input-icon" id="passwordToggle">&#128065;</span>
+                        <span class="input-icon" id="passwordToggle">👁️</span>
                     </div>
                     <div class="password-strength">
                         <div class="password-strength-bar" id="strengthBar"></div>
@@ -458,7 +480,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm Password</label>
+                    <label for="confirmPassword">Confirm Password <span class="required">*</span></label>
                     <div class="input-wrapper">
                         <input
                             type="password"
@@ -468,7 +490,7 @@
                             required
                             autocomplete="new-password"
                         >
-                        <span class="input-icon" id="confirmPasswordToggle">&#128065;</span>
+                        <span class="input-icon" id="confirmPasswordToggle">👁️</span>
                     </div>
                 </div>
             </div>
@@ -515,20 +537,20 @@
     passwordToggle.addEventListener('click', () => {
         if (passwordInput.type === 'password') {
             passwordInput.type = 'text';
-            passwordToggle.innerHTML = '&#128584;';
+            passwordToggle.textContent = '🙈';
         } else {
             passwordInput.type = 'password';
-            passwordToggle.innerHTML = '&#128065;';
+            passwordToggle.textContent = '👁️';
         }
     });
 
     confirmPasswordToggle.addEventListener('click', () => {
         if (confirmPasswordInput.type === 'password') {
             confirmPasswordInput.type = 'text';
-            confirmPasswordToggle.innerHTML = '&#128584;';
+            confirmPasswordToggle.textContent = '🙈';
         } else {
             confirmPasswordInput.type = 'password';
-            confirmPasswordToggle.innerHTML = '&#128065;';
+            confirmPasswordToggle.textContent = '👁️';
         }
     });
 
@@ -565,7 +587,7 @@
         }
     });
 
-    // Email validation on blur
+    // Email validation on blur (only if provided)
     document.getElementById('email').addEventListener('blur', (e) => {
         const email = e.target.value.trim();
         if (email && !validateEmail(email)) {
@@ -628,15 +650,20 @@
         e.preventDefault();
 
         // Get form data
+        const email = document.getElementById('email').value.trim();
         const formData = {
             first_name: document.getElementById('firstName').value.trim(),
             last_name: document.getElementById('lastName').value.trim(),
-            email: document.getElementById('email').value.trim(),
             phone_number: document.getElementById('phone').value.trim(),
             password: passwordInput.value,
             confirm_password: confirmPasswordInput.value,
             agree_terms: agreeTermsCheckbox.checked
         };
+
+        // Add email only if provided
+        if (email) {
+            formData.email = email;
+        }
 
         // Clear previous error states
         document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
@@ -647,15 +674,16 @@
             return;
         }
 
-        if (!validateEmail(formData.email)) {
-            document.getElementById('email').classList.add('error');
-            showError('Please enter a valid email address');
-            return;
-        }
-
         if (!validatePhone(formData.phone_number)) {
             document.getElementById('phone').classList.add('error');
             showError('Please enter a valid 10-digit phone number starting with 6-9');
+            return;
+        }
+
+        // Validate email only if provided
+        if (email && !validateEmail(email)) {
+            document.getElementById('email').classList.add('error');
+            showError('Please enter a valid email address');
             return;
         }
 
@@ -704,11 +732,11 @@
                 if (response.status === 400) {
                     showError(data.message || 'Invalid registration data. Please check your inputs.');
                 } else if (response.status === 409) {
-                    showError('An account with this email or phone number already exists.');
+                    showError('An account with this phone number already exists.');
                 } else if (response.status === 500) {
                     showError('Server error. Please try again later.');
                 } else {
-                    showError(data.message || 'Registration failed. Please try again.');
+                    showError(data.message || data.error || 'Registration failed. Please try again.');
                 }
                 setLoading(false);
             }
@@ -740,7 +768,7 @@
 
     // Only allow numbers in phone field
     document.getElementById('phone').addEventListener('input', (e) => {
-        e.target.value = e.target.value.replace(/\D/g, '');
+        e.target.value = e.target.value.replace(/\D/g, '').slice(0, 10);
     });
 
     // Navigation toggle functionality
