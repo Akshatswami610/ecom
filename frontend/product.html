@@ -392,7 +392,7 @@
         }, 3000);
     }
 
-    // API functions - Using same approach as cart.html
+    // Simplified API - just add to local cart and sync will handle backend
     const API = {
         async getProduct(id) {
             try {
@@ -407,82 +407,23 @@
             }
         },
 
-        async addToCart(productId, quantity = 1, variant = '100g') {
-            const token = getToken();
-
-            if (!token) {
-                throw new Error('Not authenticated');
-            }
-
-            // ✅ FIXED: Use standard POST endpoint like cart.html does
-            const body = {
-                product_id: productId,
-                quantity: quantity,
-                variant: variant
-            };
-
-            console.log('Adding to cart with body:', body);
-
-            // Use standard POST endpoint (not add_item)
-            const response = await fetch(`${API_BASE_URL}Cart/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify(body)
-            });
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                console.error('Cart API error:', errorData);
-                throw new Error(errorData.error || `Failed to add to cart: ${response.status}`);
-            }
-
-            return await response.json();
-        },
-
         async getCart() {
             const token = getToken();
+            if (!token) return { items: [] };
 
-            if (!token) {
-                throw new Error('Not authenticated');
+            try {
+                const response = await fetch(`${API_BASE_URL}Cart/`, {
+                    headers: { 'Authorization': `Token ${token}` }
+                });
+
+                if (!response.ok) return { items: [] };
+
+                const data = await response.json();
+                return data.items ? data : { items: data };
+            } catch (error) {
+                console.error('Error fetching cart:', error);
+                return { items: [] };
             }
-
-            const response = await fetch(`${API_BASE_URL}Cart/`, {
-                headers: {
-                    'Authorization': `Token ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to fetch cart: ${response.status}`);
-            }
-
-            return await response.json();
-        },
-
-        async updateCartItem(cartItemId, quantity) {
-            const token = getToken();
-
-            if (!token) {
-                throw new Error('Not authenticated');
-            }
-
-            const response = await fetch(`${API_BASE_URL}Cart/${cartItemId}/`, {
-                method: 'PATCH',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Token ${token}`
-                },
-                body: JSON.stringify({ quantity: quantity })
-            });
-
-            if (!response.ok) {
-                throw new Error(`Failed to update cart: ${response.status}`);
-            }
-
-            return await response.json();
         }
     };
 
@@ -602,11 +543,9 @@
     function selectVariant(variantName, variantPrice) {
         selectedVariant = { name: variantName, price: variantPrice };
 
-        // Update UI
         const displayPrice = document.getElementById('displayPrice');
         displayPrice.innerHTML = `₹${variantPrice.toFixed(2)} <span style="font-size: 1rem; color: #9ca3af;">/${variantName}</span>`;
 
-        // Update selected state
         document.querySelectorAll('.variant-option').forEach(option => {
             option.classList.remove('selected');
         });
@@ -643,7 +582,6 @@
             return;
         }
 
-        // Check if user is authenticated
         if (!isAuthenticated()) {
             showNotification('Please login to add items to cart', 'error');
             setTimeout(() => {
@@ -652,106 +590,57 @@
             return;
         }
 
-        // Disable button and show loading state
         addToCartBtn.disabled = true;
         const originalText = addToCartBtn.innerHTML;
         addToCartBtn.innerHTML = '<span class="loading-spinner"></span> Adding...';
 
         try {
-            // Get variant name correctly
             const variantName = selectedVariant
                 ? selectedVariant.name
                 : (currentProduct.product_variant ?
                     (Array.isArray(currentProduct.product_variant) ? currentProduct.product_variant[0] : currentProduct.product_variant)
                     : '100g');
 
-            console.log('Adding to cart:', {
-                productId: currentProduct.id,
-                quantity: quantity,
-                variant: variantName
-            });
+            const variantPrice = selectedVariant
+                ? selectedVariant.price
+                : currentProduct.product_mrp;
 
-            // Check if item already exists in cart (same product + variant)
-            const cartData = await API.getCart();
-            let items = [];
+            // Get current local cart
+            let cart = getLocalCart();
 
-            if (cartData && cartData.items && Array.isArray(cartData.items)) {
-                items = cartData.items;
-            } else if (Array.isArray(cartData)) {
-                items = cartData;
-            }
-
-            const existingItem = items.find(item =>
-                (item.product?.id || item.product_id) === currentProduct.id &&
-                item.variant === variantName
+            // Check if item already exists (same product + variant)
+            const existingIndex = cart.findIndex(item =>
+                item.id === currentProduct.id && item.variant === variantName
             );
 
-            if (existingItem) {
-                // Update existing item quantity
-                const newQuantity = (existingItem.quantity || existingItem.qty || 0) + quantity;
-                await API.updateCartItem(existingItem.id, newQuantity);
-                console.log('Updated existing cart item');
+            if (existingIndex !== -1) {
+                // Update quantity of existing item
+                cart[existingIndex].quantity += quantity;
             } else {
-                // Add new item to cart
-                await API.addToCart(currentProduct.id, quantity, variantName);
-                console.log('Added new item to cart');
+                // Add new item
+                cart.push({
+                    id: currentProduct.id,
+                    name: currentProduct.product_name,
+                    price: variantPrice,
+                    image: currentProduct.product_image,
+                    quantity: quantity,
+                    variant: variantName
+                });
             }
 
-            // Sync local cart with backend
-            try {
-                const updatedCartData = await API.getCart();
-                let updatedItems = [];
-
-                if (updatedCartData && updatedCartData.items && Array.isArray(updatedCartData.items)) {
-                    updatedItems = updatedCartData.items;
-                } else if (Array.isArray(updatedCartData)) {
-                    updatedItems = updatedCartData;
-                }
-
-                if (updatedItems.length > 0) {
-                    const backendCart = updatedItems.map(item => ({
-                        id: item.product?.id || item.product_id || item.id,
-                        cartItemId: item.id,
-                        name: item.product?.name || item.product?.product_name || item.name,
-                        price: item.product?.price || item.price,
-                        image: item.product?.image || item.product?.product_image || item.image,
-                        quantity: item.quantity || item.qty || 1,
-                        variant: item.variant || '100g'
-                    }));
-                    saveLocalCart(backendCart);
-                }
-            } catch (syncError) {
-                console.error('Failed to sync cart after adding:', syncError);
-            }
+            // Save to local storage
+            saveLocalCart(cart);
 
             showNotification('Product added to cart successfully!', 'success');
-
-            // Reset quantity to 1
             document.getElementById('quantity').value = 1;
+
+            // Let cart.html handle the backend sync when user visits cart page
+            console.log('Added to local cart. Backend sync will happen on cart page.');
 
         } catch (error) {
             console.error('Failed to add to cart:', error);
-
-            // Specific error messages
-            if (error.message.includes('Not authenticated')) {
-                showNotification('Please login to add items to cart', 'error');
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 1500);
-            } else if (error.message.includes('500')) {
-                showNotification('Server error. Please try again later.', 'error');
-            } else if (error.message.includes('401') || error.message.includes('403')) {
-                showNotification('Authentication failed. Please login again.', 'error');
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 2000);
-            } else if (error.message.includes('Product not found')) {
-                showNotification('Product not found. Please try another product.', 'error');
-            } else {
-                showNotification(error.message || 'Failed to add product to cart. Please try again.', 'error');
-            }
+            showNotification('Failed to add product to cart. Please try again.', 'error');
         } finally {
-            // Re-enable button
             addToCartBtn.disabled = false;
             addToCartBtn.innerHTML = originalText;
         }
