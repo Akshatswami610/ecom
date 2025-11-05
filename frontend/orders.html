@@ -72,6 +72,18 @@
         margin-top: 0.5rem;
     }
 
+    .order-address {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        line-height: 1.5;
+    }
+
+    .order-address-label {
+        color: #10b981;
+        font-weight: 600;
+    }
+
     .order-status {
         padding: 0.5rem 1rem;
         font-size: 0.75rem;
@@ -105,10 +117,73 @@
 
     .order-item {
         display: flex;
-        justify-content: space-between;
-        padding: 0.75rem 0;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #1f2937;
+    }
+
+    .order-item:last-child {
+        border-bottom: none;
+    }
+
+    .product-image {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #1f2937;
+        flex-shrink: 0;
+    }
+
+    .product-details {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .product-name {
+        color: #e5e7eb;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .product-variant-qty {
         color: #9ca3af;
         font-size: 0.875rem;
+    }
+
+    .product-price {
+        color: #10b981;
+        font-weight: 600;
+        font-size: 1rem;
+        text-align: right;
+        flex-shrink: 0;
+    }
+
+    .delivery-address {
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid #1f2937;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1.5rem;
+        display: none;
+    }
+
+    .delivery-address-title {
+        color: #10b981;
+        font-weight: 600;
+        font-size: 0.875rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.5rem;
+    }
+
+    .delivery-address-text {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        line-height: 1.6;
     }
 
     .order-total {
@@ -201,6 +276,95 @@
         font-weight: 500;
     }
 
+    .cancel-notice {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        background: linear-gradient(135deg, #1f2937 0%, #111827 100%);
+        border: 2px solid #10b981;
+        border-radius: 12px;
+        padding: 1.25rem 1.5rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        max-width: 350px;
+        z-index: 1000;
+        animation: slideInRight 0.5s ease-out;
+    }
+
+    @keyframes slideInRight {
+        from {
+            opacity: 0;
+            transform: translateX(100px);
+        }
+        to {
+            opacity: 1;
+            transform: translateX(0);
+        }
+    }
+
+    .cancel-notice-title {
+        color: #10b981;
+        font-weight: 700;
+        font-size: 0.95rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .cancel-notice-title::before {
+        content: "ℹ️";
+        font-size: 1.1rem;
+    }
+
+    .cancel-notice-text {
+        color: #d1d5db;
+        font-size: 0.85rem;
+        line-height: 1.6;
+        margin-bottom: 0.75rem;
+    }
+
+    .cancel-notice-link {
+        display: inline-block;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: #ffffff;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+        box-shadow: 0 2px 10px rgba(16, 185, 129, 0.3);
+    }
+
+    .cancel-notice-link:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4);
+    }
+
+    .cancel-notice-close {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        background: transparent;
+        border: none;
+        color: #6b7280;
+        font-size: 1.25rem;
+        cursor: pointer;
+        padding: 0;
+        width: 24px;
+        height: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: color 0.3s;
+    }
+
+    .cancel-notice-close:hover {
+        color: #ef4444;
+    }
+
     @media (max-width: 768px) {
         h1 {
             font-size: 2rem;
@@ -210,6 +374,21 @@
             flex-direction: column;
             align-items: flex-start;
             gap: 1rem;
+        }
+
+        .order-item {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+        }
+
+        .product-price {
+            text-align: left;
+            align-self: flex-start;
         }
     }
 </style>
@@ -225,6 +404,16 @@
         <div id="ordersEmpty" class="orders-empty" style="display: none;">
             <p>You haven't placed any orders yet</p>
             <a href="{% url 'home' %}" class="btn btn-primary">Start Shopping</a>
+        </div>
+
+        <!-- Cancel Order Notice -->
+        <div id="cancelNotice" class="cancel-notice">
+            <button class="cancel-notice-close" onclick="closeCancelNotice()">&times;</button>
+            <div class="cancel-notice-title">Need to Cancel an Order?</div>
+            <div class="cancel-notice-text">
+                To cancel your order, please contact us with your order ID and reason for cancellation.
+            </div>
+            <a href="{% url 'contact' %}" class="cancel-notice-link">Go to Contact Page</a>
         </div>
     </div>
 </main>
@@ -270,6 +459,14 @@
         updateCartCount();
         setupMobileNav();
 
+        // Show cancel notice after a delay
+        setTimeout(() => {
+            const cancelNotice = document.getElementById('cancelNotice');
+            if (cancelNotice && !sessionStorage.getItem('cancelNoticeClosed')) {
+                cancelNotice.style.display = 'block';
+            }
+        }, 2000);
+
         // Check authentication
         if (!isAuthenticated()) {
             document.getElementById('ordersContent').style.display = 'none';
@@ -283,6 +480,14 @@
 
         await loadOrders();
     });
+
+    function closeCancelNotice() {
+        const cancelNotice = document.getElementById('cancelNotice');
+        if (cancelNotice) {
+            cancelNotice.style.display = 'none';
+            sessionStorage.setItem('cancelNoticeClosed', 'true');
+        }
+    }
 
     function setupMobileNav() {
         const navToggle = document.getElementById('navToggle');
@@ -325,14 +530,29 @@
                 const itemPrice = order.product?.product_price_data?.[order.variant]
                     || (order.bill_amount / order.qty);
 
+                // Format delivery address
+                let deliveryAddress = 'No address provided';
+                if (order.address) {
+                    const addr = order.address;
+                    deliveryAddress = [
+                        addr.address_lane1,
+                        addr.address_landmark,
+                        addr.address_city,
+                        addr.address_district,
+                        addr.address_state,
+                        addr.address_pincode
+                    ].filter(Boolean).join(', ');
+                }
+
                 return {
                     id: order.id,
                     created_at: order.order_date,
                     status: mapStatus(order.status),
                     total: order.bill_amount,
-                    delivery_address: order.address,
+                    delivery_address: deliveryAddress,
                     items: [{
                         product_name: order.product?.product_name || 'Product',
+                        product_image: order.product?.product_image || '',
                         quantity: order.qty,
                         variant: order.variant,
                         price: itemPrice
@@ -358,6 +578,11 @@
                         <div>
                             <div class="order-id">Order #${order.id}</div>
                             <div class="order-date">${formatDate(order.created_at)}</div>
+                            ${order.delivery_address ? `
+                            <div class="order-address">
+                                <span class="order-address-label">Delivery to:</span> ${order.delivery_address}
+                            </div>
+                            ` : ''}
                         </div>
                         <span class="order-status ${order.status}">${order.status}</span>
                     </div>
@@ -366,8 +591,15 @@
                             .map(
                                 (item) => `
                             <div class="order-item">
-                                <span>${item.product_name} (${item.variant}) × ${item.quantity}</span>
-                                <span>₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</span>
+                                <img src="${item.product_image || '/static/images/placeholder.png'}"
+                                     alt="${item.product_name}"
+                                     class="product-image"
+                                     onerror="this.src='/static/images/placeholder.png'">
+                                <div class="product-details">
+                                    <div class="product-name">${item.product_name}</div>
+                                    <div class="product-variant-qty">${item.variant} × ${item.quantity}</div>
+                                </div>
+                                <div class="product-price">₹${(parseFloat(item.price) * item.quantity).toFixed(2)}</div>
                             </div>`
                             )
                             .join('')}

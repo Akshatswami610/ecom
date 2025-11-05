@@ -83,10 +83,35 @@ class CartSerializer(serializers.ModelSerializer):
         fields = ['id', 'product', 'product_id', 'quantity', 'variant']
         read_only_fields = ['id']
 
+class AddressSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Address
+        fields = ['id', 'address_lane1', 'address_landmark', 'address_city',
+                  'address_district', 'address_state', 'address_pincode']
+
 class OrderHistorySerializer(serializers.ModelSerializer):
+    product = ProductSerializer(read_only=True)
+    address = AddressSerializer(read_only=True)
+
     class Meta:
         model = OrderHistory
-        fields = '__all__'
+        fields = [
+            'id',
+            'user',
+            'address',
+            'product',
+            'variant',
+            'qty',
+            'order_date',
+            'delivery_date',
+            'status',
+            'bill_amount',
+        ]
+        read_only_fields = ['user']
+
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
 
 class ReviewSerializer(serializers.ModelSerializer):
     class Meta:
@@ -97,9 +122,3 @@ class ContactFormSerializer(serializers.ModelSerializer):
     class Meta:
         model = ContactForm
         fields = '__all__'
-
-class AddressSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Address
-        fields = ['id', 'address_lane1', 'address_landmark', 'address_city',
-                  'address_district', 'address_state', 'address_pincode']
