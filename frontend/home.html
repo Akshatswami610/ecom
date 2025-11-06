@@ -475,7 +475,6 @@
             }
 
             saveLocalCart(cart);
-            showNotification('Product added to cart! 🛒', 'success');
         }
 
         function showNotification(message, type = 'success') {
@@ -701,13 +700,12 @@
                     });
 
                     if (response.ok) {
-                        showNotification('Added to backend cart ✅', 'success');
-                        console.log('Backend cart updated successfully');
+                        showNotification('Product added to cart! 🛒', 'success');
                     } else {
-                        console.error('Backend add failed:', await response.text());
+                        showNotification('Error while adding to cart..... Please try after some time');
                     }
                 } catch (error) {
-                    console.error('Error adding to backend cart:', error);
+                        showNotification("Error adding to cart", "error");
                 }
             }
         }
