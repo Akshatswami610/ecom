@@ -399,7 +399,6 @@
 
                     return await response.json();
                 } catch (error) {
-                    console.error('API request failed:', error);
                     throw error;
                 }
             },
@@ -510,7 +509,6 @@
                     }));
                 }
             } catch (error) {
-                console.error('Error parsing price data:', error);
             }
             return [];
         }

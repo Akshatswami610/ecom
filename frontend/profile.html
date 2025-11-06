@@ -662,7 +662,7 @@
                     </div>
                 `;
             } catch (error) {
-                console.error(error);
+
                 userDetailsDiv.innerHTML = `<div class="empty-state">Unable to load user details.</div>`;
             }
         }
@@ -702,7 +702,6 @@
                     </div>
                 `).join('');
             } catch (error) {
-                console.error(error);
                 addressListDiv.innerHTML = '<div class="empty-state">Failed to load addresses.</div>';
             }
         }
@@ -753,7 +752,6 @@
                 closeEditDetailsModal();
                 loadUserDetails();
             } catch (error) {
-                console.error(error);
                 alert('Failed to update details.');
             }
         }
@@ -789,7 +787,6 @@
 
                 document.getElementById('addressModal').classList.add('active');
             } catch (error) {
-                console.error(error);
                 alert('Failed to load address details.');
             }
         }
@@ -811,8 +808,6 @@
                 address_pincode: document.getElementById('addressPincode').value.trim(),
             };
 
-            console.log("Sending to API:", addressData);
-
             const method = currentEditingAddressId ? 'PUT' : 'POST';
             const url = currentEditingAddressId
                 ? `${API_BASE_URL}Address/${currentEditingAddressId}/`
@@ -829,7 +824,6 @@
                 });
 
                 const result = await response.json();
-                console.log("Server replied:", result);
 
                 if (!response.ok) {
                     throw new Error(result.detail || JSON.stringify(result));
@@ -839,7 +833,6 @@
                 closeAddressModal();
                 loadAddresses();
             } catch (error) {
-                console.error('Error saving address:', error);
                 alert('Failed to save address.');
             }
         }
@@ -859,7 +852,6 @@
                 showNotification('Address deleted successfully!');
                 loadAddresses();
             } catch (error) {
-                console.error(error);
                 alert('Failed to delete address.');
             }
         }

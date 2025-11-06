@@ -405,7 +405,6 @@
             });
 
             if (!response.ok) {
-                console.error('Failed to fetch cart from backend:', response.status);
                 return;
             }
 
@@ -425,10 +424,8 @@
                 }));
 
                 saveLocalCart(backendCart);
-                console.log('Cart synced successfully with backend');
             }
         } catch (error) {
-            console.error('Error syncing cart:', error);
         }
     }
 
@@ -565,7 +562,6 @@
                     body: JSON.stringify({ quantity: newQuantity })
                 });
             } catch (error) {
-                console.error('Error updating cart:', error);
             }
         }
 
@@ -610,7 +606,6 @@
                         }
                     });
                 } catch (error) {
-                    console.error('Error removing item:', error);
                 }
             }
 
@@ -692,7 +687,6 @@
                 throw new Error('Failed to create order');
             }
         } catch (error) {
-            console.error('Checkout error:', error);
             showNotification('Failed to process checkout. Please try again.', 'error');
             checkoutBtn.disabled = false;
             checkoutBtn.textContent = 'Proceed to Checkout';

@@ -402,7 +402,6 @@
                 }
                 return await response.json();
             } catch (error) {
-                console.error('API request failed:', error);
                 throw error;
             }
         }
@@ -444,7 +443,6 @@
             currentProduct = await API.getProduct(productId);
             displayProduct(currentProduct);
         } catch (error) {
-            console.error('Error loading product:', error);
             productDetail.innerHTML =
                 '<div class="error-message">Failed to load product. Please try again later.</div>';
         }
@@ -467,7 +465,6 @@
                 }));
             }
         } catch (error) {
-            console.error('Error parsing price data:', error);
         }
 
         // Set initial selected variant
@@ -639,7 +636,6 @@
             document.getElementById('quantity').value = 1;
 
         } catch (error) {
-            console.error('Failed to add to cart:', error);
             showNotification(error.message || 'Failed to add product to cart. Please try again.', 'error');
         } finally {
             addToCartBtn.disabled = false;
