@@ -40,8 +40,7 @@ class CartViewSet(viewsets.ModelViewSet):
             'items': serializer.data
         })
 
-    @action(detail=False, methods=['post'], url_path='add')
-    def add_item(self, request):
+    def create(self, request, *args, **kwargs):
         """Add item to cart or update quantity if exists"""
         product_id = request.data.get('product_id')
         quantity = request.data.get('quantity', 1)
@@ -61,27 +60,38 @@ class CartViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        # Check if item already exists in cart
-        cart_item, created = Cart.objects.get_or_create(
+        # Check if item already exists in cart (same product + variant)
+        cart_item = Cart.objects.filter(
             user=request.user,
             product=product,
-            variant=variant,
-            defaults={'qty': quantity}
-        )
+            variant=variant
+        ).first()
 
-        if not created:
+        if cart_item:
             # Update existing item quantity
-            cart_item.qty += quantity
+            cart_item.qty += int(quantity)
             cart_item.save()
+            message = 'Cart item updated'
+        else:
+            # Create new cart item
+            cart_item = Cart.objects.create(
+                user=request.user,
+                product=product,
+                variant=variant,
+                qty=int(quantity)
+            )
+            message = 'Item added to cart'
 
         serializer = self.get_serializer(cart_item)
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response({
+            **serializer.data,
+            'message': message
+        }, status=status.HTTP_201_CREATED)
 
-    @action(detail=True, methods=['patch'], url_path='update')
-    def update_item(self, request, pk=None):
+    def partial_update(self, request, *args, **kwargs):
         """Update cart item quantity"""
         try:
-            cart_item = self.get_queryset().get(pk=pk)
+            cart_item = self.get_queryset().get(pk=kwargs.get('pk'))
         except Cart.DoesNotExist:
             return Response(
                 {'error': 'Cart item not found'},
@@ -90,19 +100,21 @@ class CartViewSet(viewsets.ModelViewSet):
 
         quantity = request.data.get('quantity')
         if quantity is not None:
-            cart_item.qty = quantity
+            cart_item.qty = int(quantity)
             cart_item.save()
 
         serializer = self.get_serializer(cart_item)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['delete'], url_path='remove')
-    def remove_item(self, request, pk=None):
+    def destroy(self, request, *args, **kwargs):
         """Remove item from cart"""
         try:
-            cart_item = self.get_queryset().get(pk=pk)
+            cart_item = self.get_queryset().get(pk=kwargs.get('pk'))
             cart_item.delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+            return Response(
+                {'message': 'Item removed from cart'},
+                status=status.HTTP_204_NO_CONTENT
+            )
         except Cart.DoesNotExist:
             return Response(
                 {'error': 'Cart item not found'},

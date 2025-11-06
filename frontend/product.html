@@ -392,7 +392,7 @@
         }, 3000);
     }
 
-    // Simplified API - just add to local cart and sync will handle backend
+    // API functions
     const API = {
         async getProduct(id) {
             try {
@@ -404,25 +404,6 @@
             } catch (error) {
                 console.error('API request failed:', error);
                 throw error;
-            }
-        },
-
-        async getCart() {
-            const token = getToken();
-            if (!token) return { items: [] };
-
-            try {
-                const response = await fetch(`${API_BASE_URL}Cart/`, {
-                    headers: { 'Authorization': `Token ${token}` }
-                });
-
-                if (!response.ok) return { items: [] };
-
-                const data = await response.json();
-                return data.items ? data : { items: data };
-            } catch (error) {
-                console.error('Error fetching cart:', error);
-                return { items: [] };
             }
         }
     };
@@ -605,41 +586,61 @@
                 ? selectedVariant.price
                 : currentProduct.product_mrp;
 
-            // Get current local cart
+            // Add to backend using the standard POST endpoint
+            const response = await fetch(`${API_BASE_URL}Cart/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Token ${getToken()}`
+                },
+                body: JSON.stringify({
+                    product_id: currentProduct.id,
+                    quantity: quantity,
+                    variant: variantName
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Failed to add to cart');
+            }
+
+            const data = await response.json();
+
+            // Update local cart with backend response
             let cart = getLocalCart();
 
-            // Check if item already exists (same product + variant)
+            // Check if item already exists locally (same product + variant)
             const existingIndex = cart.findIndex(item =>
                 item.id === currentProduct.id && item.variant === variantName
             );
 
             if (existingIndex !== -1) {
-                // Update quantity of existing item
-                cart[existingIndex].quantity += quantity;
+                // Update existing item with new quantity and backend ID
+                cart[existingIndex].quantity = data.quantity || (cart[existingIndex].quantity + quantity);
+                cart[existingIndex].cartItemId = data.id;
             } else {
-                // Add new item
+                // Add new item with backend cart item ID
                 cart.push({
                     id: currentProduct.id,
+                    cartItemId: data.id, // Backend ID for future updates/deletes
                     name: currentProduct.product_name,
                     price: variantPrice,
                     image: currentProduct.product_image,
-                    quantity: quantity,
+                    quantity: data.quantity || quantity,
                     variant: variantName
                 });
             }
 
-            // Save to local storage
+            // Save updated cart to localStorage
             saveLocalCart(cart);
 
             showNotification('Product added to cart successfully!', 'success');
             document.getElementById('quantity').value = 1;
 
-            // Let cart.html handle the backend sync when user visits cart page
-            console.log('Added to local cart. Backend sync will happen on cart page.');
-
         } catch (error) {
             console.error('Failed to add to cart:', error);
-            showNotification('Failed to add product to cart. Please try again.', 'error');
+            showNotification(error.message || 'Failed to add product to cart. Please try again.', 'error');
         } finally {
             addToCartBtn.disabled = false;
             addToCartBtn.innerHTML = originalText;
