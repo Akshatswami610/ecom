@@ -30,6 +30,10 @@
         }
     }
 
+    @keyframes fadeOut {
+        to { opacity: 0; }
+    }
+
     @keyframes slideIn {
         from {
             opacity: 0;
@@ -270,6 +274,156 @@
         to { transform: rotate(360deg); }
     }
 
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 10000;
+        opacity: 0;
+        animation: fadeInOverlay 0.3s ease forwards;
+    }
+
+    @keyframes fadeInOverlay {
+        to { opacity: 1; }
+    }
+
+    .modal-content {
+        background: linear-gradient(135deg, #1a1a1a 0%, #0f0f0f 100%);
+        border: 1px solid #374151;
+        border-radius: 16px;
+        padding: 2rem;
+        max-width: 450px;
+        width: 90%;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        transform: scale(0.9) translateY(20px);
+        opacity: 0;
+        animation: modalSlideIn 0.3s ease 0.1s forwards;
+    }
+
+    @keyframes modalSlideIn {
+        to {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
+    }
+
+    .modal-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .modal-icon {
+        width: 48px;
+        height: 48px;
+        background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+        border: 2px solid #ef4444;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #ef4444;
+        font-size: 24px;
+        animation: pulseIcon 2s ease infinite;
+    }
+
+    @keyframes pulseIcon {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    .modal-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: #ffffff;
+        margin: 0;
+    }
+
+    .modal-body {
+        margin-bottom: 2rem;
+    }
+
+    .modal-product {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: rgba(16, 185, 129, 0.05);
+        border: 1px solid #1f2937;
+        border-radius: 12px;
+        margin-top: 1rem;
+    }
+
+    .modal-product-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 8px;
+        border: 1px solid #374151;
+    }
+
+    .modal-product-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #ffffff;
+    }
+
+    .modal-message {
+        color: #9ca3af;
+        font-size: 0.875rem;
+        line-height: 1.6;
+        margin-bottom: 0.5rem;
+    }
+
+    .modal-actions {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .modal-btn {
+        flex: 1;
+        padding: 0.875rem 1.5rem;
+        border: none;
+        font-size: 0.875rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .modal-btn-cancel {
+        background: transparent;
+        color: #9ca3af;
+        border: 2px solid #374151;
+    }
+
+    .modal-btn-cancel:hover {
+        background: #1f2937;
+        color: #ffffff;
+        border-color: #4b5563;
+    }
+
+    .modal-btn-confirm {
+        background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+        color: #ffffff;
+        box-shadow: 0 4px 15px rgba(239, 68, 68, 0.3);
+    }
+
+    .modal-btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(239, 68, 68, 0.4);
+    }
+
     @media (max-width: 768px) {
         .cart-layout {
             grid-template-columns: 1fr;
@@ -285,6 +439,14 @@
             justify-content: space-between;
             align-items: center;
             margin-top: 1rem;
+        }
+
+        .modal-content {
+            padding: 1.5rem;
+        }
+
+        .modal-actions {
+            flex-direction: column-reverse;
         }
     }
 </style>
@@ -586,32 +748,94 @@
         loadCart();
     }
 
-    async function removeItem(index) {
+    function showRemoveModal(index) {
         const cart = getLocalCart();
-        const itemName = cart[index].name;
+        const item = cart[index];
 
-        if (confirm(`Remove "${itemName}" from cart?`)) {
-            const cartItemId = cart[index].cartItemId;
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay';
+        modal.innerHTML = `
+            <div class="modal-content">
+                <div class="modal-header">
+                    <div class="modal-icon">🗑️</div>
+                    <h2 class="modal-title">Remove Item?</h2>
+                </div>
+                <div class="modal-body">
+                    <p class="modal-message">Are you sure you want to remove this item from your cart?</p>
+                    <div class="modal-product">
+                        <img src="${item.image || '/placeholder.svg?height=60&width=60'}"
+                             alt="${item.name}"
+                             class="modal-product-image"
+                             onerror="this.src='/placeholder.svg?height=60&width=60'">
+                        <div>
+                            <div class="modal-product-name">${item.name}</div>
+                            <div style="color: #6b7280; font-size: 0.875rem; margin-top: 0.25rem;">
+                                ${item.quantity} × ₹${parseFloat(item.price).toFixed(2)}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="modal-btn modal-btn-cancel" onclick="closeRemoveModal()">
+                        Cancel
+                    </button>
+                    <button class="modal-btn modal-btn-confirm" onclick="confirmRemoveItem(${index})">
+                        Remove Item
+                    </button>
+                </div>
+            </div>
+        `;
 
-            cart.splice(index, 1);
-            saveLocalCart(cart);
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
 
-            // Remove from backend if authenticated using standard DELETE
-            if (isAuthenticated() && cartItemId) {
-                try {
-                    await fetch(`${API_BASE_URL}Cart/${cartItemId}/`, {
-                        method: 'DELETE',
-                        headers: {
-                            'Authorization': `Token ${getToken()}`
-                        }
-                    });
-                } catch (error) {
-                }
+        // Close on overlay click
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeRemoveModal();
             }
+        });
+    }
 
-            loadCart();
-            showNotification('Item removed from cart', 'success');
+    function closeRemoveModal() {
+        const modal = document.querySelector('.modal-overlay');
+        if (modal) {
+            modal.style.animation = 'fadeOut 0.2s ease forwards';
+            setTimeout(() => {
+                modal.remove();
+                document.body.style.overflow = '';
+            }, 200);
         }
+    }
+
+    async function confirmRemoveItem(index) {
+        closeRemoveModal();
+
+        const cart = getLocalCart();
+        const cartItemId = cart[index].cartItemId;
+
+        cart.splice(index, 1);
+        saveLocalCart(cart);
+
+        // Remove from backend if authenticated using standard DELETE
+        if (isAuthenticated() && cartItemId) {
+            try {
+                await fetch(`${API_BASE_URL}Cart/${cartItemId}/`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Token ${getToken()}`
+                    }
+                });
+            } catch (error) {
+            }
+        }
+
+        loadCart();
+        showNotification('Item removed from cart', 'success');
+    }
+
+    async function removeItem(index) {
+        showRemoveModal(index);
     }
 
     function updateSummary(cart) {
