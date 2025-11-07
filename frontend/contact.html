@@ -131,7 +131,6 @@
         color: #ffffff;
     }
 
-
     .form-group input,
     .form-group textarea {
         width: 100%;
@@ -193,12 +192,171 @@
     }
 
     @media (max-width: 768px) {
+        main {
+            padding: 2rem 0;
+            min-height: calc(100vh - 200px);
+        }
+
         h1 {
             font-size: 2rem;
+            margin-bottom: 2rem;
         }
 
         .contact-content {
             grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        .contact-info,
+        .contact-form {
+            padding: 2rem;
+            border-radius: 12px;
+        }
+
+        .contact-info h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+        }
+
+        .contact-details {
+            gap: 1.5rem;
+        }
+
+        .contact-item {
+            padding: 1.25rem;
+            border-radius: 10px;
+        }
+
+        .contact-item h3 {
+            font-size: 0.8rem;
+        }
+
+        .contact-item p {
+            font-size: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.25rem;
+        }
+
+        .form-group label {
+            font-size: 0.8rem;
+            margin-bottom: 0.65rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.875rem 1.25rem;
+            font-size: 0.85rem;
+            border-radius: 8px;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.8rem;
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 480px) {
+        main {
+            padding: 1.5rem 0;
+            min-height: calc(100vh - 150px);
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .container {
+            padding: 0 0.75rem;
+        }
+
+        .contact-info,
+        .contact-form {
+            padding: 1.5rem;
+            border-radius: 10px;
+        }
+
+        .contact-info h2 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .contact-info p {
+            margin-bottom: 1.25rem;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+
+        .contact-details {
+            gap: 1rem;
+        }
+
+        .contact-item {
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .contact-item:hover {
+            transform: none;
+        }
+
+        .contact-item h3 {
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .contact-item p {
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            font-size: 0.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            padding: 0.75rem 1rem;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+        }
+
+        .btn {
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            width: 100%;
+            border-radius: 6px;
+        }
+
+        .success-message {
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            position: fixed;
+            top: 60px;
+            right: 0.5rem;
+            left: 0.5rem;
+            width: auto;
+            z-index: 9999;
+            border-radius: 6px;
         }
     }
 </style>
@@ -245,10 +403,10 @@
                         <option value="" disabled selected>Select a reason</option>
                         <option value="Order Issue">Order Issue</option>
                         <option value="Payment Problem">Payment Problem</option>
-                        <option value="Payment Problem">Cancel Order</option>
+                        <option value="Cancel Order">Cancel Order</option>
                         <option value="Delivery Delay">Delivery Delay</option>
                         <option value="Product Quality">Product Quality</option>
-                        <option value="Product Quality">Return Product</option>
+                        <option value="Return Product">Return Product</option>
                         <option value="Account Support">Account Support</option>
                         <option value="Other">Other</option>
                     </select>
