@@ -4,14 +4,22 @@
 {% block css %}
 <style>
     .back-link {
-        display: inline-block;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
         margin: 2rem 0;
+        padding: 0.75rem 1.5rem;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid #1f2937;
+        border-radius: 8px;
         color: #10b981;
         text-decoration: none;
         font-size: 0.875rem;
-        font-weight: 500;
+        font-weight: 600;
         transition: all 0.3s;
         animation: fadeIn 0.5s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     @keyframes fadeIn {
@@ -20,8 +28,11 @@
     }
 
     .back-link:hover {
-        color: #059669;
+        background: rgba(16, 185, 129, 0.2);
+        border-color: #10b981;
+        color: #34d399;
         transform: translateX(-4px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
     }
 
     main {
