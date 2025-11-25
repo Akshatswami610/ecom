@@ -79,7 +79,7 @@ TasteOfShekhawati/
 ## ✅ Installation & Setup
 
 ### 1️⃣ Clone Project
-    git clone https://github.com/<your-username>/TasteOfShekhawati.git
+    git clone https://github.com/Akshatswami610/TasteOfShekhawati.git
     cd TasteOfShekhawati
 ### 2️⃣ Create Virtual Environment
     python -m venv env
